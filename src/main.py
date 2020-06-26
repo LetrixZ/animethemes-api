@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from config import config
 from models import db, Anime
-from scrapers import addYear, getUserList, getAllYears, getAllSeasons, getYearSeasons
+from scrapers import addYear, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason
 import json
 
 def create_app(enviroment):
@@ -12,7 +12,7 @@ def create_app(enviroment):
         db.create_all()
     return app
 
-enviroment = config['production']
+enviroment = config['development']
 
 app = create_app(enviroment)
 
@@ -39,14 +39,9 @@ def searchAnime(name):
     return jsonify(animeList)
 
 @app.route('/api/v1/season/<string:year>/<string:season>')
-def getSeason(year, season):
+def season(year, season):
     year = year.replace('s','')
-    results = Anime.query.filter_by(year=year).all()
-    animeList = []
-    for item in results:
-        if season.capitalize() in item.season:
-            animeList.append(item.json())
-    return jsonify(animeList)
+    return jsonify(getSeason(year, season))
 
 @app.route('/api/v1/seasons/<string:year>')
 def yearSeasons(year):
@@ -74,6 +69,13 @@ def getYear(year):
 def getMalList(user):
     userList = getUserList(user)
     return jsonify(userList)
+
+@app.route('/api/v1/current')
+def currentSeason():
+    currentSeason, year = getCurrentSeason()
+    print(currentSeason)
+    print(year)
+    return jsonify(getSeason(year, currentSeason))
 
 if __name__ == '__main__':
     app.run()

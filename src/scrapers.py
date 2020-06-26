@@ -174,11 +174,18 @@ def getYearSeasons(year):
         seasonsList.append({'season':season, 'animes': seasonList})
     return {'year':year,'seasons':seasonsList}
 
-"""def getCovers():
-    page = requests.get('https://animethemes-api.herokuapp.com/all')
-    animeList = page.json()
-    for anime in animeList:
-        row = Anime.query.filter_by(malId=anime['malId']).first()
-        if row:
-            row.cover = anime['poster']
-            row.save()"""
+def getCurrentSeason():
+    years = getAllSeasons()
+    data = list(years[0].values())
+    currentSeason = data[1][0]
+    year = data[0]
+    return (currentSeason, year)
+
+def getSeason(year, season):
+    results = Anime.query.filter_by(year=year).all()
+    animeList = []
+    for item in results:
+        if season.capitalize() in item.season:
+            animeList.append(item.json())
+    animeList = sorted(animeList, key=lambda k: k['title'][0])
+    return animeList
