@@ -174,6 +174,7 @@ def getYearSeasons(year):
                 seasonList.append(item.json())
         seasonList = sorted(seasonList, key=lambda k: k['title'][0])
         seasonsList.append({'season':season, 'animes': seasonList})
+    seasonsList = sorted(seasonsList, key=lambda k: k['season'])
     return {'year':year,'seasons':seasonsList}
 
 def getCurrentSeason():
