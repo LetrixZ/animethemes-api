@@ -160,15 +160,17 @@ def getYearSeasons(year):
     seasons = []
     for item in results:
         seasonText = item.season[:-5]
-        if seasonText not in seasons:
+        if seasonText not in seasons and len(seasonText):
                 seasons.append(seasonText)
-        if 'All' not in seasons and item.season == 'All':
+        elif 'All' not in seasons and item.season == 'All':
             seasons.append("All")
     seasonsList = []
     for season in seasons:
         seasonList = []
         for item in results:
             if item.season[:-5] == season:
+                seasonList.append(item.json())
+            elif item.season == 'All':
                 seasonList.append(item.json())
         seasonList = sorted(seasonList, key=lambda k: k['title'][0])
         seasonsList.append({'season':season, 'animes': seasonList})
