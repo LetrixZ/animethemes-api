@@ -19,11 +19,11 @@ def getBodies(urlList):
     return bodies
 
 def getCover(id):
-    print(id)
     row = Anime.query.filter_by(malId=id).first()
     if row and row.cover:
         return row.cover
     else:
+        print(id)
         anime = AnimeMAL(id)
         image = anime.image_url
         """try:
@@ -74,7 +74,8 @@ def getAnime(entry, seasonName, year):
     malUrl = entry.find('a').get('href')
     if not 'myanimelist' in malUrl:
         return None
-    malId = malUrl[30:-1]
+    malId = malUrl[30:]
+    malId = int("".join(filter(str.isdigit, malId)))
     malId = malId.split('/')[0]
     name = entry.getText()
     title = [name]
