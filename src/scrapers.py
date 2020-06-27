@@ -118,6 +118,8 @@ def addYear(year):
                 entryList.append(item)
         for entry in entryList:
             anime = getAnime(entry, seasonName, year)
+            row = Anime.query.filter_by(malId=anime['malId']).first()
+
             if anime:
                 if not row:
                     print(row.malId)
