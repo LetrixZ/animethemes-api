@@ -75,8 +75,8 @@ def getAnime(entry, seasonName, year):
     if not 'myanimelist' in malUrl:
         return None
     malId = malUrl[30:]
-    malId = int("".join(filter(str.isdigit, malId)))
     malId = malId.split('/')[0]
+    malId = int("".join(filter(str.isdigit, malId)))
     name = entry.getText()
     title = [name]
     try:
