@@ -19,6 +19,8 @@ app = create_app(enviroment)
 @app.route('/db/year/<string:year>')
 def addYearToDB(year):
     animeList = addYear(year)
+    if type(animeList) == animeList:
+        return animeList['malId']
     for anime in animeList:
         item = Anime.create(json.dumps(anime['titles']), anime['malId'], anime['cover'], anime['year'], anime['season'], json.dumps(anime['themes']))
     return jsonify({'message':'done'})
