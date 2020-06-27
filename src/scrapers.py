@@ -26,13 +26,6 @@ def getCover(id):
         print(id)
         anime = AnimeMAL(id)
         image = anime.image_url
-        """try:
-            request = session.anime(id)
-            image = request.picture
-        except:
-            print(id)
-            raise SystemExit(0)
-            image = None"""
         return image
 
 def getThemes(table):
@@ -61,7 +54,29 @@ def getThemes(table):
                 themeMirror.append({'quality':themeQuality,'mirrorUrl': nextMirror.find('a').get('href')})
         except AttributeError:
             #print('There is not another mirror')
-            None
+            pass
+        if "nextMirror" in locals():
+            try:
+                nextMirror_2 = nextMirror.find_next_sibling('tr')
+                if not len(nextMirror_2.findAll('td')[0].getText()):
+                    themeQuality = nextMirror_2.find('a').getText()[nextMirror_2.find('a').getText().find('ebm (')+5:-1]
+                    if not themeQuality:
+                        themeQuality = 'default'
+                    themeMirror.append({'quality':themeQuality,'mirrorUrl': nextMirror_2.find('a').get('href')})
+            except AttributeError:
+                #print('There is not another mirror')
+                pass
+        if "nextMirror_2" in locals():
+            try:
+                nextMirror_3 = nextMirror_2.find_next_sibling('tr')
+                if not len(nextMirror_3.findAll('td')[0].getText()):
+                    themeQuality = nextMirror_3.find('a').getText()[nextMirror_3.find('a').getText().find('ebm (')+5:-1]
+                    if not themeQuality:
+                        themeQuality = 'default'
+                    themeMirror.append({'quality':themeQuality,'mirrorUrl': nextMirror_3.find('a').get('href')})
+            except AttributeError:
+                #print('There is not another mirror')
+                pass
         themeEpisodes = tr.findAll('td')[2].getText()
         try:
             themeNotes = tr.findAll('td')[3].getText()
@@ -86,8 +101,8 @@ def getAnime(entry, seasonName, year):
         None
     table = entry.find_next_sibling('table').find('tbody').findAll('tr')
     themes = getThemes(table)
-    cover = getCover(malId)
-    return {'malId':malId,'titles':title,'themes':themes, 'cover':cover, 'year':year, 'season':seasonName}
+    #cover = getCover(malId)
+    return {'malId':malId,'titles':title,'themes':themes, 'cover':None, 'year':year, 'season':seasonName}
 
 def addYear(year):
     page = reddit.subreddit('AnimeThemes').wiki[year].content_html
