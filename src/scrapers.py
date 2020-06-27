@@ -119,7 +119,9 @@ def addYear(year):
         for entry in entryList:
             anime = getAnime(entry, seasonName, year)
             if anime:
-                animeList.append(anime)
+                if not row:
+                    print(row.malId)
+                    animeList.append(anime)
     return animeList
 
 def getAnimeID(id):
