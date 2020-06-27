@@ -19,14 +19,19 @@ def getBodies(urlList):
     return bodies
 
 def getCover(id):
-    session = Session()
-    try:
-        request = session.anime(id)
-        image = request.picture
-    except Session.anime.MalformedAnimePageError:
-        print(id)
-        image = None
-    return image
+    row = Anime.query.filter_by(malId=id).first()
+    if row.cover:
+        return row.cover
+    else:
+        session = Session()
+        try:
+            request = session.anime(id)
+            image = request.picture
+        except:
+            print(id)
+            raise SystemExit(0)
+            image = None
+        return image
 
 def getThemes(table):
     themes = []
@@ -91,7 +96,8 @@ def addYear(year):
         for entry in entryList:
             year = int(str(year).replace('s',''))
             anime = getAnime(entry, "All", year)
-            if anime:
+            row = Anime.query.filter_by(malId=anime['malId']).first()
+            if anime and not row:
                 animeList.append(anime)
         return animeList
     for season in seasons:
