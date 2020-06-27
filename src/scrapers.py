@@ -1,7 +1,7 @@
 import praw, requests, concurrent.futures, json
 from bs4 import BeautifulSoup
 from models import Anime
-from myanimelist.session import Session
+from mal import Anime as AnimeMAL
 
 reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg", client_secret="Vs9q60YyROx780avM7AqsVFzfYM", user_agent="Letrix's AnimeThemes API")
 
@@ -23,9 +23,8 @@ def getCover(id):
     if row and row.cover:
         return row.cover
     else:
-        session = Session()
-        request = session.anime(id)
-        image = request.picture
+        anime = AnimeMAL(id)
+        image = anime.image_url
         """try:
             request = session.anime(id)
             image = request.picture
