@@ -115,9 +115,10 @@ def addYear(year):
             year = int(str(year).replace('s',''))
             anime = getAnime(entry, "All", year)
             if anime:
-                row = Anime.query.filter_by(malId=anime['malId']).first()
-                if not row:
-                    animeList.append(anime)
+                animeList.append(anime)
+                #row = Anime.query.filter_by(malId=anime['malId']).first()
+                #if not row:
+                #    animeList.append(anime)
         return animeList
     for season in seasons:
         seasonText = season.getText()
@@ -134,9 +135,10 @@ def addYear(year):
             anime = getAnime(entry, seasonName, year)
             if anime:
                 malId = anime['malId']
-                row = Anime.query.filter_by(malId=malId).first()
-                if not row:
-                    animeList.append(anime)
+                animeList.append(anime)
+                #row = Anime.query.filter_by(malId=malId).first()
+                #if not row:
+                #    animeList.append(anime)
     return animeList
 
 def getAnimeID(id):

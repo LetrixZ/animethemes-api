@@ -19,7 +19,11 @@ app = create_app(enviroment)
 @app.route('/db/year/<string:year>')
 def addYearToDB(year):
     animeList = addYear(year)
+    returnList = []
     for anime in animeList:
+        row = Anime.query.filter_by(malId=anime['malId']).first
+        if not row:
+            returnList.append(anime)
         item = Anime.create(json.dumps(anime['titles']), anime['malId'], anime['cover'], anime['year'], anime['season'], json.dumps(anime['themes']))
     return jsonify(animeList)
 
