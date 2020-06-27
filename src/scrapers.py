@@ -24,13 +24,15 @@ def getCover(id):
         return row.cover
     else:
         session = Session()
-        try:
+        request = session.anime(id)
+        image = request.picture
+        """try:
             request = session.anime(id)
             image = request.picture
         except:
             print(id)
             raise SystemExit(0)
-            image = None
+            image = None"""
         return image
 
 def getThemes(table):
