@@ -216,8 +216,11 @@ def getSeason(year, season):
 
 def getCoverFromDB():
     animes = requests.get("https://animethemes-api.herokuapp.com/all/").json()
-    for anime in json.loads(animes):
-        row = Anime.query.filter_by(malId=anime['malId']).first
-        row.cover = anime['poster']
-        row.save()
+    for anime in animes:
+        row = Anime.query.filter_by(malId=anime['malId']).first()
+        if row:
+            row.cover = anime['poster']
+            row.save()
+        else:
+            print(" {} ".format(anime['malId'],anime['name']))
     return {'message':'done'}
