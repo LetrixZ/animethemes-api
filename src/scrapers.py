@@ -101,8 +101,8 @@ def getAnime(entry, seasonName, year):
         None
     table = entry.find_next_sibling('table').find('tbody').findAll('tr')
     themes = getThemes(table)
-    #cover = getCover(malId)
-    return {'malId':malId,'titles':title,'themes':themes, 'cover':None, 'year':year, 'season':seasonName}
+    cover = getCover(malId)
+    return {'malId':malId,'titles':title,'themes':themes, 'cover':cover, 'year':year, 'season':seasonName}
 
 def addYear(year):
     page = reddit.subreddit('AnimeThemes').wiki[year].content_html
