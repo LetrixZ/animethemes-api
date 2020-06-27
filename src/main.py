@@ -18,7 +18,7 @@ app = create_app(enviroment)
 
 @app.route('/db/covers')
 def getAllCovers():
-    return jsonify(getAllCovers())
+    return jsonify(getCoverFromDB())
 
 @app.route('/db/year/<string:year>')
 def addYearToDB(year):
