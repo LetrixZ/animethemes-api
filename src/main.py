@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from config import config
 from models import db, Anime
-from scrapers import addYear, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason
+from scrapers import addYear, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, getCoverFromDB
 import json
 
 def create_app(enviroment):
@@ -12,20 +12,20 @@ def create_app(enviroment):
         db.create_all()
     return app
 
-enviroment = config['production']
+enviroment = config['development']
 
 app = create_app(enviroment)
+
+@app.route('/db/covers')
+def getAllCovers():
+    return jsonify(getAllCovers())
 
 @app.route('/db/year/<string:year>')
 def addYearToDB(year):
     animeList = addYear(year)
-    returnList = []
-    for anime in animeList:
-        row = Anime.query.filter_by(malId=anime['malId']).first
-        if not row:
-            returnList.append(anime)
+    for anime in animeList[0]:
         item = Anime.create(json.dumps(anime['titles']), anime['malId'], anime['cover'], anime['year'], anime['season'], json.dumps(anime['themes']))
-    return jsonify(returnList)
+    return jsonify(animeList[1])
 
 
 @app.route('/api/v1/anime/<int:id>')

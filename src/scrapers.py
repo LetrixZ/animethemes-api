@@ -52,31 +52,19 @@ def getThemes(table):
                 if not themeQuality:
                     themeQuality = 'default'
                 themeMirror.append({'quality':themeQuality,'mirrorUrl': nextMirror.find('a').get('href')})
+                try:
+                    nextMirror_2 = nextMirror.find_next_sibling('tr')
+                    if not len(nextMirror_2.findAll('td')[0].getText()):
+                        themeQuality = nextMirror_2.find('a').getText()[nextMirror_2.find('a').getText().find('ebm (')+5:-1]
+                        if not themeQuality:
+                            themeQuality = 'default'
+                        themeMirror.append({'quality':themeQuality,'mirrorUrl': nextMirror_2.find('a').get('href')})
+                except AttributeError:
+                    #print('There is not another mirror')
+                    pass
         except AttributeError:
             #print('There is not another mirror')
             pass
-        if "nextMirror" in locals():
-            try:
-                nextMirror_2 = nextMirror.find_next_sibling('tr')
-                if not len(nextMirror_2.findAll('td')[0].getText()):
-                    themeQuality = nextMirror_2.find('a').getText()[nextMirror_2.find('a').getText().find('ebm (')+5:-1]
-                    if not themeQuality:
-                        themeQuality = 'default'
-                    themeMirror.append({'quality':themeQuality,'mirrorUrl': nextMirror_2.find('a').get('href')})
-            except AttributeError:
-                #print('There is not another mirror')
-                pass
-        if "nextMirror_2" in locals():
-            try:
-                nextMirror_3 = nextMirror_2.find_next_sibling('tr')
-                if not len(nextMirror_3.findAll('td')[0].getText()):
-                    themeQuality = nextMirror_3.find('a').getText()[nextMirror_3.find('a').getText().find('ebm (')+5:-1]
-                    if not themeQuality:
-                        themeQuality = 'default'
-                    themeMirror.append({'quality':themeQuality,'mirrorUrl': nextMirror_3.find('a').get('href')})
-            except AttributeError:
-                #print('There is not another mirror')
-                pass
         themeEpisodes = tr.findAll('td')[2].getText()
         try:
             themeNotes = tr.findAll('td')[3].getText()
@@ -101,14 +89,15 @@ def getAnime(entry, seasonName, year):
         None
     table = entry.find_next_sibling('table').find('tbody').findAll('tr')
     themes = getThemes(table)
-    cover = getCover(malId)
-    return {'malId':malId,'titles':title,'themes':themes, 'cover':cover, 'year':year, 'season':seasonName}
+    #cover = getCover(malId)
+    return {'malId':malId,'titles':title,'themes':themes, 'cover':None, 'year':year, 'season':seasonName}
 
 def addYear(year):
     page = reddit.subreddit('AnimeThemes').wiki[year].content_html
     body = BeautifulSoup(page, 'html.parser')
     seasons = body.findAll('h2')
     animeList = []
+    added = []
     if not len(seasons):
         entryList = body.findAll('h3')
         for entry in entryList:
@@ -116,10 +105,10 @@ def addYear(year):
             anime = getAnime(entry, "All", year)
             if anime:
                 animeList.append(anime)
-                #row = Anime.query.filter_by(malId=anime['malId']).first()
-                #if not row:
-                #    animeList.append(anime)
-        return animeList
+                row = Anime.query.filter_by(malId=anime['malId']).first()
+                if not row:
+                    added.append(anime)
+        return (animeList, added)
     for season in seasons:
         seasonText = season.getText()
         seasonName = seasonText[5:seasonText.find('Season')]+seasonText[:4]
@@ -136,10 +125,10 @@ def addYear(year):
             if anime:
                 malId = anime['malId']
                 animeList.append(anime)
-                #row = Anime.query.filter_by(malId=malId).first()
-                #if not row:
-                #    animeList.append(anime)
-    return animeList
+                row = Anime.query.filter_by(malId=malId).first()
+                if not row:
+                    added.append(anime)
+    return (animeList, added)
 
 def getAnimeID(id):
     anime = Anime.query.filter_by(malId=id).first()
@@ -224,3 +213,11 @@ def getSeason(year, season):
             animeList.append(item.json())
     animeList = sorted(animeList, key=lambda k: k['title'][0])
     return animeList
+
+def getCoverFromDB():
+    animes = requests.get("https://animethemes-api.herokuapp.com/all/").json()
+    for anime in json.loads(animes):
+        row = Anime.query.filter_by(malId=anime['malId']).first
+        row.cover = anime['poster']
+        row.save()
+    return {'message':'done'}
