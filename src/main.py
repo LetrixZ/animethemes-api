@@ -12,7 +12,7 @@ def create_app(enviroment):
         db.create_all()
     return app
 
-enviroment = config['development']
+enviroment = config['production']
 
 app = create_app(enviroment)
 
