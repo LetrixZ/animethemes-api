@@ -23,8 +23,9 @@ def getCover(id):
     try:
         request = session.anime(id)
         image = request.picture
-    except:
-        return id
+    except Session.anime.MalformedAnimePageError:
+        print(id)
+        image = None
     return image
 
 def getThemes(table):
@@ -78,8 +79,6 @@ def getAnime(entry, seasonName, year):
     table = entry.find_next_sibling('table').find('tbody').findAll('tr')
     themes = getThemes(table)
     cover = getCover(malId)
-    if cover == malId:
-        return malId
     return {'malId':malId,'titles':title,'themes':themes, 'cover':cover, 'year':year, 'season':seasonName}
 
 def addYear(year):
@@ -108,9 +107,7 @@ def addYear(year):
                 entryList.append(item)
         for entry in entryList:
             anime = getAnime(entry, seasonName, year)
-            if type(anime) == int:
-                return anime['malId']
-            elif anime:
+            if anime:
                 animeList.append(anime)
     return animeList
 
