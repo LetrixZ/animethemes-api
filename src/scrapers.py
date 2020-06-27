@@ -20,7 +20,7 @@ def getBodies(urlList):
 
 def getCover(id):
     row = Anime.query.filter_by(malId=id).first()
-    if row.cover:
+    if row and row.cover:
         return row.cover
     else:
         session = Session()
