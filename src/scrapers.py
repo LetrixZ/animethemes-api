@@ -102,7 +102,6 @@ def addYear(year):
             row = Anime.query.filter_by(malId=anime['malId']).first()
             if anime:
                 if not row:
-                    print(row.malId)
                     animeList.append(anime)
         return animeList
     for season in seasons:
@@ -122,7 +121,6 @@ def addYear(year):
 
             if anime:
                 if not row:
-                    print(row.malId)
                     animeList.append(anime)
     return animeList
 
