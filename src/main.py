@@ -21,7 +21,7 @@ def addYearToDB(year):
     animeList = addYear(year)
     for anime in animeList:
         item = Anime.create(json.dumps(anime['titles']), anime['malId'], anime['cover'], anime['year'], anime['season'], json.dumps(anime['themes']))
-    return jsonify({'message':'done'})
+    return jsonify(animeList)
 
 
 @app.route('/api/v1/anime/<int:id>')
