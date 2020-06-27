@@ -19,6 +19,7 @@ def getBodies(urlList):
     return bodies
 
 def getCover(id):
+    print(id)
     row = Anime.query.filter_by(malId=id).first()
     if row and row.cover:
         return row.cover
