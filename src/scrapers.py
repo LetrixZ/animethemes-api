@@ -101,7 +101,8 @@ def addYear(year):
             anime = getAnime(entry, "All", year)
             row = Anime.query.filter_by(malId=anime['malId']).first()
             if anime:
-                if row is None:
+                if not row:
+                    print(row.malId)
                     animeList.append(anime)
         return animeList
     for season in seasons:
