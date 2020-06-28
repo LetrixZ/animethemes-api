@@ -38,6 +38,7 @@ def getAnilist(user):
         anime = Anime.query.filter_by(malId=malId).first()
         if anime:
             animeList.append({'malId':anime.malId, 'title':json.loads(anime.title), 'cover':anime.cover, 'season':anime.season, 'year':anime.year, 'themes':json.loads(anime.themes)})
+    animeList = sorted(animeList, key=lambda k: k['title']) 
     return jsonify(animeList)
 
 @app.route('/api/v1/anime/<int:id>')
