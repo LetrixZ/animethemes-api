@@ -3,6 +3,7 @@ from config import config
 from models import db, Anime
 from scrapers import addYear, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, getCoverFromDB
 import json
+from anilist import getListFromUser
 
 def create_app(enviroment):
     app = Flask(__name__)
@@ -27,6 +28,17 @@ def addYearToDB(year):
         item = Anime.create(json.dumps(anime['titles']), anime['malId'], anime['cover'], anime['year'], anime['season'], json.dumps(anime['themes']))
     return jsonify(animeList[1])
 
+
+@app.route('/api/v1/anilist/<string:user>')
+def getAnilist(user):
+    aniList = getListFromUser(user)
+    animeList = []
+    for item in aniList:
+        malId = item['media']['idMal']
+        anime = Anime.query.filter_by(malId=malId).first()
+        if anime:
+            animeList.append({'malId':anime.malId, 'title':json.loads(anime.title), 'cover':anime.cover, 'season':anime.season, 'year':anime.year, 'themes':json.loads(anime.themes)})
+    return jsonify(animeList)
 
 @app.route('/api/v1/anime/<int:id>')
 def getAnime(id):
