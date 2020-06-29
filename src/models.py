@@ -3,6 +3,7 @@ import json
 
 db = SQLAlchemy()
 
+
 class Anime(db.Model):
     __tablename__ = 'animes'
 
@@ -12,7 +13,7 @@ class Anime(db.Model):
     cover = db.Column(db.String())
     year = db.Column(db.Integer, nullable=False)
     season = db.Column(db.String())
-    themes = db.Column(db.String())    
+    themes = db.Column(db.String())
 
     @classmethod
     def create(cls, title, malId, cover, year, season, themes):
@@ -29,7 +30,7 @@ class Anime(db.Model):
             row.themes = self.themes
         db.session.commit()
         return self
-        
+
     def json(self):
         return {
             'malId': self.malId,
@@ -39,10 +40,10 @@ class Anime(db.Model):
             'year': self.year,
             'themes': json.loads(self.themes)
         }
-    
+
     def toJson(self):
         return json.dumps(self, default=lambda o: o.__dict__)
-    
+
     def update(self):
         self.save()
 

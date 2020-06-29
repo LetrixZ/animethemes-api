@@ -17,6 +17,7 @@ query userList($user: String) {
 }
 '''
 
+
 def getListFromUser(user):
     variables = {
         'user': user
@@ -28,6 +29,7 @@ def getListFromUser(user):
     for entry in entries:
         aniList.extend(entry['entries'])
     return aniList
+
 
 """
 dict = {
