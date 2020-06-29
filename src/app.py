@@ -17,7 +17,7 @@ def create_app(enviroment):
     return app
 
 
-enviroment = config['development']
+enviroment = config['production']
 
 app = create_app(enviroment)
 ApiDoc(app=app)
