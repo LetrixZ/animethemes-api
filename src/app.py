@@ -1,7 +1,10 @@
 import json
-from flask import Flask, jsonify
+import random
+import string
+
+from flask import Flask, jsonify, request
 from config import config
-from models import db, Anime
+from models import db, Anime, User, Playlist
 from anilist import getListFromUser
 from flask_apidoc_extend import ApiDoc
 from scrapers import addYear, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
@@ -21,6 +24,89 @@ enviroment = config['production']
 
 app = create_app(enviroment)
 ApiDoc(app=app)
+
+def randomString(stringLength=8):
+    letters = string.ascii_lowercase + "123456789" + string.ascii_lowercase.upper()
+    return ''.join(random.choice(letters) for i in range(stringLength))
+
+
+@app.route('/api/v1/db/addplaylist', methods=['POST'])
+def post_playlist():
+    content = request.get_json()
+
+    playId = randomString(5)
+    while Playlist.query.filter_by(playId=playId).first() is not None:
+        playId = randomString(5)
+    playlist = Playlist.create(playId)
+    playlist.items = json.dumps(content)
+
+    user = User.query.filter_by(name="letrix").first()
+    print(json.loads(user.playlists))
+    playlists = json.loads(user.playlists)
+    print(playlists)
+    playlists.append(playId)
+    print(playlists)
+    user.playlists = json.dumps(playlists)
+    print(json.loads(user.playlists))
+    db.session.commit()
+    return jsonify({'key': playId})
+
+
+def create_user(name, password):
+    return User.create(name.lower(), password)
+
+
+@app.route('/api/v1/login', methods=['POST'])
+def login():
+    content = request.get_json()
+    print(content)
+    name = content.get("name")
+    password = content.get("password")
+    user = User.query.filter_by(name=name.lower()).first()
+    if user is not None:
+        if password == user.password:
+            print("Login successful")
+            if len(user.playlists) > 0:
+                playlist = Playlist.query.filter_by(playId=user.playlists).first()
+                return jsonify({'message': 'successful', 'user': user.json(), 'playlist': playlist.json()})
+            else:
+                return jsonify({'message': 'successful', 'user': user.json(), 'playlist': None})
+        else:
+            print("Bad user")
+            return jsonify({'message': 'bad_user', 'user': None})
+    else:
+        print("Not found")
+        new_user = create_user(name, password)
+        return jsonify({'message': 'not_found', 'user': new_user.json()})
+
+
+@app.route('/api/v1/upload', methods=['POST'])
+def save_playlist():
+    content = request.get_json()
+    name = content.get("name")
+    password = content.get("password")
+    playlist = content.get("playlist")
+    playId = content.get("playId")
+    print("playId = {}, name = {}, password = {}".format(playId, name, password))
+    user = User.query.filter_by(name=name.lower()).first()
+    if user is not None:
+        if user.password == password:
+            row = Playlist.query.filter_by(playId=playId).first()
+            if row is not None:
+                row.items = json.dumps(playlist)
+                row.update()
+                user.playlists = playId
+                user.update()
+                return jsonify({'message': 'Playlist saved', 'user': user.json(), 'playlist': row.json()})
+
+
+@app.route('/api/v1/create')
+def create_playlist():
+    playId = randomString(5)
+    while Playlist.query.filter_by(playId=playId).first() is not None:
+        playId = randomString(5)
+    Playlist.create(playId)
+    return jsonify({'key': playId})
 
 
 @app.route('/db/covers')
@@ -741,4 +827,4 @@ def current_season():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")
