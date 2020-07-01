@@ -66,47 +66,57 @@ def login():
     if user is not None:
         if password == user.password:
             print("Login successful")
-            if len(user.playlists) > 0:
-                playlist = Playlist.query.filter_by(playId=user.playlists).first()
-                return jsonify({'message': 'successful', 'user': user.json(), 'playlist': playlist.json()})
-            else:
-                return jsonify({'message': 'successful', 'user': user.json(), 'playlist': None})
+            return jsonify({'message': 'successful', 'user': user.json(), 'playId': user.playlists})
         else:
             print("Bad user")
-            return jsonify({'message': 'bad_user', 'user': None})
+            return jsonify({'message': 'bad_user', 'user': None, 'playId': None})
     else:
         print("Not found")
         new_user = create_user(name, password)
-        return jsonify({'message': 'not_found', 'user': new_user.json()})
+        return jsonify({'message': 'not_found', 'user': new_user.json(), 'playId': None})
+
+
+@app.route('/api/v1/set_playid', methods=['POST'])
+def set_play_id():
+    content = request.get_json()
+    name = content.get("user").get("name")
+    password = content.get("user").get("password")
+    playId = content.get("playId")
+    user = User.query.filter_by(name=name).first()
+    if user:
+        if password == user.password:
+            user.playlists = playId
+            user.update()
+            return jsonify({'key': playId})
 
 
 @app.route('/api/v1/upload', methods=['POST'])
 def save_playlist():
     content = request.get_json()
-    name = content.get("name")
-    password = content.get("password")
-    playlist = content.get("playlist")
-    playId = content.get("playId")
-    print("playId = {}, name = {}, password = {}".format(playId, name, password))
-    user = User.query.filter_by(name=name.lower()).first()
-    if user is not None:
-        if user.password == password:
-            row = Playlist.query.filter_by(playId=playId).first()
-            if row is not None:
-                row.items = json.dumps(playlist)
-                row.update()
-                user.playlists = playId
-                user.update()
-                return jsonify({'message': 'Playlist saved', 'user': user.json(), 'playlist': row.json()})
+    playId = content.get('playId')
+    row = Playlist.query.filter_by(playId=playId).first()
+    if row:
+        row.playlist = json.dumps(content)
+        row.update()
+    return jsonify({'key': playId})
 
 
 @app.route('/api/v1/create')
 def create_playlist():
-    playId = randomString(5)
+    playId = randomString(6)
     while Playlist.query.filter_by(playId=playId).first() is not None:
-        playId = randomString(5)
+        playId = randomString(6)
     Playlist.create(playId)
     return jsonify({'key': playId})
+
+
+@app.route('/api/v1/playlist', methods=['POST'])
+def get_playlist():
+    content = request.get_json()
+    playId = content
+    row = Playlist.query.filter_by(playId=playId).first()
+    playlist = row.json()
+    return jsonify(playlist)
 
 
 @app.route('/db/covers')

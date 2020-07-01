@@ -101,12 +101,11 @@ class Playlist(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     playId = db.Column(db.String(8), unique=True, nullable=False)
-    currentItem = db.Column(db.String())
-    items = db.Column(db.String())
+    playlist = db.Column(db.String())
 
     @classmethod
     def create(cls, playId):
-        playlist = Playlist(playId=playId)
+        playlist = Playlist(playId=playId, playlist=json.dumps([]))
         return playlist.save()
 
     def save(self):
@@ -114,12 +113,12 @@ class Playlist(db.Model):
         if not row:
             db.session.add(self)
         else:
-            row.items = self.items
+            row.playlist = self.playlist
         db.session.commit()
         return self
 
     def json(self):
-        return json.loads(self.items)
+        return json.loads(self.playlist)
 
     def update(self):
         self.save()
