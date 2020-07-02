@@ -101,7 +101,7 @@ class Playlist(db.Model):
 
     @classmethod
     def create(cls, playId):
-        playlist = Playlist(playId=playId, actualPlaylist=0, playlists=json.dumps([{'playlistItems': [], 'name': ''}]))
+        playlist = Playlist(playId=playId, actualPlaylist=0, playlists=json.dumps([{"lastPlayed": 0, "name": "", 'playlistItems': []}]))
         return playlist.save()
 
     def save(self):
