@@ -101,6 +101,7 @@ class Playlist(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     playId = db.Column(db.String(8), unique=True, nullable=False)
+    name = db.Column(db.String())
     playlist = db.Column(db.String())
 
     @classmethod
@@ -113,6 +114,7 @@ class Playlist(db.Model):
         if not row:
             db.session.add(self)
         else:
+            row.name = self.name
             row.playlist = self.playlist
         db.session.commit()
         return self

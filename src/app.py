@@ -25,6 +25,7 @@ enviroment = config['production']
 app = create_app(enviroment)
 ApiDoc(app=app)
 
+
 def randomString(stringLength=8):
     letters = string.ascii_lowercase + "123456789" + string.ascii_lowercase.upper()
     return ''.join(random.choice(letters) for i in range(stringLength))
@@ -94,8 +95,10 @@ def set_play_id():
 def save_playlist():
     content = request.get_json()
     playId = content.get('playId')
+    name = content.get('name')
     row = Playlist.query.filter_by(playId=playId).first()
     if row:
+        row.name = name
         row.playlist = json.dumps(content)
         row.update()
     return jsonify({'key': playId})
