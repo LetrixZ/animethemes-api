@@ -101,9 +101,11 @@ def save_playlist():
     content = request.get_json()
     playlists = content.get('playlists')
     playId = content.get('playId')
+    actualPlaylist = content.get('actualPlaylistPos')
     row = Playlist.query.filter_by(playId=playId).first()
     if row:
         row.playlists = json.dumps(playlists)
+        row.actualPlaylist = actualPlaylist
         row.update()
     return jsonify({'message': "{} saved succesfully".format(playId)})
 
