@@ -57,69 +57,73 @@ def create_user(name, password):
     return User.create(name.lower(), password)
 
 
-@app.route('/api/v1/login', methods=['POST'])
+@app.route('/playlist/login', methods=['POST'])
 def login():
     content = request.get_json()
     print(content)
-    name = content.get("name")
+    username = content.get("username")
     password = content.get("password")
-    user = User.query.filter_by(name=name.lower()).first()
+    user = User.query.filter_by(username=username.lower()).first()
     if user is not None:
         if password == user.password:
             print("Login successful")
-            return jsonify({'message': 'successful', 'user': user.json(), 'playId': user.playlists})
+            response = user.json()
+            response['message'] = "successful"
+            return jsonify(response)
         else:
             print("Bad user")
-            return jsonify({'message': 'bad_user', 'user': None, 'playId': None})
+            response = {'username': username, 'password': password, 'playId': None, 'message': "bad_user"}
+            return jsonify(response)
     else:
         print("Not found")
-        new_user = create_user(name, password)
-        return jsonify({'message': 'not_found', 'user': new_user.json(), 'playId': None})
+        new_user = create_user(username, password)
+        response = new_user.json()
+        response['message'] = "not_found"
+        return jsonify(response)
 
 
-@app.route('/api/v1/set_playid', methods=['POST'])
+@app.route('/playlist/set', methods=['POST'])
 def set_play_id():
     content = request.get_json()
-    name = content.get("user").get("name")
-    password = content.get("user").get("password")
+    username = content.get("username")
+    password = content.get("password")
     playId = content.get("playId")
-    user = User.query.filter_by(name=name).first()
+    user = User.query.filter_by(username=username).first()
     if user:
         if password == user.password:
-            user.playlists = playId
+            user.playId = playId
             user.update()
-            return jsonify({'key': playId})
+            return jsonify({'message': 'playId set successful'})
 
 
-@app.route('/api/v1/upload', methods=['POST'])
+@app.route('/playlist/upload', methods=['POST'])
 def save_playlist():
     content = request.get_json()
+    playlists = content.get('playlists')
     playId = content.get('playId')
-    name = content.get('name')
     row = Playlist.query.filter_by(playId=playId).first()
     if row:
-        row.name = name
-        row.playlist = json.dumps(content)
+        row.playlists = json.dumps(playlists)
         row.update()
-    return jsonify({'key': playId})
+    return jsonify({'message': "{} saved succesfully".format(playId)})
 
 
-@app.route('/api/v1/create')
-def create_playlist():
+@app.route('/playlist/get', methods=['POST'])
+def get_playlists():
+    content = request.get_json()
+    playId = content.get('message')
+    row = Playlist.query.filter_by(playId=playId).first()
+    playlist = row.json()
+    return jsonify(playlist)
+
+
+@app.route('/playlist/generate')
+def create_playid():
     playId = randomString(6)
     while Playlist.query.filter_by(playId=playId).first() is not None:
         playId = randomString(6)
     Playlist.create(playId)
-    return jsonify({'key': playId})
-
-
-@app.route('/api/v1/playlist', methods=['POST'])
-def get_playlist():
-    content = request.get_json()
-    playId = content
-    row = Playlist.query.filter_by(playId=playId).first()
-    playlist = row.json()
-    return jsonify(playlist)
+    return jsonify({'message': playId})
 
 
 @app.route('/db/covers')

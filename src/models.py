@@ -60,9 +60,78 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(), nullable=False, unique=True)
+    password = db.Column(db.String(), nullable=False)
+    playId = db.Column(db.String(), nullable=True)
+
+    @classmethod
+    def create(cls, username, password):
+        user = User(username=username, password=password)
+        return user.save()
+
+    def save(self):
+        row = User.query.filter_by(username=self.username).first()
+        if not row:
+            # No existe
+            db.session.add(self)
+        else:
+            # Existe, actualizando campos
+            row.playId = self.playId
+        db.session.commit()
+        return self
+
+    def json(self):
+        return {
+            'username': self.username,
+            'password': self.password,
+            'playId': self.playId
+        }
+
+    def update(self):
+        self.save()
+
+
+class Playlist(db.Model):
+    __tablename__ = 'playlists'
+
+    id = db.Column(db.Integer, primary_key=True)
+    playId = db.Column(db.String(), nullable=False, unique=True)
+    playlists = db.Column(db.String())
+
+    @classmethod
+    def create(cls, playId):
+        playlist = Playlist(playId=playId, playlists=json.dumps([{'playlistItems': [], 'name': 'Unnamed'}]))
+        return playlist.save()
+
+    def save(self):
+        row = Playlist.query.filter_by(playId=self.playId).first()
+        if not row:
+            # No existe
+            db.session.add(self)
+        else:
+            # Existe, actualizando campos
+            row.playlist = self.playlists
+        db.session.commit()
+        return self
+
+    def json(self):
+        return {
+            'playId': self.playId,
+            'playlists': json.loads(self.playlists)
+        }
+
+    def update(self):
+        self.save()
+
+
+"""
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), unique=True, nullable=False)
     password = db.Column(db.String(), nullable=False)
-    playlists = db.Column(db.String())
+    playId = db.Column(db.String())
 
     @classmethod
     def create(cls, name, password):
@@ -124,3 +193,4 @@ class Playlist(db.Model):
 
     def update(self):
         self.save()
+"""
