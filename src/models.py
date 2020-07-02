@@ -96,11 +96,12 @@ class Playlist(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     playId = db.Column(db.String(), nullable=False, unique=True)
+    actualPlaylist = db.Column(db.Integer, nullable=False)
     playlists = db.Column(db.String())
 
     @classmethod
     def create(cls, playId):
-        playlist = Playlist(playId=playId, playlists=json.dumps([{'playlistItems': [], 'name': ''}]))
+        playlist = Playlist(playId=playId, actualPlaylist=0, playlists=json.dumps([{'playlistItems': [], 'name': ''}]))
         return playlist.save()
 
     def save(self):
@@ -111,12 +112,14 @@ class Playlist(db.Model):
         else:
             # Existe, actualizando campos
             row.playlist = self.playlists
+            row.actualPlaylist = self.actualPlaylist
         db.session.commit()
         return self
 
     def json(self):
         return {
             'playId': self.playId,
+            'actualPlaylistPos': self.actualPlaylist,
             'playlists': json.loads(self.playlists)
         }
 
