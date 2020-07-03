@@ -77,9 +77,10 @@ def set_play_id():
 @app.route('/playlist/upload', methods=['POST'])
 def save_playlist():
     content = request.get_json()
-    playlists = content.get('playlists')
+    print(content)
+    playlists = content.get('collection')
     playId = content.get('playId')
-    actualPlaylist = content.get('actualPlaylistPos')
+    actualPlaylist = content.get('actual_pos')
     row = Playlist.query.filter_by(playId=playId).first()
     if row:
         row.playlists = json.dumps(playlists)
@@ -88,12 +89,15 @@ def save_playlist():
     return jsonify({'message': "{} saved succesfully".format(playId)})
 
 
+# GET PLAYLIS COLLECTION
 @app.route('/playlist/get', methods=['POST'])
 def get_playlists():
     content = request.get_json()
+    print(content)
     playId = content.get('message')
     row = Playlist.query.filter_by(playId=playId).first()
     playlist = row.json()
+    print("response {}".format(playlist))
     return jsonify(playlist)
 
 

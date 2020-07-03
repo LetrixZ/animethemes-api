@@ -113,14 +113,15 @@ class Playlist(db.Model):
             # Existe, actualizando campos
             row.playlist = self.playlists
             row.actualPlaylist = self.actualPlaylist
+        print(row)
         db.session.commit()
         return self
 
     def json(self):
         return {
             'playId': self.playId,
-            'actualPlaylistPos': self.actualPlaylist,
-            'playlists': json.loads(self.playlists)
+            'actual_pos': self.actualPlaylist,
+            'collection': json.loads(self.playlists)
         }
 
     def update(self):
