@@ -89,17 +89,20 @@ def getAnime(entry, seasonName, year):
     malId = malUrl[30:]
     malId = malId.split('/')[0]
     malId = int("".join(filter(str.isdigit, malId)))
-    name = entry.getText()
-    title = [name]
-    try:
-        title.extend(entry.nextSibling.nextSibling.find('strong').getText().split(', '))
-    except AttributeError:
-        # print('There are not another titles')
-        pass
-    table = entry.find_next_sibling('table').find('tbody').findAll('tr')
-    themes = get_themes(table)
-    # cover = getCover(malId)
-    return {'malId': malId, 'titles': title, 'themes': themes, 'cover': None, 'year': year, 'season': seasonName}
+    if not Anime.query.filter_by(malId=malId).first():
+        name = entry.getText()
+        title = [name]
+        try:
+            title.extend(entry.nextSibling.nextSibling.find('strong').getText().split(', '))
+        except AttributeError:
+            # print('There are not another titles')
+            pass
+        table = entry.find_next_sibling('table').find('tbody').findAll('tr')
+        themes = get_themes(table)
+        cover = get_cover(malId)
+        return {'malId': malId, 'titles': title, 'themes': themes, 'cover': cover, 'year': year, 'season': seasonName}
+    else:
+        return None
 
 
 def addYear(year):
@@ -118,7 +121,7 @@ def addYear(year):
                 row = Anime.query.filter_by(malId=anime['malId']).first()
                 if not row:
                     added.append(anime)
-        return (animeList, added)
+        return animeList, added
     for season in seasons:
         seasonText = season.getText()
         seasonName = seasonText[5:seasonText.find('Season')] + seasonText[:4]

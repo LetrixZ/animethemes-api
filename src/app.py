@@ -20,7 +20,7 @@ def create_app(enviroment):
     return app
 
 
-enviroment = config['production']
+enviroment = config['development']
 
 app = create_app(enviroment)
 ApiDoc(app=app)
@@ -29,28 +29,6 @@ ApiDoc(app=app)
 def randomString(stringLength=8):
     letters = string.ascii_lowercase + "123456789" + string.ascii_lowercase.upper()
     return ''.join(random.choice(letters) for i in range(stringLength))
-
-
-@app.route('/api/v1/db/addplaylist', methods=['POST'])
-def post_playlist():
-    content = request.get_json()
-
-    playId = randomString(5)
-    while Playlist.query.filter_by(playId=playId).first() is not None:
-        playId = randomString(5)
-    playlist = Playlist.create(playId)
-    playlist.items = json.dumps(content)
-
-    user = User.query.filter_by(name="letrix").first()
-    print(json.loads(user.playlists))
-    playlists = json.loads(user.playlists)
-    print(playlists)
-    playlists.append(playId)
-    print(playlists)
-    user.playlists = json.dumps(playlists)
-    print(json.loads(user.playlists))
-    db.session.commit()
-    return jsonify({'key': playId})
 
 
 def create_user(name, password):
