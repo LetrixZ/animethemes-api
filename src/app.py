@@ -846,37 +846,6 @@ def getAnime(id, poster=False, entry=None):
         poster = anime.cover
         return {'malId': malId, 'name': name, 'alternate': alternate, 'poster': poster, 'season': season,
                 'themes': json.loads(themes)}
-    """if anime is not None:
-        alternate = None
-        for alt in json.loads(anime.alternate):
-            if anime.name != alt:
-                alternate = alt
-                break
-        if poster:
-            if anime.poster:
-                entry = {'malId': anime.malId, 'name': anime.name, 'alternate': alternate, 'poster': anime.poster,
-                         'season': anime.season, 'themes': json.loads(anime.themes)}
-                return entry
-            else:
-                entry = {'malId': anime.malId, 'name': anime.name, 'alternate': alternate, 'poster': getPoster(id),
-                         'season': anime.season, 'themes': json.loads(anime.themes)}
-                return entry
-        if entry is not None:
-            if anime.poster:
-                entry = {'malId': anime.malId, 'name': anime.name, 'alternate': alternate, 'poster': anime.poster,
-                         'season': anime.season, 'themes': json.loads(anime.themes)}
-                return entry
-            else:
-                poster = entry['anime_image_path'].replace(entry['anime_image_path'][28:37], "")[:56]
-                animeDB = Anime.query.filter_by(malId=id).first()
-                animeDB.poster = poster
-                db.session.commit()
-                entry = {'malId': anime.malId, 'name': anime.name, 'alternate': alternate, 'poster': poster,
-                         'season': anime.season, 'themes': json.loads(anime.themes)}
-                return entry
-        entry = {'malId': anime.malId, 'name': anime.name, 'alternate': alternate, 'season': anime.season,
-                 'themes': json.loads(anime.themes)}
-        return entry"""
     return None
 
 
@@ -972,7 +941,7 @@ def audioById(id, type):
     themes = json.loads(anime.themes)
     for theme in themes:
         if theme['type'].lower() == type:
-            title = [theme['title'], anime.name, theme['type']]
+            title = [theme['title'], json.loads(anime.title)[0], theme['type']]
             url = theme['mirror'][0]['mirrorUrl']
             return redirect(getAudio(url, title))
     return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
