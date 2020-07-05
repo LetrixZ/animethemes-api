@@ -1,7 +1,11 @@
+import concurrent
 import json
 import random
 import string
+import subprocess
 
+import fileioapi as fileioapi
+import requests
 from flask import Flask, jsonify, request
 from config import config
 from models import db, Anime, User, Playlist
@@ -9,6 +13,7 @@ from anilist import getListFromUser
 from flask_apidoc_extend import ApiDoc
 from scrapers import addYear, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
     getCoverFromDB
+from werkzeug.utils import redirect
 
 
 def create_app(enviroment):
@@ -826,6 +831,170 @@ def current_season():
     current_season, year = getCurrentSeason()
     return jsonify(getSeason(year, current_season))
 
+
+# LEGACY ROUTES
+
+def getAnime(id, poster=False, entry=None):
+    anime = Anime.query.filter_by(malId=id).first()
+    if anime is not None:
+        name = json.loads(anime.name)[0]
+        alternate = json.loads(anime.alternate)
+        malId = anime.malId
+        themes = anime.themes
+        year = anime.year
+        season = anime.season
+        poster = anime.cover
+        return {'malId': malId, 'name': name, 'alternate': alternate, 'poster': poster, 'season': season,
+                'themes': json.loads(themes)}
+    """if anime is not None:
+        alternate = None
+        for alt in json.loads(anime.alternate):
+            if anime.name != alt:
+                alternate = alt
+                break
+        if poster:
+            if anime.poster:
+                entry = {'malId': anime.malId, 'name': anime.name, 'alternate': alternate, 'poster': anime.poster,
+                         'season': anime.season, 'themes': json.loads(anime.themes)}
+                return entry
+            else:
+                entry = {'malId': anime.malId, 'name': anime.name, 'alternate': alternate, 'poster': getPoster(id),
+                         'season': anime.season, 'themes': json.loads(anime.themes)}
+                return entry
+        if entry is not None:
+            if anime.poster:
+                entry = {'malId': anime.malId, 'name': anime.name, 'alternate': alternate, 'poster': anime.poster,
+                         'season': anime.season, 'themes': json.loads(anime.themes)}
+                return entry
+            else:
+                poster = entry['anime_image_path'].replace(entry['anime_image_path'][28:37], "")[:56]
+                animeDB = Anime.query.filter_by(malId=id).first()
+                animeDB.poster = poster
+                db.session.commit()
+                entry = {'malId': anime.malId, 'name': anime.name, 'alternate': alternate, 'poster': poster,
+                         'season': anime.season, 'themes': json.loads(anime.themes)}
+                return entry
+        entry = {'malId': anime.malId, 'name': anime.name, 'alternate': alternate, 'season': anime.season,
+                 'themes': json.loads(anime.themes)}
+        return entry"""
+    return None
+
+
+def getVideo(id, type):
+    anime = getAnime(id)
+    try:
+        anime = anime['themes']
+    except KeyError:
+        return None
+    themes = []
+    for theme in anime:
+        entry = {'title': theme['title'], 'type': theme['type']}
+        themes.append(entry)
+        if theme['type'].lower() == type.lower():
+            return (theme.get('mirror')[0]['mirrorUrl'], theme['title'], theme['type'])
+    return [{'message': 'theme not found'}, {'themes available': themes}]
+
+
+def getAudio(url, title):
+    videoFile = ['curl', url, '--output', './assets/video.webm']
+    subprocess.run(videoFile, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    printable = set(string.printable)
+    fileTitle = ''.join(filter(lambda x: x in printable, title[0]))
+    animeTitle = ''.join(filter(lambda x: x in printable, title[1]))
+    filename = './assets/{} - {} ({}).mp3'.format(fileTitle, animeTitle, title[2])
+    ffmpeg = ['ffmpeg', '-i', './assets/video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a', '320k',
+              '-metadata', "title='" + title[0] + "'", filename, "-y"]
+    subprocess.run(ffmpeg)
+    response = fileioapi.upload(filename, "1w")
+    print(response)
+    subprocess.run(['rm', './assets/video.webm', filename])
+    return response.get("link")
+
+
+def getBodies(urlList):
+    def load_url(url, timeout):
+        return requests.get(url, timeout=timeout)
+
+    bodies = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        future_to_url = {executor.submit(load_url, url, 30): url for url in urlList}
+        for future in concurrent.futures.as_completed(future_to_url):
+            url = future_to_url[future]
+            data = future.result()
+            if len(data.content) > 2:
+                bodies.append(data.content)
+    return bodies
+
+
+def getList(user):
+    urlList = ['https://myanimelist.net/animelist/{}/load.json?offset={}&status=7'.format(user, i) for i in
+               range(0, 300 * 4, 300)]
+    bodies = getBodies(urlList)
+    content = []
+    for body in bodies:
+        content.append(body.decode("utf-8"))
+    malList = []
+    for data in content:
+        for entry in json.loads(data):
+            anime = getAnime(entry['anime_id'], False, entry)
+            if anime is not None:
+                malList.append(anime)
+    malList = sorted(malList, key=lambda k: k['name'])
+    return malList
+
+
+def returnJson(obj):
+    response = app.response_class(json.dumps(obj, sort_keys=False), mimetype=app.config['JSONIFY_MIMETYPE'])
+    return response
+
+
+@app.route('/u/<string:user>/')
+def getAnimeList(user):
+    malList = getList(user)
+    return returnJson(malList)
+
+
+@app.route('/id/<int:id>/<string:type>/')
+def videoById(id, type):
+    type = type.lower()
+    anime = Anime.query.filter_by(malId=id).first()
+    themes = json.loads(anime.themes)
+    for theme in themes:
+        if theme['type'].lower() == type:
+            return redirect(theme['mirror'][0]['mirrorUrl'])
+    return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
+
+
+@app.route('/id/<int:id>/<string:type>/audio')
+def audioById(id, type):
+    type = type.lower()
+    anime = Anime.query.filter_by(malId=id).first()
+    themes = json.loads(anime.themes)
+    for theme in themes:
+        if theme['type'].lower() == type:
+            title = [theme['title'], anime.name, theme['type']]
+            url = theme['mirror'][0]['mirrorUrl']
+            return redirect(getAudio(url, title))
+    return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
+
+
+@app.route('/id/<int:id>/')
+def themesByID(id):
+    anime = getAnime(id)
+    if anime is None:
+        return returnJson(
+            {'message': "this anime isn't available in r/AnimeThemes. Send me a message if it is to u/LetrixZ"})
+    # return returnJson({'malId': id, 'name':anime.name, 'themes':json.loads(anime.themes)})
+    return returnJson(anime)
+
+
+@app.route('/anime/<int:id>/')
+def getAnimeThemes(id):
+    return returnJson(getAnime(id))
+
+@app.route('/')
+def index():
+    return returnJson({'message': 'animethemes api', 'author': 'u/LetrixZ', 'docs': '/apidoc'})
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
