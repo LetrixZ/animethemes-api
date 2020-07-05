@@ -837,8 +837,8 @@ def current_season():
 def getAnime(id, poster=False, entry=None):
     anime = Anime.query.filter_by(malId=id).first()
     if anime is not None:
-        name = json.loads(anime.name)[0]
-        alternate = json.loads(anime.alternate)
+        name = json.loads(anime.title)[0]
+        alternate = json.loads(anime.title)
         malId = anime.malId
         themes = anime.themes
         year = anime.year
