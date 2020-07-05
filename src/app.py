@@ -992,9 +992,11 @@ def themesByID(id):
 def getAnimeThemes(id):
     return returnJson(getAnime(id))
 
+
 @app.route('/')
 def index():
     return returnJson({'message': 'animethemes api', 'author': 'u/LetrixZ', 'docs': '/apidoc'})
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
