@@ -222,9 +222,10 @@ def getYearSeasons(year):
 def getCurrentSeason():
     years = getAllSeasons()
     data = list(years[0].values())
-    currentSeason = data[1][0]
+    currentSeason = data[1][-1]
     year = data[0]
-    return (currentSeason, year)
+    print(currentSeason)
+    return currentSeason, year
 
 
 def getSeason(year, season):
