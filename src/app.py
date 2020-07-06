@@ -832,6 +832,16 @@ def current_season():
     return jsonify(getSeason(year, current_season))
 
 
+@app.route('/api/v1/latest')
+def latest_themes():
+    animes = Anime.query.order_by(Anime.id.desc()).limit(15)
+    animeList = []
+    for anime in animes:
+        animeList.append({'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+         'year': anime.year, 'themes': json.loads(anime.themes)})
+    return jsonify(animeList)
+
+
 # LEGACY ROUTES
 
 def getAnime(id, poster=False, entry=None):
