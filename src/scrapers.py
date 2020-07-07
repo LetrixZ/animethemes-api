@@ -28,7 +28,6 @@ def get_cover(mal_id):
     if row and row.cover:
         return row.cover
     else:
-        print(mal_id)
         anime = AnimeMAL(mal_id)
         image = anime.image_url
         return image
@@ -224,7 +223,6 @@ def getCurrentSeason():
     data = list(years[0].values())
     currentSeason = data[1][-1]
     year = data[0]
-    print(currentSeason)
     return currentSeason, year
 
 

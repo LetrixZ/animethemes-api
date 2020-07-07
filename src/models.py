@@ -113,7 +113,6 @@ class Playlist(db.Model):
             # Existe, actualizando campos
             row.playlist = self.playlists
             row.actualPlaylist = self.actualPlaylist
-        print(row)
         db.session.commit()
         return self
 

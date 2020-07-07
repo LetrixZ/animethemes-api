@@ -43,7 +43,6 @@ def create_user(name, password):
 @app.route('/playlist/login', methods=['POST'])
 def login():
     content = request.get_json()
-    print(content)
     username = content.get("username")
     password = content.get("password")
     user = User.query.filter_by(username=username.lower()).first()
@@ -82,7 +81,6 @@ def set_play_id():
 @app.route('/playlist/upload', methods=['POST'])
 def save_playlist():
     content = request.get_json()
-    print(content)
     playlists = content.get('collection')
     playId = content.get('playId')
     actualPlaylist = content.get('actual_pos')
@@ -98,11 +96,9 @@ def save_playlist():
 @app.route('/playlist/get', methods=['POST'])
 def get_playlists():
     content = request.get_json()
-    print(content)
     playId = content.get('message')
     row = Playlist.query.filter_by(playId=playId).first()
     playlist = row.json()
-    print("response {}".format(playlist))
     return jsonify(playlist)
 
 
@@ -885,7 +881,6 @@ def getAudio(url, title):
               '-metadata', "title='" + title[0] + "'", filename, "-y"]
     subprocess.run(ffmpeg)
     response = fileioapi.upload(filename, "1w")
-    print(response)
     subprocess.run(['rm', './assets/video.webm', filename])
     return response.get("link")
 
