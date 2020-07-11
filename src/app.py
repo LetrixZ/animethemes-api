@@ -25,7 +25,7 @@ def create_app(enviroment):
     return app
 
 
-enviroment = config['development']
+enviroment = config['production']
 
 app = create_app(enviroment)
 ApiDoc(app=app)
@@ -847,7 +847,7 @@ def getTheme(malId, theme, version):
             themeItem = json.loads(item.themes)[theme]
             try:
                 versionItem = themeItem.get('mirror')[version]
-                return jsonify(versionItem)
+                return redirect(versionItem.get('mirrorUrl'))
             except IndexError:
                 return jsonify({'message': len(themeItem.get('mirror'))})
         except IndexError:
