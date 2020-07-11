@@ -25,7 +25,7 @@ def create_app(enviroment):
     return app
 
 
-enviroment = config['production']
+enviroment = config['development']
 
 app = create_app(enviroment)
 ApiDoc(app=app)
@@ -204,7 +204,7 @@ def get_anilist(user):
     return jsonify(animeList)
 
 
-@app.route('/api/v1/anime/<int:id>')
+@app.route('/api/v1/anime/<int:malId>')
 def get_anime(malId):
     """
         @api {get} /anime/:mal_id Request anime and themes with MyAnimeList's anime id
@@ -833,15 +833,48 @@ def latest_themes():
     animes = Anime.query.order_by(Anime.id.desc()).limit(15)
     animeList = []
     for anime in animes:
-        animeList.append({'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-         'year': anime.year, 'themes': json.loads(anime.themes)})
+        animeList.append(
+            {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+             'year': anime.year, 'themes': json.loads(anime.themes)})
     return jsonify(animeList)
+
+
+@app.route('/api/v1/anime/<int:malId>/<int:theme>/<int:version>')
+def getTheme(malId, theme, version):
+    item = Anime.query.filter_by(malId=malId).first()
+    if item:
+        try:
+            themeItem = json.loads(item.themes)[theme]
+            try:
+                versionItem = themeItem.get('mirror')[version]
+                return jsonify(versionItem)
+            except IndexError:
+                return jsonify({'message': len(themeItem.get('mirror'))})
+        except IndexError:
+            return jsonify({'message': len(json.loads(item.themes))})
+
+
+@app.route('/db/update/themes')
+def updateThemes():
+    animeList = Anime.query.all()
+    for anime in animeList:
+        themes = json.loads(anime.themes)
+        themeIndex = 0
+        for theme in themes:
+            # theme['extras'] = {'views': 0, 'likes': 0, 'dislikes': 0}
+            mirrorIndex = 0
+            for mirror in theme.get('mirror'):
+                mirror['appUrl'] = 'https://animethemes-api.herokuapp.com/api/v1/anime/{}/{}/{}'.format(anime.malId, themeIndex, mirrorIndex)
+                mirrorIndex += 1
+            themeIndex += 1
+        anime.themes = json.dumps(themes)
+        anime.update()
 
 
 # LEGACY ROUTES
 
-def getAnime(id, poster=False, entry=None):
-    anime = Anime.query.filter_by(malId=id).first()
+def getAnime(malId, poster=False, entry=None):
+    anime = Anime.query.filter_by(malId=malId).first()
     if anime is not None:
         name = json.loads(anime.title)[0]
         alternate = json.loads(anime.title)
@@ -855,8 +888,8 @@ def getAnime(id, poster=False, entry=None):
     return None
 
 
-def getVideo(id, type):
-    anime = getAnime(id)
+def getVideo(malId, themeType):
+    anime = getAnime(malId)
     try:
         anime = anime['themes']
     except KeyError:
@@ -865,7 +898,7 @@ def getVideo(id, type):
     for theme in anime:
         entry = {'title': theme['title'], 'type': theme['type']}
         themes.append(entry)
-        if theme['type'].lower() == type.lower():
+        if theme['type'].lower() == themeType.lower():
             return (theme.get('mirror')[0]['mirrorUrl'], theme['title'], theme['type'])
     return [{'message': 'theme not found'}, {'themes available': themes}]
 
