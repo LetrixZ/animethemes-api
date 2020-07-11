@@ -326,9 +326,12 @@ def get_anime(malId):
             }
         """
     anime = Anime.query.filter_by(malId=malId).first()
-    return jsonify(
-        {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-         'year': anime.year, 'themes': json.loads(anime.themes)})
+    if anime:
+        return jsonify(
+            {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+             'year': anime.year, 'themes': json.loads(anime.themes)})
+    else:
+        return jsonify({'message': 'not found'})
 
 
 @app.route('/api/v1/search/<string:name>')
@@ -841,17 +844,23 @@ def latest_themes():
 
 @app.route('/api/v1/anime/<int:malId>/<int:theme>/<int:version>')
 def getTheme(malId, theme, version):
-    item = Anime.query.filter_by(malId=malId).first()
-    if item:
+    anime = Anime.query.filter_by(malId=malId).first()
+    if anime:
         try:
-            themeItem = json.loads(item.themes)[theme]
+            themeItem = json.loads(anime.themes)[theme]
             try:
                 versionItem = themeItem.get('mirror')[version]
+                extras = themeItem.get('extras')
+                views = extras.get('views') + 1
+                extras['views'] = views
+                themeItem['extras'] = extras
+                anime.update()
+                print("views = " + views)
                 return redirect(versionItem.get('mirrorUrl'))
             except IndexError:
                 return jsonify({'message': len(themeItem.get('mirror'))})
         except IndexError:
-            return jsonify({'message': len(json.loads(item.themes))})
+            return jsonify({'message': len(json.loads(anime.themes))})
 
 
 @app.route('/db/update/themes')
@@ -864,7 +873,9 @@ def updateThemes():
             # theme['extras'] = {'views': 0, 'likes': 0, 'dislikes': 0}
             mirrorIndex = 0
             for mirror in theme.get('mirror'):
-                mirror['appUrl'] = 'https://animethemes-api.herokuapp.com/api/v1/anime/{}/{}/{}'.format(anime.malId, themeIndex, mirrorIndex)
+                mirror['appUrl'] = 'https://animethemes-api.herokuapp.com/api/v1/anime/{}/{}/{}'.format(anime.malId,
+                                                                                                        themeIndex,
+                                                                                                        mirrorIndex)
                 mirrorIndex += 1
             themeIndex += 1
         anime.themes = json.dumps(themes)
