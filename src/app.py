@@ -855,7 +855,7 @@ def getTheme(malId, theme, version):
                 extras['views'] = views
                 themeItem['extras'] = extras
                 anime.update()
-                print("views = " + views)
+                print(views)
                 return redirect(versionItem.get('mirrorUrl'))
             except IndexError:
                 return jsonify({'message': len(themeItem.get('mirror'))})
