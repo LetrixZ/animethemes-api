@@ -352,7 +352,7 @@ def get_most_viewed(size):
     while i < size:
         anime = Anime.query.filter_by(malId=themeList[i]['extras']['malId']).first()
         entry = {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-                 'year': anime.year, 'themes': themeList[i]}
+                 'year': anime.year, 'themes': [themeList[i]]}
         returnList.append(entry)
         i += 1
     return jsonify(returnList)
