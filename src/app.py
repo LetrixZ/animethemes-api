@@ -846,21 +846,31 @@ def latest_themes():
 def getTheme(malId, theme, version):
     anime = Anime.query.filter_by(malId=malId).first()
     if anime:
+        themes = json.loads(anime.themes)
         try:
-            themeItem = json.loads(anime.themes)[theme]
-            try:
-                versionItem = themeItem.get('mirror')[version]
-                extras = themeItem.get('extras')
-                views = extras.get('views') + 1
-                extras['views'] = views
-                themeItem['extras'] = extras
-                anime.update()
-                print(views)
-                return redirect(versionItem.get('mirrorUrl'))
-            except IndexError:
-                return jsonify({'message': len(themeItem.get('mirror'))})
+            url = themes[theme].get('mirror')[version]
+            themes[theme].get('extras')['views'] += 1
+            anime.themes = json.dumps(themes)
+            anime.update()
+            # print(themes[theme].get('extras')['views'])
+            return redirect(url.get('mirrorUrl'))
         except IndexError:
-            return jsonify({'message': len(json.loads(anime.themes))})
+            return jsonify({'message': 'bad index'})
+        # try:
+        #     themeItem = json.loads(anime.themes)[theme]
+        #     try:
+        #         versionItem = themeItem.get('mirror')[version]
+        #         extras = themeItem.get('extras')
+        #         views = extras.get('views') + 1
+        #         extras['views'] = views
+        #         themeItem['extras'] = extras
+        #         anime.update()
+        #         print(views)
+        #         return redirect(versionItem.get('mirrorUrl'))
+        #     except IndexError:
+        #         return jsonify({'message': len(themeItem.get('mirror'))})
+        # except IndexError:
+        #     return jsonify({'message': len(json.loads(anime.themes))})
 
 
 @app.route('/db/update/themes')
