@@ -852,7 +852,7 @@ def current_season():
            ]
     """
     current_season, year = getCurrentSeason()
-    return jsonify(getSeason(year, current_season))
+    return jsonify(getSeason(year, "Summer"))
 
 
 @app.route('/api/v1/latest')
