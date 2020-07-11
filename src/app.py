@@ -26,7 +26,7 @@ def create_app(enviroment):
 
 
 enviroment = config['production']
-#enviroment = config['development']
+# enviroment = config['development']
 
 app = create_app(enviroment)
 ApiDoc(app=app)
@@ -876,8 +876,9 @@ def getTheme(malId, theme, version):
             themes[theme].get('extras')['views'] += 1
             anime.themes = json.dumps(themes)
             anime.update()
+            return jsonify({'message': themes[theme].get('extras')['views']})
             # print(themes[theme].get('extras')['views'])
-            return redirect(url.get('mirrorUrl'))
+            # return redirect(url.get('mirrorUrl'))
         except IndexError:
             return jsonify({'message': 'bad index'})
         # try:
@@ -905,15 +906,15 @@ def updateThemes():
         themeIndex = 0
         for theme in themes:
             theme['extras'] = {'views': 0, 'likes': 0, 'dislikes': 0, 'malId': anime.malId}
-            # mirrorIndex = 0
-            # for mirror in theme.get('mirror'):
-            #     mirror['appUrl'] = 'https://animethemes-api.herokuapp.com/api/v1/anime/{}/{}/{}'.format(anime.malId,
-            #                                                                                             themeIndex,
-            #                                                                                             mirrorIndex)
-            #     mirrorIndex += 1
+            mirrorIndex = 0
+            for mirror in theme.get('mirror'):
+                mirror['appUrl'] = '{}/{}/{}'.format(anime.malId,
+                                                     themeIndex,
+                                                     mirrorIndex)
+                mirrorIndex += 1
             themeIndex += 1
         anime.themes = json.dumps(themes)
-        anime.update()
+    db.session.commit()
 
 
 # LEGACY ROUTES
