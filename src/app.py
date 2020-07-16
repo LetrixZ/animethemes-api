@@ -335,29 +335,6 @@ def get_anime(malId):
         return jsonify({'message': 'not found'})
 
 
-@app.route('/api/v1/top/<int:size>')
-def get_most_viewed(size):
-    queryList = Anime.query.all()
-    themeList = []
-    for anime in queryList:
-        for theme in json.loads(anime.themes):
-            # if not len(theme.get('title')):
-            #    theme['title'] = theme['type']
-            themeList.append(theme)
-    # themeList = sorted(themeList, key=lambda k: k['title'], reverse=False)
-    themeList = sorted(themeList, key=lambda k: k['extras']['views'], reverse=True)
-    returnList = []
-    i = 0
-    print(themeList[0])
-    while i < size:
-        anime = Anime.query.filter_by(malId=themeList[i]['extras']['malId']).first()
-        entry = {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-                 'year': anime.year, 'themes': [themeList[i]]}
-        returnList.append(entry)
-        i += 1
-    return jsonify(returnList)
-
-
 @app.route('/api/v1/search/<string:name>')
 def search_anime(name):
     """
@@ -915,6 +892,46 @@ def updateThemes():
             themeIndex += 1
         anime.themes = json.dumps(themes)
     db.session.commit()
+
+
+@app.route('/api/v1/top/<int:size>')
+def get_most_viewed(size):
+    queryList = Anime.query.all()
+    themeList = []
+    for anime in queryList:
+        for theme in json.loads(anime.themes):
+            # if not len(theme.get('title')):
+            #    theme['title'] = theme['type']
+            themeList.append(theme)
+    # themeList = sorted(themeList, key=lambda k: k['title'], reverse=False)
+    themeList = sorted(themeList, key=lambda k: k['extras']['views'], reverse=True)
+    returnList = []
+    i = 0
+    print(themeList[0])
+    while i < size:
+        anime = Anime.query.filter_by(malId=themeList[i]['extras']['malId']).first()
+        entry = {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+                 'year': anime.year, 'themes': [themeList[i]]}
+        returnList.append(entry)
+        i += 1
+    return jsonify(returnList)
+
+
+@app.route('/api/v1/themes/<string:name>')
+def serch_by_theme(name):
+    animeList = Anime.query.all()
+    themeList = []
+    for anime in animeList:
+        for theme in json.loads(anime.themes):
+            if name.lower() in theme.get('title').lower():
+                themeList.append(theme)
+    searchList = []
+    for theme in themeList:
+        anime = Anime.query.filter_by(malId=theme.get('extras')['malId']).first()
+        entry = {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+                 'year': anime.year, 'themes': [theme]}
+        searchList.append(entry)
+    return jsonify(searchList)
 
 
 # LEGACY ROUTES
