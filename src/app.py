@@ -882,7 +882,7 @@ def updateThemes():
         themes = json.loads(anime.themes)
         themeIndex = 0
         for theme in themes:
-            # theme['extras'] = {'views': 0, 'likes': 0, 'dislikes': 0, 'malId': anime.malId}
+            theme['extras'] = {'views': 0, 'likes': 0, 'dislikes': 0, 'malId': anime.malId}
             mirrorIndex = 0
             for mirror in theme.get('mirror'):
                 mirror['appUrl'] = '{}/{}/{}'.format(anime.malId,
