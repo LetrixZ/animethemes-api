@@ -99,6 +99,8 @@ def get_playlists():
     content = request.get_json()
     playId = content.get('message')
     row = Playlist.query.filter_by(playId=playId).first()
+    if not row:
+        return None
     playlist = row.json()
     return jsonify(playlist)
 
