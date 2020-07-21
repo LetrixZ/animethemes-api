@@ -81,7 +81,7 @@ def get_themes(table, index, malId):
         except IndexError:
             themeNotes = ''
         themes.append({'title': themeTitle, 'type': themeType, 'mirror': themeMirror, 'episodes': themeEpisodes,
-                       'notes': themeNotes, 'extras': {'views': 0, 'likes': 0, 'dislikes': 0}})
+                       'notes': themeNotes, 'extras': {'views': 0, 'likes': 0, 'dislikes': 0, 'malId': malId}})
         index += 1
     return themes
 
