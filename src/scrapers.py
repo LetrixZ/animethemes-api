@@ -1,6 +1,6 @@
 import praw, requests, concurrent.futures, json
 from bs4 import BeautifulSoup
-from models import Anime
+from src.models import Anime
 from mal import Anime as AnimeMAL
 
 reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
@@ -33,7 +33,7 @@ def get_cover(mal_id):
         return image
 
 
-def get_themes(table):
+def get_themes(table, index, malId):
     themes = []
     for tr in table:
         if not len(tr.findAll('td')[0].getText()):
@@ -49,14 +49,17 @@ def get_themes(table):
         themeQuality = tr.find('a').getText()[tr.find('a').getText().find('ebm (') + 5:-1]
         if not themeQuality:
             themeQuality = 'default'
-        themeMirror.append({'quality': themeQuality, 'mirrorUrl': tr.find('a').get('href')})
+        themeMirror.append(
+            {'quality': themeQuality, 'mirrorUrl': tr.find('a').get('href'),
+             'appUrl': '{}/{}/{}'.format(malId, index, 0)})
         try:
             nextMirror = tr.find_next_sibling('tr')
             if not len(nextMirror.findAll('td')[0].getText()):
                 themeQuality = nextMirror.find('a').getText()[nextMirror.find('a').getText().find('ebm (') + 5:-1]
                 if not themeQuality:
                     themeQuality = 'default'
-                themeMirror.append({'quality': themeQuality, 'mirrorUrl': nextMirror.find('a').get('href')})
+                themeMirror.append({'quality': themeQuality, 'mirrorUrl': nextMirror.find('a').get('href'),
+                                    'appUrl': '{}/{}/{}'.format(malId, index, 1)})
                 try:
                     nextMirror_2 = nextMirror.find_next_sibling('tr')
                     if not len(nextMirror_2.findAll('td')[0].getText()):
@@ -64,7 +67,8 @@ def get_themes(table):
                                        nextMirror_2.find('a').getText().find('ebm (') + 5:-1]
                         if not themeQuality:
                             themeQuality = 'default'
-                        themeMirror.append({'quality': themeQuality, 'mirrorUrl': nextMirror_2.find('a').get('href')})
+                        themeMirror.append({'quality': themeQuality, 'mirrorUrl': nextMirror_2.find('a').get('href'),
+                                            'appUrl': '{}/{}/{}'.format(malId, index, 2)})
                 except AttributeError:
                     # print('There is not another mirror')
                     pass
@@ -78,52 +82,65 @@ def get_themes(table):
             themeNotes = ''
         themes.append({'title': themeTitle, 'type': themeType, 'mirror': themeMirror, 'episodes': themeEpisodes,
                        'notes': themeNotes, 'extras': {'views': 0, 'likes': 0, 'dislikes': 0}})
+        index += 1
     return themes
 
 
-def getAnime(entry, seasonName, year):
+def get_anime(entry, season_name, year):
+    index = 0
     malUrl = entry.find('a').get('href')
-    if not 'myanimelist' in malUrl:
+    if 'myanimelist' not in malUrl:
         return None
     malId = malUrl[30:]
     malId = malId.split('/')[0]
     malId = int("".join(filter(str.isdigit, malId)))
-    if not Anime.query.filter_by(malId=malId).first():
-        name = entry.getText()
-        title = [name]
-        try:
-            title.extend(entry.nextSibling.nextSibling.find('strong').getText().split(', '))
-        except AttributeError:
-            # print('There are not another titles')
-            pass
-        table = entry.find_next_sibling('table').find('tbody').findAll('tr')
-        themes = get_themes(table)
-        cover = get_cover(malId)
-        return {'malId': malId, 'titles': title, 'themes': themes, 'cover': cover, 'year': year, 'season': seasonName}
+    # if not Anime.query.filter_by(malId=malId).first():
+    name = entry.getText()
+    title = [name]
+    try:
+        title.extend(entry.nextSibling.nextSibling.find('strong').getText().split(', '))
+    except AttributeError:
+        # print('There are not another titles')
+        pass
+    table = entry.find_next_sibling('table').find('tbody').findAll('tr')
+    themes = get_themes(table, index, malId)
+    table2 = entry.find_next_sibling('table')
+    while True:
+        table2 = table2.nextSibling
+        if table2 is None or table2.name == 'h3':
+            break
+        elif table2.name == 'table':
+            themes += get_themes(table2.find('tbody').findAll('tr'), index, malId)
+    row = Anime.query.filter_by(malId=malId).first()
+    if row:
+        cover = row.cover
     else:
-        return None
+        cover = get_cover(malId)
+    return {'malId': malId, 'titles': title, 'themes': themes, 'cover': cover, 'year': year, 'season': season_name}
+    # else:
+    #    return None
 
 
-def addYear(year):
+def add_year(year):
     page = reddit.subreddit('AnimeThemes').wiki[year].content_html
     body = BeautifulSoup(page, 'html.parser')
     seasons = body.findAll('h2')
-    animeList = []
+    anime_list = []
     added = []
     if not len(seasons):
         entryList = body.findAll('h3')
         for entry in entryList:
             year = int(str(year).replace('s', ''))
-            anime = getAnime(entry, "All", year)
+            anime = get_anime(entry, "All", year)
             if anime:
-                animeList.append(anime)
+                anime_list.append(anime)
                 row = Anime.query.filter_by(malId=anime['malId']).first()
                 if not row:
                     added.append(anime)
-        return animeList, added
+        return anime_list, added
     for season in seasons:
-        seasonText = season.getText()
-        seasonName = seasonText[5:seasonText.find('Season')] + seasonText[:4]
+        season_text = season.getText()
+        season_name = season_text[5:season_text.find('Season')] + season_text[:4]
         entryList = []
         item = season
         while True:
@@ -133,14 +150,18 @@ def addYear(year):
             elif item.name == 'h3':
                 entryList.append(item)
         for entry in entryList:
-            anime = getAnime(entry, seasonName, year)
+            anime = get_anime(entry, season_name, year)
             if anime:
                 malId = anime['malId']
-                animeList.append(anime)
+                anime_list.append(anime)
                 row = Anime.query.filter_by(malId=malId).first()
                 if not row:
                     added.append(anime)
-    return (animeList, added)
+                elif row:
+                    row_themes = json.loads(row.themes)
+                    if row_themes != anime['themes']:
+                        added.append(anime)
+    return anime_list, added
 
 
 def getAnimeID(id):

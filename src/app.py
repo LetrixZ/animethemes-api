@@ -7,28 +7,28 @@ import subprocess
 import fileioapi as fileioapi
 import requests
 from flask import Flask, jsonify, request
-from config import config
-from models import db, Anime, User, Playlist
-from anilist import getListFromUser
+from src.config import config
+from src.models import db, Anime, User, Playlist
+from src.anilist import getListFromUser
 from flask_apidoc_extend import ApiDoc
-from scrapers import addYear, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
+from src.scrapers import add_year, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
     getCoverFromDB
 from werkzeug.utils import redirect
 
 
-def create_app(enviroment):
+def create_app(environment):
     app = Flask(__name__)
-    app.config.from_object(enviroment)
+    app.config.from_object(environment)
     with app.app_context():
         db.init_app(app)
         db.create_all()
     return app
 
 
-enviroment = config['production']
-# enviroment = config['development']
+# environment = config['production']
+environment = config['development']
 
-app = create_app(enviroment)
+app = create_app(environment)
 ApiDoc(app=app)
 
 
@@ -93,7 +93,7 @@ def save_playlist():
     return jsonify({'message': "{} saved succesfully".format(playId)})
 
 
-# GET PLAYLIS COLLECTION
+# GET PLAYLIST COLLECTION
 @app.route('/playlist/get', methods=['POST'])
 def get_playlists():
     content = request.get_json()
@@ -121,7 +121,7 @@ def get_all_covers():
 
 @app.route('/db/year/<string:year>')
 def add_year_to_db(year):
-    animeList = addYear(year)
+    animeList = add_year(year)
     for anime in animeList[0]:
         Anime.create(json.dumps(anime['titles']), anime['malId'], anime['cover'], anime['year'], anime['season'],
                      json.dumps(anime['themes']))
@@ -909,7 +909,7 @@ def get_most_viewed(size):
     themeList = sorted(themeList, key=lambda k: k['extras']['views'], reverse=True)
     returnList = []
     i = 0
-    print(themeList[0])
+
     while i < size:
         anime = Anime.query.filter_by(malId=themeList[i]['extras']['malId']).first()
         entry = {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
