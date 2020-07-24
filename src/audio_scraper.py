@@ -85,6 +85,7 @@ def get_audio_anime(anime):
     anime_name = json.loads(anime.title)[0]
     main = get_request(anime_name, 0)
     themes = json.loads(anime.themes)
+    added = []
     for entry in main:
         s = entry.get('alt').split(' - ')
         artist = s[0]
@@ -94,9 +95,10 @@ def get_audio_anime(anime):
                 text = entry.get('src').split('/')
                 mirror = "{}//{}/ddl/{}/{}/audio.mp3".format(text[0], text[2], text[4], text[5])
                 theme['audio'] = {'artist': artist, 'title': title, 'mirror': mirror}
+                added.append({'artist': artist, 'title': title, 'mirror': mirror})
                 print("{} - {} ({})".format(artist, title, anime_name))
                 break
-    if not main:
+    if not added:
         for theme in themes:
             theme["audio"] = {'artist': None, 'title': None, 'mirror': None}
     return themes
