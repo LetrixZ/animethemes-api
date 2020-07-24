@@ -11,9 +11,11 @@ from src.config import config
 from src.models import db, Anime, User, Playlist
 from src.anilist import getListFromUser
 from flask_apidoc_extend import ApiDoc
+from src.audio_scraper import get_audio, get_audio_name, get_audio_anime
 from src.scrapers import add_year, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
     getCoverFromDB
 from werkzeug.utils import redirect
+from difflib import SequenceMatcher
 
 
 def create_app(environment):
@@ -32,7 +34,7 @@ app = create_app(environment)
 ApiDoc(app=app)
 
 
-def randomString(stringLength=8):
+def random_string(stringLength=8):
     letters = string.ascii_lowercase + "123456789" + string.ascii_lowercase.upper()
     return ''.join(random.choice(letters) for i in range(stringLength))
 
@@ -93,6 +95,72 @@ def save_playlist():
     return jsonify({'message': "{} saved succesfully".format(playId)})
 
 
+# AUDIO
+@app.route('/api/v1/audio/<string:name>')
+def search_audio(name):
+    audio_list = get_audio(name, None)
+    return jsonify(audio_list)
+
+
+# @app.route('/db/audio/')
+# def add_audio():
+#     anime_list = Anime.query.all()
+#     added = []
+#     for anime in anime_list:
+#         print(json.loads(anime.title)[0])
+#         themes = json.loads(anime.themes)
+#         for theme in themes:
+#             if not theme.get('audio'):
+#                 print("{} missing ({})".format(theme.get('title'), json.loads(anime.title)[0]))
+#                 audio = get_audio(theme.get('title'), anime)
+#                 titles = json.loads(anime.title)
+#                 for entry in audio:
+#                     for title in titles:
+#                         # if entry.get('anime') == title:
+#                         if SequenceMatcher(a=entry.get('anime'), b=title).ratio() > 0.9:
+#                             theme['audio'] = entry
+#                             break
+#         anime.themes = json.dumps(themes)
+#         db.session.commit()
+#         added.append(anime.json())
+#     return jsonify(added)
+
+@app.route('/db/audio/')
+def add_audio():
+    anime_list = Anime.query.all()
+    for anime in anime_list:
+        anime_title = json.loads(anime.title)[0]
+        themes = json.loads(anime.themes)
+        for theme in themes:
+            if theme.get("audio"):
+                continue
+            print("{} missing ({})".format(theme.get('title'), anime_title))
+            audio = get_audio_name(theme, anime)
+            if audio is not None:
+                theme["audio"] = audio
+            else:
+                theme["audio"] = {'artist': None, 'title': None, 'mirror': None}
+        anime.themes = json.dumps(themes)
+        db.session.commit()
+    return jsonify({'message': 'done'})
+
+
+@app.route('/db/audio2/')
+def add_audio_2():
+    anime_list = Anime.query.all()
+    for anime in anime_list:
+        if len(json.loads(anime.title)[0]) > 3:
+            themes = json.loads(anime.themes)
+            for theme in themes:
+                if not theme.get('audio'):
+                    item = get_audio_anime(anime)
+                    anime.themes = json.dumps(item)
+                    db.session.commit()
+                    break
+                    # print(item)
+    return jsonify({'message': 'done'})
+
+
 # GET PLAYLIST COLLECTION
 @app.route('/playlist/get', methods=['POST'])
 def get_playlists():
@@ -107,9 +175,9 @@ def get_playlists():
 
 @app.route('/playlist/generate')
 def create_playid():
-    playId = randomString(6)
+    playId = random_string(6)
     while Playlist.query.filter_by(playId=playId).first() is not None:
-        playId = randomString(6)
+        playId = random_string(6)
     Playlist.create(playId)
     return jsonify({'message': playId})
 
@@ -330,9 +398,22 @@ def get_anime(malId):
         """
     anime = Anime.query.filter_by(malId=malId).first()
     if anime:
+        themes = json.loads(anime.themes)
+        for theme in themes:
+            if not theme.get('audio'):
+                print("{} missing".format(theme.get('title')))
+                audio = get_audio(theme.get('title'), anime)
+                titles = json.loads(anime.title)
+                for entry in audio:
+                    for title in titles:
+                        if entry.get('anime') == title.replace("'", ""):
+                            theme['audio'] = entry
+                            break
+            anime.themes = json.dumps(themes)
+            db.session.commit()
         return jsonify(
             {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-             'year': anime.year, 'themes': json.loads(anime.themes)})
+             'year': anime.year, 'themes': themes})
     else:
         return jsonify({'message': 'not found'})
 
@@ -839,9 +920,17 @@ def latest_themes():
     animes = Anime.query.order_by(Anime.id.desc()).limit(15)
     animeList = []
     for anime in animes:
+        # themes = json.loads(anime.themes)
+        # for theme in themes:
+        #     print(theme.get('title'))
+        #     audio = get_audio(theme.get('title'))
+        #     theme['audio'] = audio[0]
         animeList.append(
             {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
              'year': anime.year, 'themes': json.loads(anime.themes)})
+        # animeList.append(
+        #     {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+        #      'year': anime.year, 'themes': themes})
     return jsonify(animeList)
 
 
@@ -920,7 +1009,7 @@ def get_most_viewed(size):
 
 
 @app.route('/api/v1/themes/<string:name>')
-def serch_by_theme(name):
+def search_by_theme(name):
     animeList = Anime.query.all()
     themeList = []
     for anime in animeList:
