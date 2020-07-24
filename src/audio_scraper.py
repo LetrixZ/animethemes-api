@@ -67,9 +67,9 @@ def get_audio(name, anime):
 def get_audio_name(theme, anime):
     anime_name = json.loads(anime.title)[0]
     body = get_request(anime_name, 0)
-    main = body.find('main').findAll('img')
-    print(theme.get('title') + " " + str(len(main)))
-    for entry in main:
+    # main = body.find('main').findAll('img')
+    print(theme.get('title') + " " + str(len(body)))
+    for entry in body:
         text = entry.get('alt').split(' - ')
         artist = text[0]
         title = text[1]
