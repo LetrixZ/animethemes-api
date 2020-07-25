@@ -11,7 +11,8 @@ from src.config import config
 from src.models import db, Anime, User, Playlist
 from src.anilist import getListFromUser
 from flask_apidoc_extend import ApiDoc
-from src.audio_scraper import get_audio, get_audio_name, get_audio_anime
+from src.audio_scraper import get_audio, get_audio_name, get_audio_anime, get_music
+from src.scrapersv2 import get_year as v2_get_year
 from src.scrapers import add_year, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
     getCoverFromDB
 from werkzeug.utils import redirect
@@ -27,8 +28,8 @@ def create_app(environment):
     return app
 
 
-# environment = config['production']
-environment = config['development']
+environment = config['production']
+# environment = config['development']
 
 app = create_app(environment)
 ApiDoc(app=app)
@@ -152,12 +153,29 @@ def add_audio_2():
         if len(json.loads(anime.title)[0]) > 3:
             themes = json.loads(anime.themes)
             for theme in themes:
+                print(theme.get('audio'))
                 if not theme.get('audio'):
                     item = get_audio_anime(anime)
                     anime.themes = json.dumps(item)
-                    db.session.commit()
+                    # db.session.commit()
                     break
                     # print(item)
+    return jsonify({'message': 'done'})
+
+
+@app.route('/music')
+def add_music():
+    anime_list = Anime.query.all()
+    for anime in anime_list:
+        anime_title = json.loads(anime.title)[0]
+        if len(anime_title) >= 3:
+            themes = json.loads(anime.themes)
+            for theme in themes:
+                if not theme.get('audio'):
+                    item = get_music(anime)
+                    anime.themes = json.dumps(item)
+                    db.session.commit()
+                    break
     return jsonify({'message': 'done'})
 
 
@@ -194,6 +212,16 @@ def add_year_to_db(year):
         Anime.create(json.dumps(anime['titles']), anime['malId'], anime['cover'], anime['year'], anime['season'],
                      json.dumps(anime['themes']))
     return jsonify(animeList[1])
+
+
+@app.route('/add/<string:year>')
+def add_year(year):
+    anime_list = v2_get_year(year)
+    for season_list in anime_list:
+        for anime in season_list:
+            Anime.create(json.dumps(anime['titles']), anime['malId'], anime['cover'], anime['year'], anime['season'],
+                         json.dumps(anime['themes']))
+    return jsonify(anime_list)
 
 
 @app.route('/api/v1/anilist/<string:user>')

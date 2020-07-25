@@ -1,6 +1,6 @@
 import praw, requests, concurrent.futures, json
 from bs4 import BeautifulSoup
-from src.models import Anime
+from src.models import Anime, db
 from mal import Anime as AnimeMAL
 
 reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
@@ -120,149 +120,89 @@ def get_anime(entry, season_name, year):
     #    return None
 
 
-def add_year(year):
+def add_anime(item, year, season):
+    mal_url = item.find('a').get('href')
+    if 'myanimelist' not in mal_url:
+        return None
+    mal_id = int("".join(filter(str.isdigit, mal_url[30:].split('/')[0])))
+    row = Anime.query.filter_by(malId=mal_id).first()
+    if not row:
+        anime_name = item.getText()
+        anime_titles = [anime_name]
+        try:
+            anime_titles.extend(item.nextSibling.nextSibling.find('strong').getText().split(', '))
+        except AttributeError:
+            pass
+        theme_table = item.find_next_sibling('table').find('tbody').findAll('tr')
+        themes = get_themes(theme_table, 0, mal_id)
+        # Getting extra themes {
+        theme_table_2 = item.find_next_sibling('table')
+        while True:
+            theme_table_2 = theme_table_2.nextSibling
+            if theme_table_2 is None or theme_table_2.name == 'h3':
+                break
+            elif theme_table_2.name == 'table':
+                themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
+        # }
+        cover = get_cover(mal_id)
+        return {'malId': mal_id, 'titles': anime_titles, 'themes': themes, 'cover': cover, 'year': year,
+                'season': season}
+    else:
+        themes = json.loads(row.themes)
+        theme_table = item.find_next_sibling('table').find('tbody').findAll('tr')
+        new_themes = get_themes(theme_table, 0, mal_id)
+        theme_table_2 = item.find_next_sibling('table')
+        while True:
+            theme_table_2 = theme_table_2.nextSibling
+            if theme_table_2 is None or theme_table_2.name == 'h3':
+                break
+            elif theme_table_2.name == 'table':
+                new_themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
+        if len(themes) != len(new_themes):
+            print("{}, different list".format(json.loads(row.title)[0]))
+        for i in range(len(themes)):
+            if len(themes[i].get('mirror')) != len(new_themes[i].get('mirror')):
+                print(json.loads(row.title))
+                print('{}, different mirrors'.format(themes[i].get('title')))
+                themes[i]['mirror'] = new_themes[i]['mirror']
+        row.themes = json.dumps(themes)
+        db.session.commit()
+
+
+def get_season(entry, year):
+    anime_list = []
+    for item in entry[1]:
+        anime = add_anime(item, year, entry[0])
+        if anime:
+            anime_list.append(anime)
+    return anime_list
+
+
+def get_year(year):
     page = reddit.subreddit('AnimeThemes').wiki[year].content_html
     body = BeautifulSoup(page, 'html.parser')
     seasons = body.findAll('h2')
-    anime_list = []
-    added = []
-    if not len(seasons):
-        entryList = body.findAll('h3')
-        for entry in entryList:
-            year = int(str(year).replace('s', ''))
-            anime = get_anime(entry, "All", year)
-            if anime:
-                anime_list.append(anime)
-                row = Anime.query.filter_by(malId=anime['malId']).first()
-                if not row:
-                    added.append(anime)
-        return anime_list, added
+    entry_list = {}
+    added_list = []
+    if not seasons:
+        entry_list['All'] = body.findAll('h3')
+        for entry in entry_list.items():
+            added_list.append(get_season(entry, year))
+        return added_list
     for season in seasons:
         season_text = season.getText()
         season_name = season_text[5:season_text.find('Season')] + season_text[:4]
-        entryList = []
         item = season
+        entry_list[season_name] = []
         while True:
             item = item.nextSibling
             if item is None or item.name == 'h2':
                 break
             elif item.name == 'h3':
-                entryList.append(item)
-        for entry in entryList:
-            anime = get_anime(entry, season_name, year)
-            if anime:
-                malId = anime['malId']
-                anime_list.append(anime)
-                row = Anime.query.filter_by(malId=malId).first()
-                if not row:
-                    added.append(anime)
-                elif row:
-                    row_themes = json.loads(row.themes)
-                    if row_themes != anime['themes']:
-                        added.append(anime)
-    return anime_list, added
-
-
-def getAnimeID(id):
-    anime = Anime.query.filter_by(malId=id).first()
-    if anime:
-        return {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-                'year': anime.year, 'themes': json.loads(anime.themes)}
-    return None
-
-
-def getUserList(user):
-    urlList = ['https://myanimelist.net/animelist/{}/load.json?offset={}&status=7'.format(user, i) for i in
-               range(0, 300 * 4, 300)]
-    bodies = getBodies(urlList)
-    content = []
-    for body in bodies:
-        content.append(body.decode("utf-8"))
-    malList = []
-    for page in content:
-        for entry in json.loads(page):
-            anime = getAnimeID(entry['anime_id'])
-            if anime:
-                malList.append(anime)
-    malList = sorted(malList, key=lambda k: k['title'])
-    return malList
-
-
-def getAllYears():
-    results = Anime.query.all()
-    yearList = []
-    for item in results:
-        year = item.year
-        if year not in yearList:
-            yearList.append(year)
-    yearList.sort(reverse=True)
-    return yearList
-
-
-def getAllSeasons():
-    results = Anime.query.all()
-    years = getAllYears()
-    yearList = []
-    for year in years:
-        seasons = []
-        for item in results:
-            season = item.season[:-5]
-            if season not in seasons and str(year) in item.season:
-                seasons.append(season)
-            if 'All' not in seasons and item.season == 'All' and year == item.year:
-                seasons.append("All")
-        yearList.append({'year': year, 'seasons': seasons})
-    return yearList
-
-
-def getYearSeasons(year):
-    results = Anime.query.filter_by(year=year).all()
-    seasons = []
-    for item in results:
-        seasonText = item.season[:-5]
-        if seasonText not in seasons and len(seasonText):
-            seasons.append(seasonText)
-        elif 'All' not in seasons and item.season == 'All':
-            seasons.append("All")
-    seasonsList = []
-    for season in seasons:
-        seasonList = []
-        for item in results:
-            if item.season[:-5] == season:
-                seasonList.append(item.json())
-            elif item.season == 'All':
-                seasonList.append(item.json())
-        seasonList = sorted(seasonList, key=lambda k: k['title'][0])
-        seasonsList.append({'season': season, 'animes': seasonList})
-    seasonsList = sorted(seasonsList, key=lambda k: k['season'])
-    return {'year': year, 'seasons': seasonsList}
-
-
-def getCurrentSeason():
-    years = getAllSeasons()
-    data = list(years[0].values())
-    currentSeason = data[1][-1]
-    year = data[0]
-    return currentSeason, year
-
-
-def getSeason(year, season):
-    results = Anime.query.filter_by(year=year).all()
-    animeList = []
-    for item in results:
-        if season.capitalize() in item.season:
-            animeList.append(item.json())
-    animeList = sorted(animeList, key=lambda k: k['title'][0])
-    return animeList
-
-
-def getCoverFromDB():
-    animes = requests.get("https://animethemes-api.herokuapp.com/all/").json()
-    for anime in animes:
-        row = Anime.query.filter_by(malId=anime['malId']).first()
-        if row:
-            row.cover = anime['poster']
-            row.save()
-        else:
-            print(" {} ".format(anime['malId'], anime['name']))
-    return {'message': 'done'}
+                entry_list[season_name].append(item)
+    for entry in entry_list.items():
+        print(entry[0])
+        season_list = get_season(entry, year)
+        added_list.append(season_list)
+    return added_list
+    # GET ANIME
