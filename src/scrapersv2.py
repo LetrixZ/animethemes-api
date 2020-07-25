@@ -182,6 +182,7 @@ def get_year(year):
     page = reddit.subreddit('AnimeThemes').wiki[year].content_html
     body = BeautifulSoup(page, 'html.parser')
     seasons = body.findAll('h2')
+    year = int(str(year).replace('s', ''))
     entry_list = {}
     added_list = []
     if not seasons:
