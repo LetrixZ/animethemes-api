@@ -106,8 +106,10 @@ def get_audio_anime(anime):
     return themes
 
 
-def get_music(anime):
+def get_music(anime, name=None):
     anime_name = json.loads(anime.title)[0].lower()
+    if name:
+        anime_name = name
     body = get_request(anime_name, 0)
     themes = json.loads(anime.themes)
     # for entry in body:
@@ -129,18 +131,18 @@ def get_music(anime):
     #                 print("{} NOT found ({})".format(theme_title, anime_name))
     #                 theme["audio"] = {'artist': None, 'title': None, 'mirror': None}
     for theme in themes:
-        if not theme.get('audio'):
+        if not theme.get('audio').get('mirror'):
             theme_title = theme.get('title')
             # print(theme_title)
             for entry in body:
                 # info = entry.parent.parent.find('a').text.split('[', 1)[1].split(']')[0].lower()
                 info = entry.parent.parent.find('a').text
                 info = info[info.find("[") + 1:info.find("]")]
-                if SequenceMatcher(a=anime_name, b=info).ratio() > .3:
+                if SequenceMatcher(a=anime_name.lower(), b=info.lower()).ratio() > .2:
                     s = entry.get('alt').split(' - ')
                     artist = s[0]
                     title = s[1]
-                    if SequenceMatcher(a=theme_title, b=title).ratio() > .7:
+                    if SequenceMatcher(a=theme_title.lower(), b=title.lower()).ratio() > .7:
                         print("{} = {} found ({})".format(theme_title, title, anime_name))
                         text = entry.get('src').split('/')
                         mirror = "{}//{}/ddl/{}/{}/audio.mp3".format(text[0], text[2], text[4], text[5])

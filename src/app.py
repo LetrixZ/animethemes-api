@@ -28,8 +28,8 @@ def create_app(environment):
     return app
 
 
-environment = config['production']
-# environment = config['development']
+# environment = config['production']
+environment = config['development']
 
 app = create_app(environment)
 ApiDoc(app=app)
@@ -177,6 +177,34 @@ def add_music():
                     db.session.commit()
                     break
     return jsonify({'message': 'done'})
+
+
+@app.route('/nomusic')
+def no_music():
+    anime_list = Anime.query.all()
+    theme_list = []
+    for anime in anime_list:
+        themes = json.loads(anime.themes)
+        for theme in themes:
+            if theme.get('audio').get('mirror') is None:
+                theme_list.append(
+                    {'anime': json.loads(anime.title), 'mal_id': anime.malId, 'theme_title': theme.get('title')})
+    return jsonify(theme_list)
+
+
+@app.route('/addmusic/<int:malId>/<string:name>')
+def get_music_web(malId, name):
+    anime = Anime.query.filter_by(malId=malId).first()
+    themes = json.loads(anime.themes)
+    added = []
+    for theme in themes:
+        if not theme.get('audio').get('mirror'):
+            item = get_music(anime, name)
+            added.append({'anime': json.loads(anime.title), 'mal_id': anime.malId, 'theme_list': item})
+            anime.themes = json.dumps(item)
+            db.session.commit()
+            break
+    return jsonify(added)
 
 
 # GET PLAYLIST COLLECTION
@@ -446,7 +474,7 @@ def get_anime(malId):
         return jsonify({'message': 'not found'})
 
 
-@app.route('/api/v1/search/<string:name>')
+@app.route('/api/v1/search/<path:name>')
 def search_anime(name):
     """
         @api {get} /search/:search_term Perform a search on the DB to check for results based on search term
@@ -512,6 +540,7 @@ def search_anime(name):
                ...
            ]
         """
+    print(name)
     term = '%{}%'.format(name)
     results = Anime.query.filter(Anime.title.ilike(term)).all()
     animeList = []
@@ -805,7 +834,7 @@ def get_year(year):
     return jsonify(animeList)
 
 
-@app.route('/api/v1/user/<string:user>')
+@app.route('/api/v1/user/<path:user>')
 def get_mal_list(user):
     """
     @api {get} /user/:mal_user Request MyAnimeList's user list
@@ -1036,7 +1065,7 @@ def get_most_viewed(size):
     return jsonify(returnList)
 
 
-@app.route('/api/v1/themes/<string:name>')
+@app.route('/api/v1/themes/<path:name>')
 def search_by_theme(name):
     animeList = Anime.query.all()
     themeList = []
@@ -1137,7 +1166,7 @@ def returnJson(obj):
     return response
 
 
-@app.route('/u/<string:user>/')
+@app.route('/u/<path:user>/')
 def getAnimeList(user):
     malList = getList(user)
     return returnJson(malList)
