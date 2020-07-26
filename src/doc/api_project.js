@@ -1,6 +1,6 @@
 define({
   "name": "AnimeThemes API",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "API documentation",
   "title": "AnimeThemes API documentation",
   "url": "https://animethemes-app.herokuapp.com/api/v1",
@@ -9,7 +9,7 @@ define({
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2020-07-26T19:42:51.199Z",
+    "time": "2020-07-26T20:16:15.666Z",
     "url": "http://apidocjs.com",
     "version": "0.23.0"
   }

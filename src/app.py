@@ -730,43 +730,43 @@ def get_years():
 @app.route('/api/v1/seasons')
 def get_seasons():
     """
-        @api {get} /years Request list of years available on the DB
-        @apiName get_seasons
-        @apiGroup Data
+    @api {get} /years Request list of years available on the DB
+    @apiName get_seasons
+    @apiGroup Data
 
-        @apiSuccess {Object[]} years List years and seasons
-        @apiSuccess {String} years.year Year
-        @apiSuccess {String[]} year.seasons Seasons of the year
+    @apiSuccess {Object[]} years List years and seasons
+    @apiSuccess {String} years.year Year
+    @apiSuccess {String[]} year.seasons Seasons of the year
 
-        @apiSuccessExample {json} Success-Response:
-            [
-               {
-                  "year":2020,
-                  "seasons":[
-                     "Spring",
-                     "Winter"
-                  ]
-               },
-               {
-                  "year":2019,
-                  "seasons":[
-                     "Fall",
-                     "Summer",
-                     "Spring",
-                     "Winter"
-                  ]
-               },
-               {
-                  "year":2018,
-                  "seasons":[
-                     "Spring",
-                     "Fall",
-                     "Summer",
-                     "Winter"
-                  ]
-               },
-               ...
-           ]
+    @apiSuccessExample {json} Success-Response:
+    [
+       {
+          "year":2020,
+          "seasons":[
+             "Spring",
+             "Winter"
+          ]
+       },
+       {
+          "year":2019,
+          "seasons":[
+             "Fall",
+             "Summer",
+             "Spring",
+             "Winter"
+          ]
+       },
+       {
+          "year":2018,
+          "seasons":[
+             "Spring",
+             "Fall",
+             "Summer",
+             "Winter"
+          ]
+       },
+       ...
+   ]
     """
     return jsonify(getAllSeasons())
 
@@ -933,44 +933,44 @@ def get_mal_list(user):
     @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
     @apiSuccessExample {json} Success-Response:
-        [
+    [
+      {
+        "malId": 851,
+        "title": [
+          "Kyou kara Ore wa!!"
+        ],
+        "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+        "season": "All",
+        "year": 90,
+        "themes": [
           {
-            "malId": 851,
-            "title": [
-              "Kyou kara Ore wa!!"
-            ],
-            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
-            "season": "All",
-            "year": 90,
-            "themes": [
+            "title": "Bokura Wa Family",
+            "type": "ED",
+            "mirror": [
               {
-                "title": "Bokura Wa Family",
-                "type": "ED",
-                "mirror": [
-                  {
-                    "quality": "BD, 1080",
-                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
-                    "appUrl": "851/0/0"
-                  }
-                ],
-                "episodes": "",
-                "notes": "",
-                "extras": {
-                  "views": 0,
-                  "likes": 0,
-                  "dislikes": 0,
-                  "malId": 851
-                },
-                "audio": {
-                  "artist": null,
-                  "title": null,
-                  "mirror": null
-                }
+                "quality": "BD, 1080",
+                "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                "appUrl": "851/0/0"
               }
-            ]
-          },
-          ...
+            ],
+            "episodes": "",
+            "notes": "",
+            "extras": {
+              "views": 0,
+              "likes": 0,
+              "dislikes": 0,
+              "malId": 851
+            },
+            "audio": {
+              "artist": null,
+              "title": null,
+              "mirror": null
+            }
+          }
         ]
+      },
+      ...
+    ]
     """
     userList = getUserList(user)
     return jsonify(userList)
@@ -979,11 +979,11 @@ def get_mal_list(user):
 @app.route('/api/v1/current')
 def current_season():
     """
-        @api {get} /current Request list of anime and themes of the current season
-        @apiName current_season
-        @apiGroup Anime
+    @api {get} /current Request list of anime and themes of the current season
+    @apiName current_season
+    @apiGroup Anime
 
-        @apiSuccess {int} malId MyAnimeList's id for the anime
+    @apiSuccess {int} malId MyAnimeList's id for the anime
     @apiSuccess {String[]} title Title and synonims of the anime
     @apiSuccess {String} cover URL of the anime cover
     @apiSuccess {String} season Season of the anime
@@ -1007,44 +1007,44 @@ def current_season():
     @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
     @apiSuccessExample {json} Success-Response:
-        [
+    [
+      {
+        "malId": 851,
+        "title": [
+          "Kyou kara Ore wa!!"
+        ],
+        "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+        "season": "All",
+        "year": 90,
+        "themes": [
           {
-            "malId": 851,
-            "title": [
-              "Kyou kara Ore wa!!"
-            ],
-            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
-            "season": "All",
-            "year": 90,
-            "themes": [
+            "title": "Bokura Wa Family",
+            "type": "ED",
+            "mirror": [
               {
-                "title": "Bokura Wa Family",
-                "type": "ED",
-                "mirror": [
-                  {
-                    "quality": "BD, 1080",
-                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
-                    "appUrl": "851/0/0"
-                  }
-                ],
-                "episodes": "",
-                "notes": "",
-                "extras": {
-                  "views": 0,
-                  "likes": 0,
-                  "dislikes": 0,
-                  "malId": 851
-                },
-                "audio": {
-                  "artist": null,
-                  "title": null,
-                  "mirror": null
-                }
+                "quality": "BD, 1080",
+                "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                "appUrl": "851/0/0"
               }
-            ]
-          },
-          ...
+            ],
+            "episodes": "",
+            "notes": "",
+            "extras": {
+              "views": 0,
+              "likes": 0,
+              "dislikes": 0,
+              "malId": 851
+            },
+            "audio": {
+              "artist": null,
+              "title": null,
+              "mirror": null
+            }
+          }
         ]
+      },
+      ...
+    ]
     """
     current_season, year = getCurrentSeason()
     return jsonify(getSeason(year, "Summer"))
@@ -1081,44 +1081,44 @@ def latest_themes():
     @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
     @apiSuccessExample {json} Success-Response:
-        [
+    [
+      {
+        "malId": 851,
+        "title": [
+          "Kyou kara Ore wa!!"
+        ],
+        "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+        "season": "All",
+        "year": 90,
+        "themes": [
           {
-            "malId": 851,
-            "title": [
-              "Kyou kara Ore wa!!"
-            ],
-            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
-            "season": "All",
-            "year": 90,
-            "themes": [
+            "title": "Bokura Wa Family",
+            "type": "ED",
+            "mirror": [
               {
-                "title": "Bokura Wa Family",
-                "type": "ED",
-                "mirror": [
-                  {
-                    "quality": "BD, 1080",
-                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
-                    "appUrl": "851/0/0"
-                  }
-                ],
-                "episodes": "",
-                "notes": "",
-                "extras": {
-                  "views": 0,
-                  "likes": 0,
-                  "dislikes": 0,
-                  "malId": 851
-                },
-                "audio": {
-                  "artist": null,
-                  "title": null,
-                  "mirror": null
-                }
+                "quality": "BD, 1080",
+                "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                "appUrl": "851/0/0"
               }
-            ]
-          },
-          ...
+            ],
+            "episodes": "",
+            "notes": "",
+            "extras": {
+              "views": 0,
+              "likes": 0,
+              "dislikes": 0,
+              "malId": 851
+            },
+            "audio": {
+              "artist": null,
+              "title": null,
+              "mirror": null
+            }
+          }
         ]
+      },
+      ...
+    ]
     """
     animes = Anime.query.order_by(Anime.id.desc()).limit(15)
     animeList = []
@@ -1221,44 +1221,44 @@ def get_most_viewed(size):
     @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
     @apiSuccessExample {json} Success-Response:
-        [
+    [
+      {
+        "malId": 851,
+        "title": [
+          "Kyou kara Ore wa!!"
+        ],
+        "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+        "season": "All",
+        "year": 90,
+        "themes": [
           {
-            "malId": 851,
-            "title": [
-              "Kyou kara Ore wa!!"
-            ],
-            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
-            "season": "All",
-            "year": 90,
-            "themes": [
+            "title": "Bokura Wa Family",
+            "type": "ED",
+            "mirror": [
               {
-                "title": "Bokura Wa Family",
-                "type": "ED",
-                "mirror": [
-                  {
-                    "quality": "BD, 1080",
-                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
-                    "appUrl": "851/0/0"
-                  }
-                ],
-                "episodes": "",
-                "notes": "",
-                "extras": {
-                  "views": 0,
-                  "likes": 0,
-                  "dislikes": 0,
-                  "malId": 851
-                },
-                "audio": {
-                  "artist": null,
-                  "title": null,
-                  "mirror": null
-                }
+                "quality": "BD, 1080",
+                "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                "appUrl": "851/0/0"
               }
-            ]
-          },
-          ...
+            ],
+            "episodes": "",
+            "notes": "",
+            "extras": {
+              "views": 0,
+              "likes": 0,
+              "dislikes": 0,
+              "malId": 851
+            },
+            "audio": {
+              "artist": null,
+              "title": null,
+              "mirror": null
+            }
+          }
         ]
+      },
+      ...
+    ]
     """
     queryList = Anime.query.all()
     themeList = []
@@ -1314,44 +1314,44 @@ def search_by_theme(name):
     @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
     @apiSuccessExample {json} Success-Response:
-        [
+    [
+      {
+        "malId": 851,
+        "title": [
+          "Kyou kara Ore wa!!"
+        ],
+        "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+        "season": "All",
+        "year": 90,
+        "themes": [
           {
-            "malId": 851,
-            "title": [
-              "Kyou kara Ore wa!!"
-            ],
-            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
-            "season": "All",
-            "year": 90,
-            "themes": [
+            "title": "Bokura Wa Family",
+            "type": "ED",
+            "mirror": [
               {
-                "title": "Bokura Wa Family",
-                "type": "ED",
-                "mirror": [
-                  {
-                    "quality": "BD, 1080",
-                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
-                    "appUrl": "851/0/0"
-                  }
-                ],
-                "episodes": "",
-                "notes": "",
-                "extras": {
-                  "views": 0,
-                  "likes": 0,
-                  "dislikes": 0,
-                  "malId": 851
-                },
-                "audio": {
-                  "artist": null,
-                  "title": null,
-                  "mirror": null
-                }
+                "quality": "BD, 1080",
+                "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                "appUrl": "851/0/0"
               }
-            ]
-          },
-          ...
+            ],
+            "episodes": "",
+            "notes": "",
+            "extras": {
+              "views": 0,
+              "likes": 0,
+              "dislikes": 0,
+              "malId": 851
+            },
+            "audio": {
+              "artist": null,
+              "title": null,
+              "mirror": null
+            }
+          }
         ]
+      },
+      ...
+    ]
     """
     animeList = Anime.query.all()
     themeList = []

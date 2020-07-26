@@ -98,13 +98,76 @@ define({ "api": [
             "optional": false,
             "field": "themes.notes",
             "description": "<p>Notes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.extras",
+            "description": "<p>Extras of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.views",
+            "description": "<p>Views of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.likes",
+            "description": "<p>Like count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.dislikes",
+            "description": "<p>Dislike count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.malId",
+            "description": "<p>MalID of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.audio",
+            "description": "<p>Audio data of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.artist",
+            "description": "<p>Artist of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.title",
+            "description": "<p>Title of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.mirror",
+            "description": "<p>Mirror link of the original song</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " [\n     ...\n     {\n       \"malId\":40060,\n       \"title\":[\n          \"BNA\",\n          \"Brand New Animal\"\n       ],\n       \"cover\":\"https://cdn.myanimelist.net/images/anime/1139/106986.jpg\",\n       \"season\":\"Spring 2020\",\n       \"year\":2020,\n       \"themes\":[\n          {\n             \"title\":\"Ready to\",\n             \"type\":\"OP V1\",\n             \"mirror\":[\n                {\n                   \"quality\":\"default\",\n                   \"mirrorUrl\":\"https://animethemes.moe/video/BrandNewAnimal-OP1.webm\"\n                }\n             ],\n             \"episodes\":\"1-5\",\n             \"notes\":\"\"\n          },\n          {\n             \"title\":\"Ready to\",\n             \"type\":\"OP V2\",\n             \"mirror\":[\n                {\n                   \"quality\":\"default\",\n                   \"mirrorUrl\":\"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm\"\n                }\n             ],\n             \"episodes\":\"6-11\",\n             \"notes\":\"\"\n          },\n          ...\n       ]\n    },\n    ...\n]",
+          "content": "[\n  {\n    \"malId\": 851,\n    \"title\": [\n      \"Kyou kara Ore wa!!\"\n    ],\n    \"cover\": \"https://cdn.myanimelist.net/images/anime/2/43779.jpg\",\n    \"season\": \"All\",\n    \"year\": 90,\n    \"themes\": [\n      {\n        \"title\": \"Bokura Wa Family\",\n        \"type\": \"ED\",\n        \"mirror\": [\n          {\n            \"quality\": \"BD, 1080\",\n            \"mirrorUrl\": \"https://animethemes.moe/video/KyouKaraOreWa-ED1.webm\",\n            \"appUrl\": \"851/0/0\"\n          }\n        ],\n        \"episodes\": \"\",\n        \"notes\": \"\",\n        \"extras\": {\n          \"views\": 0,\n          \"likes\": 0,\n          \"dislikes\": 0,\n          \"malId\": 851\n        },\n        \"audio\": {\n          \"artist\": null,\n          \"title\": null,\n          \"mirror\": null\n        }\n      }\n    ]\n  },\n  ...\n]",
           "type": "json"
         }
       ]
@@ -225,13 +288,76 @@ define({ "api": [
             "optional": false,
             "field": "themes.notes",
             "description": "<p>Notes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.extras",
+            "description": "<p>Extras of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.views",
+            "description": "<p>Views of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.likes",
+            "description": "<p>Like count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.dislikes",
+            "description": "<p>Dislike count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.malId",
+            "description": "<p>MalID of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.audio",
+            "description": "<p>Audio data of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.artist",
+            "description": "<p>Artist of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.title",
+            "description": "<p>Title of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.mirror",
+            "description": "<p>Mirror link of the original song</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n   \"malId\":13601,\n   \"title\":[\n      \"Psycho Pass\",\n      \"Psychopath\"\n   ],\n   \"cover\":\"https://cdn.myanimelist.net/images/anime/5/43399.jpg\",\n   \"season\":\"Fall 2012\",\n   \"year\":2012,\n   \"themes\":[\n      {\n         \"title\":\"abnormalize\",\n         \"type\":\"OP1\",\n         \"mirror\":[\n            {\n               \"quality\":\"NC, BD, 1080\",\n               \"mirrorUrl\":\"https://animethemes.moe/video/PsychoPass-OP1.webm\"\n            }\n         ],\n         \"episodes\":\"1-11\",\n         \"notes\":\"\"\n      },\n      {\n         \"title\":\"Out of Control\",\n         \"type\":\"OP2 V1\",\n         \"mirror\":[\n            {\n               \"quality\":\"NC, BD, 1080\",\n               \"mirrorUrl\":\"https://animethemes.moe/video/PsychoPass-OP2v2.webm\"\n            }\n         ],\n         \"episodes\":\"12\",\n         \"notes\":\"\"\n      },\n      {\n         \"title\":\"Out of Control\",\n         \"type\":\"OP2 V2\",\n         \"mirror\":[\n            {\n               \"quality\":\"NC, BD, 1080\",\n               \"mirrorUrl\":\"https://animethemes.moe/video/PsychoPass-OP2.webm\"\n            }\n         ],\n         \"episodes\":\"13-22\",\n         \"notes\":\"\"\n      },\n      {\n         \"title\":\"Namae no nai Kaibutsu\",\n         \"type\":\"ED1 V1\",\n         \"mirror\":[\n            {\n               \"quality\":\"NC, BD, 1080\",\n               \"mirrorUrl\":\"https://animethemes.moe/video/PsychoPass-ED1.webm\"\n            }\n         ],\n         \"episodes\":\"1-3, 5, 7-8, 10-11\",\n         \"notes\":\"\"\n      },\n      {\n         \"title\":\"Namae no nai Kaibutsu\",\n         \"type\":\"ED1 V2\",\n         \"mirror\":[\n            {\n               \"quality\":\"NC, BD, 1080\",\n               \"mirrorUrl\":\"https://animethemes.moe/video/PsychoPass-ED1v2.webm\"\n            }\n         ],\n         \"episodes\":\"4, 6, 9\",\n         \"notes\":\"\"\n      },\n      {\n         \"title\":\"All Alone With You\",\n         \"type\":\"ED2 V1\",\n         \"mirror\":[\n            {\n               \"quality\":\"NC, BD, 1080\",\n               \"mirrorUrl\":\"https://animethemes.moe/video/PsychoPass-ED2.webm\"\n            }\n         ],\n         \"episodes\":\"12-21\",\n         \"notes\":\"\"\n      },\n      {\n         \"title\":\"All Alone With You\",\n         \"type\":\"ED2 V2\",\n         \"mirror\":[\n            {\n               \"quality\":\"NC, BD, 1080, Over\",\n               \"mirrorUrl\":\"https://animethemes.moe/video/PsychoPass-ED2v2.webm\"\n            }\n         ],\n         \"episodes\":\"22\",\n         \"notes\":\"Spoiler\"\n      }\n   ]\n}",
+          "content": "{\n  \"malId\": 40060,\n  \"title\": [\n    \"BNA\",\n    \"Brand New Animal\"\n  ],\n  \"cover\": \"https://cdn.myanimelist.net/images/anime/1139/106986.jpg\",\n  \"season\": \"Spring 2020\",\n  \"year\": 2020,\n  \"themes\": [\n    {\n      \"title\": \"Ready to\",\n      \"type\": \"OP V1\",\n      \"mirror\": [\n        {\n          \"quality\": \"default\",\n          \"mirrorUrl\": \"https://animethemes.moe/video/BrandNewAnimal-OP1.webm\",\n          \"appUrl\": \"40060/0/0\"\n        }\n      ],\n      \"episodes\": \"1-5\",\n      \"notes\": \"\",\n      \"extras\": {\n        \"views\": 0,\n        \"likes\": 0,\n        \"dislikes\": 0,\n        \"malId\": 40060\n      },\n      \"audio\": {\n        \"artist\": \"Sumire Morohoshi\",\n        \"title\": \"Ready to\",\n        \"mirror\": \"https://dl4.wapkizfile.info/ddl/0d58ba3e38aa5c118d16200ecaad6d5b/osanime+wapkiz+com/audio.mp3\"\n      }\n    },\n    {\n      \"title\": \"Ready to\",\n      \"type\": \"OP V2\",\n      \"mirror\": [\n        {\n          \"quality\": \"default\",\n          \"mirrorUrl\": \"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm\",\n          \"appUrl\": \"40060/1/0\"\n        }\n      ],\n      \"episodes\": \"6-11\",\n      \"notes\": \"\",\n      \"extras\": {\n        \"views\": 0,\n        \"likes\": 0,\n        \"dislikes\": 0,\n        \"malId\": 40060\n      },\n      \"audio\": {\n        \"artist\": \"Sumire Morohoshi\",\n        \"title\": \"Ready to\",\n        \"mirror\": \"https://dl4.wapkizfile.info/ddl/0d58ba3e38aa5c118d16200ecaad6d5b/osanime+wapkiz+com/audio.mp3\"\n      }\n    },\n    {\n      \"title\": \"NIGHT RUNNING\",\n      \"type\": \"ED V1\",\n      \"mirror\": [\n        {\n          \"quality\": \"default\",\n          \"mirrorUrl\": \"https://animethemes.moe/video/BrandNewAnimal-ED1.webm\",\n          \"appUrl\": \"40060/2/0\"\n        }\n      ],\n      \"episodes\": \"1-6\",\n      \"notes\": \"\",\n      \"extras\": {\n        \"views\": 0,\n        \"likes\": 0,\n        \"dislikes\": 0,\n        \"malId\": 40060\n      },\n      \"audio\": {\n        \"artist\": \"Shin Sakiura Feat\",\n        \"title\": \"NIGHT RUNNING\",\n        \"mirror\": \"https://dl4.wapkizfile.info/ddl/c776e0444ba03e337e7ebc077df10fdf/osanime+wapkiz+com/audio.mp3\"\n      }\n    },\n    {\n      \"title\": \"NIGHT RUNNING\",\n      \"type\": \"ED V2\",\n      \"mirror\": [\n        {\n          \"quality\": \"default\",\n          \"mirrorUrl\": \"https://animethemes.moe/video/BrandNewAnimal-ED1v2.webm\",\n          \"appUrl\": \"40060/3/0\"\n        }\n      ],\n      \"episodes\": \"7-10\",\n      \"notes\": \"\",\n      \"extras\": {\n        \"views\": 0,\n        \"likes\": 0,\n        \"dislikes\": 0,\n        \"malId\": 40060\n      },\n      \"audio\": {\n        \"artist\": \"Shin Sakiura Feat\",\n        \"title\": \"NIGHT RUNNING\",\n        \"mirror\": \"https://dl4.wapkizfile.info/ddl/c776e0444ba03e337e7ebc077df10fdf/osanime+wapkiz+com/audio.mp3\"\n      }\n    },\n    {\n      \"title\": \"NIGHT RUNNING\",\n      \"type\": \"ED V3\",\n      \"mirror\": [\n        {\n          \"quality\": \"default\",\n          \"mirrorUrl\": \"https://animethemes.moe/video/BrandNewAnimal-ED1v3.webm\",\n          \"appUrl\": \"40060/4/0\"\n        }\n      ],\n      \"episodes\": \"11\",\n      \"notes\": \"\",\n      \"extras\": {\n        \"views\": 0,\n        \"likes\": 0,\n        \"dislikes\": 0,\n        \"malId\": 40060\n      },\n      \"audio\": {\n        \"artist\": \"Shin Sakiura Feat\",\n        \"title\": \"NIGHT RUNNING\",\n        \"mirror\": \"https://dl4.wapkizfile.info/ddl/c776e0444ba03e337e7ebc077df10fdf/osanime+wapkiz+com/audio.mp3\"\n      }\n    }\n  ]\n}",
           "type": "json"
         }
       ]
@@ -352,13 +478,76 @@ define({ "api": [
             "optional": false,
             "field": "themes.notes",
             "description": "<p>Notes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.extras",
+            "description": "<p>Extras of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.views",
+            "description": "<p>Views of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.likes",
+            "description": "<p>Like count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.dislikes",
+            "description": "<p>Dislike count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.malId",
+            "description": "<p>MalID of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.audio",
+            "description": "<p>Audio data of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.artist",
+            "description": "<p>Artist of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.title",
+            "description": "<p>Title of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.mirror",
+            "description": "<p>Mirror link of the original song</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " [\n     ...\n     {\n       \"malId\":40060,\n       \"title\":[\n          \"BNA\",\n          \"Brand New Animal\"\n       ],\n       \"cover\":\"https://cdn.myanimelist.net/images/anime/1139/106986.jpg\",\n       \"season\":\"Spring 2020\",\n       \"year\":2020,\n       \"themes\":[\n          {\n             \"title\":\"Ready to\",\n             \"type\":\"OP V1\",\n             \"mirror\":[\n                {\n                   \"quality\":\"default\",\n                   \"mirrorUrl\":\"https://animethemes.moe/video/BrandNewAnimal-OP1.webm\"\n                }\n             ],\n             \"episodes\":\"1-5\",\n             \"notes\":\"\"\n          },\n          {\n             \"title\":\"Ready to\",\n             \"type\":\"OP V2\",\n             \"mirror\":[\n                {\n                   \"quality\":\"default\",\n                   \"mirrorUrl\":\"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm\"\n                }\n             ],\n             \"episodes\":\"6-11\",\n             \"notes\":\"\"\n          },\n          ...\n       ]\n    },\n    ...\n]",
+          "content": "[\n  {\n    \"malId\": 38843,\n    \"title\": [\n      \"Shironeko Project: Zero Chronicle\",\n      \"Shironeko Project ZERO Chronicle\"\n    ],\n    \"cover\": \"https://cdn.myanimelist.net/images/anime/1494/105719.jpg\",\n    \"season\": \"Spring 2020\",\n    \"year\": 2020,\n    \"themes\": [\n      {\n        \"title\": \"Tenbin -Libra-\",\n        \"type\": \"OP\",\n        \"mirror\": [\n          {\n            \"quality\": \"default\",\n            \"mirrorUrl\": \"https://animethemes.moe/video/ShironekoProject-OP1.webm\",\n            \"appUrl\": \"38843/0/0\"\n          }\n        ],\n        \"episodes\": \"1-11\",\n        \"notes\": \"\",\n        \"extras\": {\n          \"views\": 0,\n          \"likes\": 0,\n          \"dislikes\": 0,\n          \"malId\": 38843\n        },\n        \"audio\": {\n          \"artist\": \"Takanori Nishikawa + ASCA\",\n          \"title\": \"Tenbin  -Libra-\",\n          \"mirror\": \"https://dl4.wapkizfile.info/ddl/55e0a08edbdd816fdc15f97064b19436/osanime+wapkiz+com/audio.mp3\"\n        }\n      },\n      {\n        \"title\": \"through the dark\",\n        \"type\": \"ED1\",\n        \"mirror\": [\n          {\n            \"quality\": \"default\",\n            \"mirrorUrl\": \"https://animethemes.moe/video/ShironekoProject-ED1.webm\",\n            \"appUrl\": \"38843/1/0\"\n          }\n        ],\n        \"episodes\": \"1-11\",\n        \"notes\": \"\",\n        \"extras\": {\n          \"views\": 0,\n          \"likes\": 0,\n          \"dislikes\": 0,\n          \"malId\": 38843\n        },\n        \"audio\": {\n          \"artist\": \"Rei Yasuda\",\n          \"title\": \"through the dark\",\n          \"mirror\": \"https://dl4.wapkizfile.info/ddl/e308ad436d196f903715f4085dcc931f/osanime+wapkiz+com/audio.mp3\"\n        }\n      },\n      {\n        \"title\": \"Yasashiki Yami no Uta\",\n        \"type\": \"ED2\",\n        \"mirror\": [\n          {\n            \"quality\": \"Trans\",\n            \"mirrorUrl\": \"https://animethemes.moe/video/ShironekoProject-ED2.webm\",\n            \"appUrl\": \"38843/2/0\"\n          }\n        ],\n        \"episodes\": \"12\",\n        \"notes\": \"Spoiler\",\n        \"extras\": {\n          \"views\": 0,\n          \"likes\": 0,\n          \"dislikes\": 0,\n          \"malId\": 38843\n        },\n        \"audio\": {\n          \"artist\": null,\n          \"title\": null,\n          \"mirror\": null\n        }\n      }\n    ]\n  },\n  ...\n]",
           "type": "json"
         }
       ]
@@ -466,6 +655,259 @@ define({ "api": [
             "optional": false,
             "field": "themes.notes",
             "description": "<p>Notes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.extras",
+            "description": "<p>Extras of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.views",
+            "description": "<p>Views of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.likes",
+            "description": "<p>Like count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.dislikes",
+            "description": "<p>Dislike count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.malId",
+            "description": "<p>MalID of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.audio",
+            "description": "<p>Audio data of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.artist",
+            "description": "<p>Artist of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.title",
+            "description": "<p>Title of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.mirror",
+            "description": "<p>Mirror link of the original song</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "[\n  {\n    \"malId\": 851,\n    \"title\": [\n      \"Kyou kara Ore wa!!\"\n    ],\n    \"cover\": \"https://cdn.myanimelist.net/images/anime/2/43779.jpg\",\n    \"season\": \"All\",\n    \"year\": 90,\n    \"themes\": [\n      {\n        \"title\": \"Bokura Wa Family\",\n        \"type\": \"ED\",\n        \"mirror\": [\n          {\n            \"quality\": \"BD, 1080\",\n            \"mirrorUrl\": \"https://animethemes.moe/video/KyouKaraOreWa-ED1.webm\",\n            \"appUrl\": \"851/0/0\"\n          }\n        ],\n        \"episodes\": \"\",\n        \"notes\": \"\",\n        \"extras\": {\n          \"views\": 0,\n          \"likes\": 0,\n          \"dislikes\": 0,\n          \"malId\": 851\n        },\n        \"audio\": {\n          \"artist\": null,\n          \"title\": null,\n          \"mirror\": null\n        }\n      }\n    ]\n  },\n  ...\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./app.py",
+    "groupTitle": "Anime"
+  },
+  {
+    "type": "get",
+    "url": "/top/:size",
+    "title": "Request list of the most watched themes",
+    "name": "most_watched",
+    "group": "Anime",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "size",
+            "description": "<p>Size of the list</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "malId",
+            "description": "<p>MyAnimeList's id for the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String[]",
+            "optional": false,
+            "field": "title",
+            "description": "<p>Title and synonims of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "cover",
+            "description": "<p>URL of the anime cover</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "season",
+            "description": "<p>Season of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "year",
+            "description": "<p>Year of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes",
+            "description": "<p>List of themes</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.title",
+            "description": "<p>Title of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.type",
+            "description": "<p>Type of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.mirror",
+            "description": "<p>List of mirrors for the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.mirror.quality",
+            "description": "<p>Quality of the mirror</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.mirror.mirrorUrl",
+            "description": "<p>URL of the mirror</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.episodes",
+            "description": "<p>Episodes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.notes",
+            "description": "<p>Notes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.extras",
+            "description": "<p>Extras of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.views",
+            "description": "<p>Views of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.likes",
+            "description": "<p>Like count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.dislikes",
+            "description": "<p>Dislike count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.malId",
+            "description": "<p>MalID of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.audio",
+            "description": "<p>Audio data of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.artist",
+            "description": "<p>Artist of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.title",
+            "description": "<p>Title of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.mirror",
+            "description": "<p>Mirror link of the original song</p>"
           }
         ]
       },
@@ -593,13 +1035,266 @@ define({ "api": [
             "optional": false,
             "field": "themes.notes",
             "description": "<p>Notes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.extras",
+            "description": "<p>Extras of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.views",
+            "description": "<p>Views of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.likes",
+            "description": "<p>Like count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.dislikes",
+            "description": "<p>Dislike count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.malId",
+            "description": "<p>MalID of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.audio",
+            "description": "<p>Audio data of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.artist",
+            "description": "<p>Artist of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.title",
+            "description": "<p>Title of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.mirror",
+            "description": "<p>Mirror link of the original song</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " [\n     ...\n     {\n       \"malId\":40060,\n       \"title\":[\n          \"BNA\",\n          \"Brand New Animal\"\n       ],\n       \"cover\":\"https://cdn.myanimelist.net/images/anime/1139/106986.jpg\",\n       \"season\":\"Spring 2020\",\n       \"year\":2020,\n       \"themes\":[\n          {\n             \"title\":\"Ready to\",\n             \"type\":\"OP V1\",\n             \"mirror\":[\n                {\n                   \"quality\":\"default\",\n                   \"mirrorUrl\":\"https://animethemes.moe/video/BrandNewAnimal-OP1.webm\"\n                }\n             ],\n             \"episodes\":\"1-5\",\n             \"notes\":\"\"\n          },\n          {\n             \"title\":\"Ready to\",\n             \"type\":\"OP V2\",\n             \"mirror\":[\n                {\n                   \"quality\":\"default\",\n                   \"mirrorUrl\":\"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm\"\n                }\n             ],\n             \"episodes\":\"6-11\",\n             \"notes\":\"\"\n          },\n          ...\n       ]\n    },\n    ...\n]",
+          "content": "[\n  {\n    \"malId\": 851,\n    \"title\": [\n      \"Kyou kara Ore wa!!\"\n    ],\n    \"cover\": \"https://cdn.myanimelist.net/images/anime/2/43779.jpg\",\n    \"season\": \"All\",\n    \"year\": 90,\n    \"themes\": [\n      {\n        \"title\": \"Bokura Wa Family\",\n        \"type\": \"ED\",\n        \"mirror\": [\n          {\n            \"quality\": \"BD, 1080\",\n            \"mirrorUrl\": \"https://animethemes.moe/video/KyouKaraOreWa-ED1.webm\",\n            \"appUrl\": \"851/0/0\"\n          }\n        ],\n        \"episodes\": \"\",\n        \"notes\": \"\",\n        \"extras\": {\n          \"views\": 0,\n          \"likes\": 0,\n          \"dislikes\": 0,\n          \"malId\": 851\n        },\n        \"audio\": {\n          \"artist\": null,\n          \"title\": null,\n          \"mirror\": null\n        }\n      }\n    ]\n  },\n  ...\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./app.py",
+    "groupTitle": "Anime"
+  },
+  {
+    "type": "get",
+    "url": "/themes/:theme_name",
+    "title": "Search for a theme by its name",
+    "name": "search_theme",
+    "group": "Anime",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "theme_search",
+            "description": "<p>Search term</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "malId",
+            "description": "<p>MyAnimeList's id for the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String[]",
+            "optional": false,
+            "field": "title",
+            "description": "<p>Title and synonims of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "cover",
+            "description": "<p>URL of the anime cover</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "season",
+            "description": "<p>Season of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "year",
+            "description": "<p>Year of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes",
+            "description": "<p>List of themes</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.title",
+            "description": "<p>Title of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.type",
+            "description": "<p>Type of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.mirror",
+            "description": "<p>List of mirrors for the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.mirror.quality",
+            "description": "<p>Quality of the mirror</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.mirror.mirrorUrl",
+            "description": "<p>URL of the mirror</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.episodes",
+            "description": "<p>Episodes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.notes",
+            "description": "<p>Notes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.extras",
+            "description": "<p>Extras of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.views",
+            "description": "<p>Views of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.likes",
+            "description": "<p>Like count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.dislikes",
+            "description": "<p>Dislike count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.malId",
+            "description": "<p>MalID of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.audio",
+            "description": "<p>Audio data of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.artist",
+            "description": "<p>Artist of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.title",
+            "description": "<p>Title of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.mirror",
+            "description": "<p>Mirror link of the original song</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "[\n  {\n    \"malId\": 851,\n    \"title\": [\n      \"Kyou kara Ore wa!!\"\n    ],\n    \"cover\": \"https://cdn.myanimelist.net/images/anime/2/43779.jpg\",\n    \"season\": \"All\",\n    \"year\": 90,\n    \"themes\": [\n      {\n        \"title\": \"Bokura Wa Family\",\n        \"type\": \"ED\",\n        \"mirror\": [\n          {\n            \"quality\": \"BD, 1080\",\n            \"mirrorUrl\": \"https://animethemes.moe/video/KyouKaraOreWa-ED1.webm\",\n            \"appUrl\": \"851/0/0\"\n          }\n        ],\n        \"episodes\": \"\",\n        \"notes\": \"\",\n        \"extras\": {\n          \"views\": 0,\n          \"likes\": 0,\n          \"dislikes\": 0,\n          \"malId\": 851\n        },\n        \"audio\": {\n          \"artist\": null,\n          \"title\": null,\n          \"mirror\": null\n        }\n      }\n    ]\n  },\n  ...\n]",
           "type": "json"
         }
       ]
@@ -882,13 +1577,76 @@ define({ "api": [
             "optional": false,
             "field": "seasons.animes.themes.notes",
             "description": "<p>Notes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "seasons.animes.themes.extras",
+            "description": "<p>Extras of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "seasons.animes.themes.extras.views",
+            "description": "<p>Views of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "seasons.animes.themes.extras.likes",
+            "description": "<p>Like count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "seasons.animes.themes.extras.dislikes",
+            "description": "<p>Dislike count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "seasons.animes.themes.extras.malId",
+            "description": "<p>MalID of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "seasons.animes.themes.audio",
+            "description": "<p>Audio data of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "seasons.animes.themes.audio.artist",
+            "description": "<p>Artist of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "seasons.animes.themes.audio.title",
+            "description": "<p>Title of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "seasons.animes.themes.audio.mirror",
+            "description": "<p>Mirror link of the original song</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n   \"year\":\"2000\",\n   \"seasons\":[\n      {\n         \"season\":\"Fall\",\n         \"animes\":[\n            {\n               \"malId\":1281,\n               \"title\":[\n                  \"Gakkou no Kaidan\",\n                  \"Ghost Stories\"\n               ],\n               \"cover\":\"https://cdn.myanimelist.net/images/anime/9/18360.jpg\",\n               \"season\":\"Fall 2000\",\n               \"year\":2000,\n               \"themes\":[\n                  {\n                     \"title\":\"Grow Up\",\n                     \"type\":\"OP\",\n                     \"mirror\":[\n                        {\n                           \"quality\":\"NC, DVD, 480\",\n                           \"mirrorUrl\":\"https://animethemes.moe/video/GakkouNoKaidan-OP1.webm\"\n                        }\n                     ],\n                     \"episodes\":\"\",\n                     \"notes\":\"\"\n                  },\n                  {\n                     \"title\":\"sexy sexy\",\n                     \"type\":\"ED\",\n                     \"mirror\":[\n                        {\n                           \"quality\":\"NC, DVD, 480\",\n                           \"mirrorUrl\":\"https://animethemes.moe/video/GakkouNoKaidan-ED1.webm\"\n                        }\n                     ],\n                     \"episodes\":\"\",\n                     \"notes\":\"\"\n                  }\n               ]\n            },\n            ...\n         ]\n      },\n      ...\n  ]\n}",
+          "content": "{\n  \"year\": \"2020\",\n  \"seasons\": [\n    {\n      \"season\": \"Spring\",\n      \"animes\": [\n        {\n          \"malId\": 40532,\n          \"title\": [\n            \"Appare-Ranman!\"\n          ],\n          \"cover\": \"https://cdn.myanimelist.net/images/anime/1710/106614.jpg\",\n          \"season\": \"Spring 2020\",\n          \"year\": 2020,\n          \"themes\": [\n            {\n              \"title\": \"I got it!\",\n              \"type\": \"OP\",\n              \"mirror\": [\n                {\n                  \"quality\": \"default\",\n                  \"mirrorUrl\": \"https://animethemes.moe/video/AppareRanman-OP1.webm\",\n                  \"appUrl\": \"40532/0/0\"\n                }\n              ],\n              \"episodes\": \"1-\",\n              \"notes\": \"\",\n              \"extras\": {\n                \"views\": 0,\n                \"likes\": 0,\n                \"dislikes\": 0,\n                \"malId\": 40532\n              },\n              \"audio\": {\n                \"artist\": \"Mia REGINA\",\n                \"title\": \"I got it!\",\n                \"mirror\": \"https://dl4.wapkizfile.info/ddl/7b87353304746846d873ba0934fc8859/osanime+wapkiz+com/audio.mp3\"\n              }\n            },\n            {\n              \"title\": \"I'm Nobody\",\n              \"type\": \"ED\",\n              \"mirror\": [\n                {\n                  \"quality\": \"default\",\n                  \"mirrorUrl\": \"https://animethemes.moe/video/AppareRanman-ED1.webm\",\n                  \"appUrl\": \"40532/1/0\"\n                }\n              ],\n              \"episodes\": \"1-\",\n              \"notes\": \"\",\n              \"extras\": {\n                \"views\": 0,\n                \"likes\": 0,\n                \"dislikes\": 0,\n                \"malId\": 40532\n              },\n              \"audio\": {\n                \"artist\": \"Showtaro Morikubo\",\n                \"title\": \"Im Nobody\",\n                \"mirror\": \"https://dl4.wapkizfile.info/ddl/8ecae8e5649dfdca6eaa9c5b47367436/osanime+wapkiz+com/audio.mp3\"\n              }\n            }\n          ]\n        }, ...\n    ],\n    ...\n}",
           "type": "json"
         }
       ]
@@ -1139,13 +1897,76 @@ define({ "api": [
             "optional": false,
             "field": "themes.notes",
             "description": "<p>Notes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.extras",
+            "description": "<p>Extras of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.views",
+            "description": "<p>Views of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.likes",
+            "description": "<p>Like count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.dislikes",
+            "description": "<p>Dislike count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.malId",
+            "description": "<p>MalID of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.audio",
+            "description": "<p>Audio data of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.artist",
+            "description": "<p>Artist of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.title",
+            "description": "<p>Title of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.mirror",
+            "description": "<p>Mirror link of the original song</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " [\n     ...\n     {\n       \"malId\":40060,\n       \"title\":[\n          \"BNA\",\n          \"Brand New Animal\"\n       ],\n       \"cover\":\"https://cdn.myanimelist.net/images/anime/1139/106986.jpg\",\n       \"season\":\"Spring 2020\",\n       \"year\":2020,\n       \"themes\":[\n          {\n             \"title\":\"Ready to\",\n             \"type\":\"OP V1\",\n             \"mirror\":[\n                {\n                   \"quality\":\"default\",\n                   \"mirrorUrl\":\"https://animethemes.moe/video/BrandNewAnimal-OP1.webm\"\n                }\n             ],\n             \"episodes\":\"1-5\",\n             \"notes\":\"\"\n          },\n          {\n             \"title\":\"Ready to\",\n             \"type\":\"OP V2\",\n             \"mirror\":[\n                {\n                   \"quality\":\"default\",\n                   \"mirrorUrl\":\"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm\"\n                }\n             ],\n             \"episodes\":\"6-11\",\n             \"notes\":\"\"\n          },\n          ...\n       ]\n    },\n    ...\n]",
+          "content": "[\n  {\n    \"malId\": 851,\n    \"title\": [\n      \"Kyou kara Ore wa!!\"\n    ],\n    \"cover\": \"https://cdn.myanimelist.net/images/anime/2/43779.jpg\",\n    \"season\": \"All\",\n    \"year\": 90,\n    \"themes\": [\n      {\n        \"title\": \"Bokura Wa Family\",\n        \"type\": \"ED\",\n        \"mirror\": [\n          {\n            \"quality\": \"BD, 1080\",\n            \"mirrorUrl\": \"https://animethemes.moe/video/KyouKaraOreWa-ED1.webm\",\n            \"appUrl\": \"851/0/0\"\n          }\n        ],\n        \"episodes\": \"\",\n        \"notes\": \"\",\n        \"extras\": {\n          \"views\": 0,\n          \"likes\": 0,\n          \"dislikes\": 0,\n          \"malId\": 851\n        },\n        \"audio\": {\n          \"artist\": null,\n          \"title\": null,\n          \"mirror\": null\n        }\n      }\n    ]\n  },\n  ...\n]",
           "type": "json"
         }
       ]
@@ -1266,13 +2087,76 @@ define({ "api": [
             "optional": false,
             "field": "themes.notes",
             "description": "<p>Notes of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.extras",
+            "description": "<p>Extras of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.views",
+            "description": "<p>Views of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.likes",
+            "description": "<p>Like count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.dislikes",
+            "description": "<p>Dislike count of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "int",
+            "optional": false,
+            "field": "themes.extras.malId",
+            "description": "<p>MalID of the anime</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "themes.audio",
+            "description": "<p>Audio data of the theme</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.artist",
+            "description": "<p>Artist of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.title",
+            "description": "<p>Title of the original song</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "themes.audio.mirror",
+            "description": "<p>Mirror link of the original song</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " [\n     ...\n     {\n       \"malId\":40060,\n       \"title\":[\n          \"BNA\",\n          \"Brand New Animal\"\n       ],\n       \"cover\":\"https://cdn.myanimelist.net/images/anime/1139/106986.jpg\",\n       \"season\":\"Spring 2020\",\n       \"year\":2020,\n       \"themes\":[\n          {\n             \"title\":\"Ready to\",\n             \"type\":\"OP V1\",\n             \"mirror\":[\n                {\n                   \"quality\":\"default\",\n                   \"mirrorUrl\":\"https://animethemes.moe/video/BrandNewAnimal-OP1.webm\"\n                }\n             ],\n             \"episodes\":\"1-5\",\n             \"notes\":\"\"\n          },\n          {\n             \"title\":\"Ready to\",\n             \"type\":\"OP V2\",\n             \"mirror\":[\n                {\n                   \"quality\":\"default\",\n                   \"mirrorUrl\":\"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm\"\n                }\n             ],\n             \"episodes\":\"6-11\",\n             \"notes\":\"\"\n          },\n          ...\n       ]\n    },\n    ...\n]",
+          "content": "[\n  {\n    \"malId\": 851,\n    \"title\": [\n      \"Kyou kara Ore wa!!\"\n    ],\n    \"cover\": \"https://cdn.myanimelist.net/images/anime/2/43779.jpg\",\n    \"season\": \"All\",\n    \"year\": 90,\n    \"themes\": [\n      {\n        \"title\": \"Bokura Wa Family\",\n        \"type\": \"ED\",\n        \"mirror\": [\n          {\n            \"quality\": \"BD, 1080\",\n            \"mirrorUrl\": \"https://animethemes.moe/video/KyouKaraOreWa-ED1.webm\",\n            \"appUrl\": \"851/0/0\"\n          }\n        ],\n        \"episodes\": \"\",\n        \"notes\": \"\",\n        \"extras\": {\n          \"views\": 0,\n          \"likes\": 0,\n          \"dislikes\": 0,\n          \"malId\": 851\n        },\n        \"audio\": {\n          \"artist\": null,\n          \"title\": null,\n          \"mirror\": null\n        }\n      }\n    ]\n  },\n  ...\n]",
           "type": "json"
         }
       ]
