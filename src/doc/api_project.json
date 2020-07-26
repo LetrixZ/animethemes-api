@@ -1,15 +1,15 @@
 {
-  "name": "AnimeThemes unnoficial API",
+  "name": "AnimeThemes API",
   "version": "1.0.0",
   "description": "API documentation",
-  "title": "API documentation",
-  "url": "http://localhost:5000",
+  "title": "AnimeThemes API documentation",
+  "url": "https://animethemes-app.herokuapp.com/api/v1",
   "sampleUrl": false,
   "defaultVersion": "0.0.0",
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2020-06-29T01:11:16.338Z",
+    "time": "2020-07-26T19:42:51.199Z",
     "url": "http://apidocjs.com",
     "version": "0.23.0"
   }

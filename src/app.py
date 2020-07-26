@@ -7,16 +7,16 @@ import subprocess
 import fileioapi as fileioapi
 import requests
 from flask import Flask, jsonify, request
-from src.config import config
-from src.models import db, Anime, User, Playlist
-from src.anilist import getListFromUser
 from flask_apidoc_extend import ApiDoc
-from src.audio_scraper import get_audio, get_audio_name, get_audio_anime, get_music
-from src.scrapersv2 import get_year as v2_get_year
-from src.scrapers import add_year, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
-    getCoverFromDB
 from werkzeug.utils import redirect
-from difflib import SequenceMatcher
+
+from anilist import getListFromUser
+from audio_scraper import get_audio, get_audio_name, get_audio_anime, get_music
+from config import config
+from models import db, Anime, User, Playlist
+from scrapers import add_year, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
+    getCoverFromDB
+from scrapersv2 import get_year as v2_get_year
 
 
 def create_app(environment):
@@ -96,75 +96,8 @@ def save_playlist():
     return jsonify({'message': "{} saved succesfully".format(playId)})
 
 
-# AUDIO
-@app.route('/api/v1/audio/<string:name>')
-def search_audio(name):
-    audio_list = get_audio(name, None)
-    return jsonify(audio_list)
-
-
-# @app.route('/db/audio/')
-# def add_audio():
-#     anime_list = Anime.query.all()
-#     added = []
-#     for anime in anime_list:
-#         print(json.loads(anime.title)[0])
-#         themes = json.loads(anime.themes)
-#         for theme in themes:
-#             if not theme.get('audio'):
-#                 print("{} missing ({})".format(theme.get('title'), json.loads(anime.title)[0]))
-#                 audio = get_audio(theme.get('title'), anime)
-#                 titles = json.loads(anime.title)
-#                 for entry in audio:
-#                     for title in titles:
-#                         # if entry.get('anime') == title:
-#                         if SequenceMatcher(a=entry.get('anime'), b=title).ratio() > 0.9:
-#                             theme['audio'] = entry
-#                             break
-#         anime.themes = json.dumps(themes)
-#         db.session.commit()
-#         added.append(anime.json())
-#     return jsonify(added)
-
-@app.route('/db/audio/')
-def add_audio():
-    anime_list = Anime.query.all()
-    for anime in anime_list:
-        anime_title = json.loads(anime.title)[0]
-        themes = json.loads(anime.themes)
-        for theme in themes:
-            if theme.get("audio"):
-                continue
-            print("{} missing ({})".format(theme.get('title'), anime_title))
-            audio = get_audio_name(theme, anime)
-            if audio is not None:
-                theme["audio"] = audio
-            else:
-                theme["audio"] = {'artist': None, 'title': None, 'mirror': None}
-        anime.themes = json.dumps(themes)
-        db.session.commit()
-    return jsonify({'message': 'done'})
-
-
-@app.route('/db/audio2/')
-def add_audio_2():
-    anime_list = Anime.query.all()
-    for anime in anime_list:
-        if len(json.loads(anime.title)[0]) > 3:
-            themes = json.loads(anime.themes)
-            for theme in themes:
-                print(theme.get('audio'))
-                if not theme.get('audio'):
-                    item = get_audio_anime(anime)
-                    anime.themes = json.dumps(item)
-                    # db.session.commit()
-                    break
-                    # print(item)
-    return jsonify({'message': 'done'})
-
-
 @app.route('/music')
-def add_music():
+def db_add_music():
     anime_list = Anime.query.all()
     for anime in anime_list:
         anime_title = json.loads(anime.title)[0]
@@ -234,15 +167,6 @@ def get_all_covers():
 
 
 @app.route('/db/year/<string:year>')
-def add_year_to_db(year):
-    animeList = add_year(year)
-    for anime in animeList[0]:
-        Anime.create(json.dumps(anime['titles']), anime['malId'], anime['cover'], anime['year'], anime['season'],
-                     json.dumps(anime['themes']))
-    return jsonify(animeList[1])
-
-
-@app.route('/add/<string:year>')
 def add_year(year):
     anime_list = v2_get_year(year)
     for season_list in anime_list:
@@ -255,69 +179,75 @@ def add_year(year):
 @app.route('/api/v1/anilist/<string:user>')
 def get_anilist(user):
     """
-        @api {get} /anilist/:anilist_user Request AniList's user list
-        @apiName get_anilist
-        @apiGroup User
+    @api {get} /anilist/:anilist_user Request AniList's user list
+    @apiName get_anilist
+    @apiGroup User
 
-        @apiParam {String} mal_user AniList's username
+    @apiParam {String} mal_user AniList's username
 
-        @apiSuccess {int} malId MyAnimeList's id for the anime
-        @apiSuccess {String[]} title Title and synonims of the anime
-        @apiSuccess {String} cover URL of the anime cover
-        @apiSuccess {String} season Season of the anime
-        @apiSuccess {int} year Year of the anime
-        @apiSuccess {Object[]} themes List of themes
-        @apiSuccess {String} themes.title Title of the theme
-        @apiSuccess {String} themes.type Type of the theme
-        @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
-        @apiSuccess {String} themes.mirror.quality Quality of the mirror
-        @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
-        @apiSuccess {String} themes.episodes Episodes of the theme
-        @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {int} malId MyAnimeList's id for the anime
+    @apiSuccess {String[]} title Title and synonims of the anime
+    @apiSuccess {String} cover URL of the anime cover
+    @apiSuccess {String} season Season of the anime
+    @apiSuccess {int} year Year of the anime
+    @apiSuccess {Object[]} themes List of themes
+    @apiSuccess {String} themes.title Title of the theme
+    @apiSuccess {String} themes.type Type of the theme
+    @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
+    @apiSuccess {String} themes.mirror.quality Quality of the mirror
+    @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
+    @apiSuccess {String} themes.episodes Episodes of the theme
+    @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {Object[]} themes.extras Extras of the theme
+    @apiSuccess {int} themes.extras.views Views of the theme
+    @apiSuccess {int} themes.extras.likes Like count of the theme
+    @apiSuccess {int} themes.extras.dislikes Dislike count of the theme
+    @apiSuccess {int} themes.extras.malId MalID of the anime
+    @apiSuccess {Object[]} themes.audio Audio data of the theme
+    @apiSuccess {String} themes.audio.artist Artist of the original song
+    @apiSuccess {String} themes.audio.title Title of the original song
+    @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
-        @apiSuccessExample {json} Success-Response:
-            [
-                ...
-                {
-                  "malId":40060,
-                  "title":[
-                     "BNA",
-                     "Brand New Animal"
-                  ],
-                  "cover":"https://cdn.myanimelist.net/images/anime/1139/106986.jpg",
-                  "season":"Spring 2020",
-                  "year":2020,
-                  "themes":[
-                     {
-                        "title":"Ready to",
-                        "type":"OP V1",
-                        "mirror":[
-                           {
-                              "quality":"default",
-                              "mirrorUrl":"https://animethemes.moe/video/BrandNewAnimal-OP1.webm"
-                           }
-                        ],
-                        "episodes":"1-5",
-                        "notes":""
-                     },
-                     {
-                        "title":"Ready to",
-                        "type":"OP V2",
-                        "mirror":[
-                           {
-                              "quality":"default",
-                              "mirrorUrl":"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm"
-                           }
-                        ],
-                        "episodes":"6-11",
-                        "notes":""
-                     },
-                     ...
-                  ]
-               },
-               ...
-           ]
-        """
+    @apiSuccessExample {json} Success-Response:
+        [
+          {
+            "malId": 851,
+            "title": [
+              "Kyou kara Ore wa!!"
+            ],
+            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+            "season": "All",
+            "year": 90,
+            "themes": [
+              {
+                "title": "Bokura Wa Family",
+                "type": "ED",
+                "mirror": [
+                  {
+                    "quality": "BD, 1080",
+                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                    "appUrl": "851/0/0"
+                  }
+                ],
+                "episodes": "",
+                "notes": "",
+                "extras": {
+                  "views": 0,
+                  "likes": 0,
+                  "dislikes": 0,
+                  "malId": 851
+                },
+                "audio": {
+                  "artist": null,
+                  "title": null,
+                  "mirror": null
+                }
+              }
+            ]
+          },
+          ...
+        ]
+    """
     aniList = getListFromUser(user)
     animeList = []
     for item in aniList:
@@ -334,124 +264,169 @@ def get_anilist(user):
 @app.route('/api/v1/anime/<int:malId>')
 def get_anime(malId):
     """
-        @api {get} /anime/:mal_id Request anime and themes with MyAnimeList's anime id
-        @apiName get_anime
-        @apiGroup Anime
+    @api {get} /anime/:mal_id Request anime and themes with MyAnimeList's anime id
+    @apiName get_anime
+    @apiGroup Anime
 
-        @apiParam {int} mal_id MyAnimeList's anime id
+    @apiParam {int} mal_id MyAnimeList's anime id
 
-        @apiSuccess {int} malId MyAnimeList's id for the anime
-        @apiSuccess {String[]} title Title and synonims of the anime
-        @apiSuccess {String} cover URL of the anime cover
-        @apiSuccess {String} season Season of the anime
-        @apiSuccess {int} year Year of the anime
-        @apiSuccess {Object[]} themes List of themes
-        @apiSuccess {String} themes.title Title of the theme
-        @apiSuccess {String} themes.type Type of the theme
-        @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
-        @apiSuccess {String} themes.mirror.quality Quality of the mirror
-        @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
-        @apiSuccess {String} themes.episodes Episodes of the theme
-        @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {int} malId MyAnimeList's id for the anime
+    @apiSuccess {String[]} title Title and synonims of the anime
+    @apiSuccess {String} cover URL of the anime cover
+    @apiSuccess {String} season Season of the anime
+    @apiSuccess {int} year Year of the anime
+    @apiSuccess {Object[]} themes List of themes
+    @apiSuccess {String} themes.title Title of the theme
+    @apiSuccess {String} themes.type Type of the theme
+    @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
+    @apiSuccess {String} themes.mirror.quality Quality of the mirror
+    @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
+    @apiSuccess {String} themes.episodes Episodes of the theme
+    @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {Object[]} themes.extras Extras of the theme
+    @apiSuccess {int} themes.extras.views Views of the theme
+    @apiSuccess {int} themes.extras.likes Like count of the theme
+    @apiSuccess {int} themes.extras.dislikes Dislike count of the theme
+    @apiSuccess {int} themes.extras.malId MalID of the anime
+    @apiSuccess {Object[]} themes.audio Audio data of the theme
+    @apiSuccess {String} themes.audio.artist Artist of the original song
+    @apiSuccess {String} themes.audio.title Title of the original song
+    @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
-        @apiSuccessExample {json} Success-Response:
+    @apiSuccessExample {json} Success-Response:
+    {
+      "malId": 40060,
+      "title": [
+        "BNA",
+        "Brand New Animal"
+      ],
+      "cover": "https://cdn.myanimelist.net/images/anime/1139/106986.jpg",
+      "season": "Spring 2020",
+      "year": 2020,
+      "themes": [
+        {
+          "title": "Ready to",
+          "type": "OP V1",
+          "mirror": [
             {
-               "malId":13601,
-               "title":[
-                  "Psycho Pass",
-                  "Psychopath"
-               ],
-               "cover":"https://cdn.myanimelist.net/images/anime/5/43399.jpg",
-               "season":"Fall 2012",
-               "year":2012,
-               "themes":[
-                  {
-                     "title":"abnormalize",
-                     "type":"OP1",
-                     "mirror":[
-                        {
-                           "quality":"NC, BD, 1080",
-                           "mirrorUrl":"https://animethemes.moe/video/PsychoPass-OP1.webm"
-                        }
-                     ],
-                     "episodes":"1-11",
-                     "notes":""
-                  },
-                  {
-                     "title":"Out of Control",
-                     "type":"OP2 V1",
-                     "mirror":[
-                        {
-                           "quality":"NC, BD, 1080",
-                           "mirrorUrl":"https://animethemes.moe/video/PsychoPass-OP2v2.webm"
-                        }
-                     ],
-                     "episodes":"12",
-                     "notes":""
-                  },
-                  {
-                     "title":"Out of Control",
-                     "type":"OP2 V2",
-                     "mirror":[
-                        {
-                           "quality":"NC, BD, 1080",
-                           "mirrorUrl":"https://animethemes.moe/video/PsychoPass-OP2.webm"
-                        }
-                     ],
-                     "episodes":"13-22",
-                     "notes":""
-                  },
-                  {
-                     "title":"Namae no nai Kaibutsu",
-                     "type":"ED1 V1",
-                     "mirror":[
-                        {
-                           "quality":"NC, BD, 1080",
-                           "mirrorUrl":"https://animethemes.moe/video/PsychoPass-ED1.webm"
-                        }
-                     ],
-                     "episodes":"1-3, 5, 7-8, 10-11",
-                     "notes":""
-                  },
-                  {
-                     "title":"Namae no nai Kaibutsu",
-                     "type":"ED1 V2",
-                     "mirror":[
-                        {
-                           "quality":"NC, BD, 1080",
-                           "mirrorUrl":"https://animethemes.moe/video/PsychoPass-ED1v2.webm"
-                        }
-                     ],
-                     "episodes":"4, 6, 9",
-                     "notes":""
-                  },
-                  {
-                     "title":"All Alone With You",
-                     "type":"ED2 V1",
-                     "mirror":[
-                        {
-                           "quality":"NC, BD, 1080",
-                           "mirrorUrl":"https://animethemes.moe/video/PsychoPass-ED2.webm"
-                        }
-                     ],
-                     "episodes":"12-21",
-                     "notes":""
-                  },
-                  {
-                     "title":"All Alone With You",
-                     "type":"ED2 V2",
-                     "mirror":[
-                        {
-                           "quality":"NC, BD, 1080, Over",
-                           "mirrorUrl":"https://animethemes.moe/video/PsychoPass-ED2v2.webm"
-                        }
-                     ],
-                     "episodes":"22",
-                     "notes":"Spoiler"
-                  }
-               ]
+              "quality": "default",
+              "mirrorUrl": "https://animethemes.moe/video/BrandNewAnimal-OP1.webm",
+              "appUrl": "40060/0/0"
             }
-        """
+          ],
+          "episodes": "1-5",
+          "notes": "",
+          "extras": {
+            "views": 0,
+            "likes": 0,
+            "dislikes": 0,
+            "malId": 40060
+          },
+          "audio": {
+            "artist": "Sumire Morohoshi",
+            "title": "Ready to",
+            "mirror": "https://dl4.wapkizfile.info/ddl/0d58ba3e38aa5c118d16200ecaad6d5b/osanime+wapkiz+com/audio.mp3"
+          }
+        },
+        {
+          "title": "Ready to",
+          "type": "OP V2",
+          "mirror": [
+            {
+              "quality": "default",
+              "mirrorUrl": "https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm",
+              "appUrl": "40060/1/0"
+            }
+          ],
+          "episodes": "6-11",
+          "notes": "",
+          "extras": {
+            "views": 0,
+            "likes": 0,
+            "dislikes": 0,
+            "malId": 40060
+          },
+          "audio": {
+            "artist": "Sumire Morohoshi",
+            "title": "Ready to",
+            "mirror": "https://dl4.wapkizfile.info/ddl/0d58ba3e38aa5c118d16200ecaad6d5b/osanime+wapkiz+com/audio.mp3"
+          }
+        },
+        {
+          "title": "NIGHT RUNNING",
+          "type": "ED V1",
+          "mirror": [
+            {
+              "quality": "default",
+              "mirrorUrl": "https://animethemes.moe/video/BrandNewAnimal-ED1.webm",
+              "appUrl": "40060/2/0"
+            }
+          ],
+          "episodes": "1-6",
+          "notes": "",
+          "extras": {
+            "views": 0,
+            "likes": 0,
+            "dislikes": 0,
+            "malId": 40060
+          },
+          "audio": {
+            "artist": "Shin Sakiura Feat",
+            "title": "NIGHT RUNNING",
+            "mirror": "https://dl4.wapkizfile.info/ddl/c776e0444ba03e337e7ebc077df10fdf/osanime+wapkiz+com/audio.mp3"
+          }
+        },
+        {
+          "title": "NIGHT RUNNING",
+          "type": "ED V2",
+          "mirror": [
+            {
+              "quality": "default",
+              "mirrorUrl": "https://animethemes.moe/video/BrandNewAnimal-ED1v2.webm",
+              "appUrl": "40060/3/0"
+            }
+          ],
+          "episodes": "7-10",
+          "notes": "",
+          "extras": {
+            "views": 0,
+            "likes": 0,
+            "dislikes": 0,
+            "malId": 40060
+          },
+          "audio": {
+            "artist": "Shin Sakiura Feat",
+            "title": "NIGHT RUNNING",
+            "mirror": "https://dl4.wapkizfile.info/ddl/c776e0444ba03e337e7ebc077df10fdf/osanime+wapkiz+com/audio.mp3"
+          }
+        },
+        {
+          "title": "NIGHT RUNNING",
+          "type": "ED V3",
+          "mirror": [
+            {
+              "quality": "default",
+              "mirrorUrl": "https://animethemes.moe/video/BrandNewAnimal-ED1v3.webm",
+              "appUrl": "40060/4/0"
+            }
+          ],
+          "episodes": "11",
+          "notes": "",
+          "extras": {
+            "views": 0,
+            "likes": 0,
+            "dislikes": 0,
+            "malId": 40060
+          },
+          "audio": {
+            "artist": "Shin Sakiura Feat",
+            "title": "NIGHT RUNNING",
+            "mirror": "https://dl4.wapkizfile.info/ddl/c776e0444ba03e337e7ebc077df10fdf/osanime+wapkiz+com/audio.mp3"
+          }
+        }
+      ]
+    }
+    """
     anime = Anime.query.filter_by(malId=malId).first()
     if anime:
         themes = json.loads(anime.themes)
@@ -477,69 +452,75 @@ def get_anime(malId):
 @app.route('/api/v1/search/<path:name>')
 def search_anime(name):
     """
-        @api {get} /search/:search_term Perform a search on the DB to check for results based on search term
-        @apiName search_anime
-        @apiGroup Anime
+    @api {get} /search/:search_term Perform a search on the DB to check for results based on search term
+    @apiName search_anime
+    @apiGroup Anime
 
-        @apiParam {String} search_term Search term
+    @apiParam {String} search_term Search term
 
-        @apiSuccess {int} malId MyAnimeList's id for the anime
-        @apiSuccess {String[]} title Title and synonims of the anime
-        @apiSuccess {String} cover URL of the anime cover
-        @apiSuccess {String} season Season of the anime
-        @apiSuccess {int} year Year of the anime
-        @apiSuccess {Object[]} themes List of themes
-        @apiSuccess {String} themes.title Title of the theme
-        @apiSuccess {String} themes.type Type of the theme
-        @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
-        @apiSuccess {String} themes.mirror.quality Quality of the mirror
-        @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
-        @apiSuccess {String} themes.episodes Episodes of the theme
-        @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {int} malId MyAnimeList's id for the anime
+    @apiSuccess {String[]} title Title and synonims of the anime
+    @apiSuccess {String} cover URL of the anime cover
+    @apiSuccess {String} season Season of the anime
+    @apiSuccess {int} year Year of the anime
+    @apiSuccess {Object[]} themes List of themes
+    @apiSuccess {String} themes.title Title of the theme
+    @apiSuccess {String} themes.type Type of the theme
+    @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
+    @apiSuccess {String} themes.mirror.quality Quality of the mirror
+    @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
+    @apiSuccess {String} themes.episodes Episodes of the theme
+    @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {Object[]} themes.extras Extras of the theme
+    @apiSuccess {int} themes.extras.views Views of the theme
+    @apiSuccess {int} themes.extras.likes Like count of the theme
+    @apiSuccess {int} themes.extras.dislikes Dislike count of the theme
+    @apiSuccess {int} themes.extras.malId MalID of the anime
+    @apiSuccess {Object[]} themes.audio Audio data of the theme
+    @apiSuccess {String} themes.audio.artist Artist of the original song
+    @apiSuccess {String} themes.audio.title Title of the original song
+    @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
-        @apiSuccessExample {json} Success-Response:
-            [
-                ...
-                {
-                  "malId":40060,
-                  "title":[
-                     "BNA",
-                     "Brand New Animal"
-                  ],
-                  "cover":"https://cdn.myanimelist.net/images/anime/1139/106986.jpg",
-                  "season":"Spring 2020",
-                  "year":2020,
-                  "themes":[
-                     {
-                        "title":"Ready to",
-                        "type":"OP V1",
-                        "mirror":[
-                           {
-                              "quality":"default",
-                              "mirrorUrl":"https://animethemes.moe/video/BrandNewAnimal-OP1.webm"
-                           }
-                        ],
-                        "episodes":"1-5",
-                        "notes":""
-                     },
-                     {
-                        "title":"Ready to",
-                        "type":"OP V2",
-                        "mirror":[
-                           {
-                              "quality":"default",
-                              "mirrorUrl":"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm"
-                           }
-                        ],
-                        "episodes":"6-11",
-                        "notes":""
-                     },
-                     ...
-                  ]
-               },
-               ...
-           ]
-        """
+    @apiSuccessExample {json} Success-Response:
+    [
+      {
+        "malId": 851,
+        "title": [
+          "Kyou kara Ore wa!!"
+        ],
+        "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+        "season": "All",
+        "year": 90,
+        "themes": [
+          {
+            "title": "Bokura Wa Family",
+            "type": "ED",
+            "mirror": [
+              {
+                "quality": "BD, 1080",
+                "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                "appUrl": "851/0/0"
+              }
+            ],
+            "episodes": "",
+            "notes": "",
+            "extras": {
+              "views": 0,
+              "likes": 0,
+              "dislikes": 0,
+              "malId": 851
+            },
+            "audio": {
+              "artist": null,
+              "title": null,
+              "mirror": null
+            }
+          }
+        ]
+      },
+      ...
+    ]
+    """
     print(name)
     term = '%{}%'.format(name)
     results = Anime.query.filter(Anime.title.ilike(term)).all()
@@ -623,80 +604,110 @@ def season(year, season):
 @app.route('/api/v1/seasons/<string:year>')
 def year_seasons(year):
     """
-        @api {get} /seasons/:year/ Request list of seasons based on year
-        @apiName year_seasons
-        @apiGroup Anime
+    @api {get} /seasons/:year/ Request list of seasons based on year
+    @apiName year_seasons
+    @apiGroup Anime
 
-        @apiParam {int} year Year
+    @apiParam {int} year Year
 
-        @apiSuccess {String} year Year
-        @apiSuccess {Object[]} seasons Seasons of the year
-        @apiSuccess {String} seasons.season Season of the year
-        @apiSuccess {Object[]} seasons.animes List of animes of the season
-        @apiSuccess {int} seasons.animes.malId MyAnimeList's id for the anime
-        @apiSuccess {String[]} seasons.animes.title Title and synonims of the anime
-        @apiSuccess {String} seasons.animes.cover URL of the anime cover
-        @apiSuccess {String} seasons.animes.season Season of the anime
-        @apiSuccess {int} seasons.animes.year Year of the anime
-        @apiSuccess {Object[]} seasons.animes.themes List of themes
-        @apiSuccess {String} seasons.animes.themes.title Title of the theme
-        @apiSuccess {String} seasons.animes.themes.type Type of the theme
-        @apiSuccess {Object[]} seasons.animes.themes.mirror List of mirrors for the theme
-        @apiSuccess {String} seasons.animes.themes.mirror.quality Quality of the mirror
-        @apiSuccess {String} seasons.animes.themes.mirror.mirrorUrl URL of the mirror
-        @apiSuccess {String} seasons.animes.themes.episodes Episodes of the theme
-        @apiSuccess {String} seasons.animes.themes.notes Notes of the theme
+    @apiSuccess {String} year Year
+    @apiSuccess {Object[]} seasons Seasons of the year
+    @apiSuccess {String} seasons.season Season of the year
+    @apiSuccess {Object[]} seasons.animes List of animes of the season
+    @apiSuccess {int} seasons.animes.malId MyAnimeList's id for the anime
+    @apiSuccess {String[]} seasons.animes.title Title and synonims of the anime
+    @apiSuccess {String} seasons.animes.cover URL of the anime cover
+    @apiSuccess {String} seasons.animes.season Season of the anime
+    @apiSuccess {int} seasons.animes.year Year of the anime
+    @apiSuccess {Object[]} seasons.animes.themes List of themes
+    @apiSuccess {String} seasons.animes.themes.title Title of the theme
+    @apiSuccess {String} seasons.animes.themes.type Type of the theme
+    @apiSuccess {Object[]} seasons.animes.themes.mirror List of mirrors for the theme
+    @apiSuccess {String} seasons.animes.themes.mirror.quality Quality of the mirror
+    @apiSuccess {String} seasons.animes.themes.mirror.mirrorUrl URL of the mirror
+    @apiSuccess {String} seasons.animes.themes.episodes Episodes of the theme
+    @apiSuccess {String} seasons.animes.themes.notes Notes of the theme
+    @apiSuccess {Object[]} seasons.animes.themes.extras Extras of the theme
+    @apiSuccess {int} seasons.animes.themes.extras.views Views of the theme
+    @apiSuccess {int} seasons.animes.themes.extras.likes Like count of the theme
+    @apiSuccess {int} seasons.animes.themes.extras.dislikes Dislike count of the theme
+    @apiSuccess {int} seasons.animes.themes.extras.malId MalID of the anime
+    @apiSuccess {Object[]} seasons.animes.themes.audio Audio data of the theme
+    @apiSuccess {String} seasons.animes.themes.audio.artist Artist of the original song
+    @apiSuccess {String} seasons.animes.themes.audio.title Title of the original song
+    @apiSuccess {String} seasons.animes.themes.audio.mirror Mirror link of the original song
 
-        @apiSuccessExample {json} Success-Response:
+
+    @apiSuccessExample {json} Success-Response:
+    {
+      "year": "2020",
+      "seasons": [
+        {
+          "season": "Spring",
+          "animes": [
             {
-               "year":"2000",
-               "seasons":[
-                  {
-                     "season":"Fall",
-                     "animes":[
-                        {
-                           "malId":1281,
-                           "title":[
-                              "Gakkou no Kaidan",
-                              "Ghost Stories"
-                           ],
-                           "cover":"https://cdn.myanimelist.net/images/anime/9/18360.jpg",
-                           "season":"Fall 2000",
-                           "year":2000,
-                           "themes":[
-                              {
-                                 "title":"Grow Up",
-                                 "type":"OP",
-                                 "mirror":[
-                                    {
-                                       "quality":"NC, DVD, 480",
-                                       "mirrorUrl":"https://animethemes.moe/video/GakkouNoKaidan-OP1.webm"
-                                    }
-                                 ],
-                                 "episodes":"",
-                                 "notes":""
-                              },
-                              {
-                                 "title":"sexy sexy",
-                                 "type":"ED",
-                                 "mirror":[
-                                    {
-                                       "quality":"NC, DVD, 480",
-                                       "mirrorUrl":"https://animethemes.moe/video/GakkouNoKaidan-ED1.webm"
-                                    }
-                                 ],
-                                 "episodes":"",
-                                 "notes":""
-                              }
-                           ]
-                        },
-                        ...
-                     ]
+              "malId": 40532,
+              "title": [
+                "Appare-Ranman!"
+              ],
+              "cover": "https://cdn.myanimelist.net/images/anime/1710/106614.jpg",
+              "season": "Spring 2020",
+              "year": 2020,
+              "themes": [
+                {
+                  "title": "I got it!",
+                  "type": "OP",
+                  "mirror": [
+                    {
+                      "quality": "default",
+                      "mirrorUrl": "https://animethemes.moe/video/AppareRanman-OP1.webm",
+                      "appUrl": "40532/0/0"
+                    }
+                  ],
+                  "episodes": "1-",
+                  "notes": "",
+                  "extras": {
+                    "views": 0,
+                    "likes": 0,
+                    "dislikes": 0,
+                    "malId": 40532
                   },
-                  ...
+                  "audio": {
+                    "artist": "Mia REGINA",
+                    "title": "I got it!",
+                    "mirror": "https://dl4.wapkizfile.info/ddl/7b87353304746846d873ba0934fc8859/osanime+wapkiz+com/audio.mp3"
+                  }
+                },
+                {
+                  "title": "I'm Nobody",
+                  "type": "ED",
+                  "mirror": [
+                    {
+                      "quality": "default",
+                      "mirrorUrl": "https://animethemes.moe/video/AppareRanman-ED1.webm",
+                      "appUrl": "40532/1/0"
+                    }
+                  ],
+                  "episodes": "1-",
+                  "notes": "",
+                  "extras": {
+                    "views": 0,
+                    "likes": 0,
+                    "dislikes": 0,
+                    "malId": 40532
+                  },
+                  "audio": {
+                    "artist": "Showtaro Morikubo",
+                    "title": "Im Nobody",
+                    "mirror": "https://dl4.wapkizfile.info/ddl/8ecae8e5649dfdca6eaa9c5b47367436/osanime+wapkiz+com/audio.mp3"
+                  }
+                }
               ]
-            }
-        """
+            }, ...
+        ],
+        ...
+    }
+    """
     year = year.replace('s', '')
     return jsonify(getYearSeasons(year))
 
@@ -763,68 +774,123 @@ def get_seasons():
 @app.route('/api/v1/year/<string:year>')
 def get_year(year):
     """
-        @api {get} /year/:year Request list of anime and themes of the year
-        @apiName get_year
-        @apiGroup Anime
+    @api {get} /year/:year Request list of anime and themes of the year
+    @apiName get_year
+    @apiGroup Anime
 
-        @apiParam {int} year Year
+    @apiParam {int} year Year
 
-        @apiSuccess {int} malId MyAnimeList's id for the anime
-        @apiSuccess {String[]} title Title and synonims of the anime
-        @apiSuccess {String} cover URL of the anime cover
-        @apiSuccess {String} season Season of the anime
-        @apiSuccess {int} year Year of the anime
-        @apiSuccess {Object[]} themes List of themes
-        @apiSuccess {String} themes.title Title of the theme
-        @apiSuccess {String} themes.type Type of the theme
-        @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
-        @apiSuccess {String} themes.mirror.quality Quality of the mirror
-        @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
-        @apiSuccess {String} themes.episodes Episodes of the theme
-        @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {int} malId MyAnimeList's id for the anime
+    @apiSuccess {String[]} title Title and synonims of the anime
+    @apiSuccess {String} cover URL of the anime cover
+    @apiSuccess {String} season Season of the anime
+    @apiSuccess {int} year Year of the anime
+    @apiSuccess {Object[]} themes List of themes
+    @apiSuccess {String} themes.title Title of the theme
+    @apiSuccess {String} themes.type Type of the theme
+    @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
+    @apiSuccess {String} themes.mirror.quality Quality of the mirror
+    @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
+    @apiSuccess {String} themes.episodes Episodes of the theme
+    @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {Object[]} themes.extras Extras of the theme
+    @apiSuccess {int} themes.extras.views Views of the theme
+    @apiSuccess {int} themes.extras.likes Like count of the theme
+    @apiSuccess {int} themes.extras.dislikes Dislike count of the theme
+    @apiSuccess {int} themes.extras.malId MalID of the anime
+    @apiSuccess {Object[]} themes.audio Audio data of the theme
+    @apiSuccess {String} themes.audio.artist Artist of the original song
+    @apiSuccess {String} themes.audio.title Title of the original song
+    @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
-        @apiSuccessExample {json} Success-Response:
-            [
-                ...
-                {
-                  "malId":40060,
-                  "title":[
-                     "BNA",
-                     "Brand New Animal"
-                  ],
-                  "cover":"https://cdn.myanimelist.net/images/anime/1139/106986.jpg",
-                  "season":"Spring 2020",
-                  "year":2020,
-                  "themes":[
-                     {
-                        "title":"Ready to",
-                        "type":"OP V1",
-                        "mirror":[
-                           {
-                              "quality":"default",
-                              "mirrorUrl":"https://animethemes.moe/video/BrandNewAnimal-OP1.webm"
-                           }
-                        ],
-                        "episodes":"1-5",
-                        "notes":""
-                     },
-                     {
-                        "title":"Ready to",
-                        "type":"OP V2",
-                        "mirror":[
-                           {
-                              "quality":"default",
-                              "mirrorUrl":"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm"
-                           }
-                        ],
-                        "episodes":"6-11",
-                        "notes":""
-                     },
-                     ...
-                  ]
-               },
-               ...
-           ]
+    @apiSuccessExample {json} Success-Response:
+    [
+      {
+        "malId": 38843,
+        "title": [
+          "Shironeko Project: Zero Chronicle",
+          "Shironeko Project ZERO Chronicle"
+        ],
+        "cover": "https://cdn.myanimelist.net/images/anime/1494/105719.jpg",
+        "season": "Spring 2020",
+        "year": 2020,
+        "themes": [
+          {
+            "title": "Tenbin -Libra-",
+            "type": "OP",
+            "mirror": [
+              {
+                "quality": "default",
+                "mirrorUrl": "https://animethemes.moe/video/ShironekoProject-OP1.webm",
+                "appUrl": "38843/0/0"
+              }
+            ],
+            "episodes": "1-11",
+            "notes": "",
+            "extras": {
+              "views": 0,
+              "likes": 0,
+              "dislikes": 0,
+              "malId": 38843
+            },
+            "audio": {
+              "artist": "Takanori Nishikawa + ASCA",
+              "title": "Tenbin  -Libra-",
+              "mirror": "https://dl4.wapkizfile.info/ddl/55e0a08edbdd816fdc15f97064b19436/osanime+wapkiz+com/audio.mp3"
+            }
+          },
+          {
+            "title": "through the dark",
+            "type": "ED1",
+            "mirror": [
+              {
+                "quality": "default",
+                "mirrorUrl": "https://animethemes.moe/video/ShironekoProject-ED1.webm",
+                "appUrl": "38843/1/0"
+              }
+            ],
+            "episodes": "1-11",
+            "notes": "",
+            "extras": {
+              "views": 0,
+              "likes": 0,
+              "dislikes": 0,
+              "malId": 38843
+            },
+            "audio": {
+              "artist": "Rei Yasuda",
+              "title": "through the dark",
+              "mirror": "https://dl4.wapkizfile.info/ddl/e308ad436d196f903715f4085dcc931f/osanime+wapkiz+com/audio.mp3"
+            }
+          },
+          {
+            "title": "Yasashiki Yami no Uta",
+            "type": "ED2",
+            "mirror": [
+              {
+                "quality": "Trans",
+                "mirrorUrl": "https://animethemes.moe/video/ShironekoProject-ED2.webm",
+                "appUrl": "38843/2/0"
+              }
+            ],
+            "episodes": "12",
+            "notes": "Spoiler",
+            "extras": {
+              "views": 0,
+              "likes": 0,
+              "dislikes": 0,
+              "malId": 38843
+            },
+            "audio": {
+              "artist": null,
+              "title": null,
+              "mirror": null
+            }
+          }
+        ]
+      },
+      ...
+    ]
     """
     year = int(str(year).replace('s', ''))
     results = Anime.query.filter_by(year=year).all()
@@ -856,49 +922,55 @@ def get_mal_list(user):
     @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
     @apiSuccess {String} themes.episodes Episodes of the theme
     @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {Object[]} themes.extras Extras of the theme
+    @apiSuccess {int} themes.extras.views Views of the theme
+    @apiSuccess {int} themes.extras.likes Like count of the theme
+    @apiSuccess {int} themes.extras.dislikes Dislike count of the theme
+    @apiSuccess {int} themes.extras.malId MalID of the anime
+    @apiSuccess {Object[]} themes.audio Audio data of the theme
+    @apiSuccess {String} themes.audio.artist Artist of the original song
+    @apiSuccess {String} themes.audio.title Title of the original song
+    @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
     @apiSuccessExample {json} Success-Response:
         [
-            ...
-            {
-              "malId":40060,
-              "title":[
-                 "BNA",
-                 "Brand New Animal"
-              ],
-              "cover":"https://cdn.myanimelist.net/images/anime/1139/106986.jpg",
-              "season":"Spring 2020",
-              "year":2020,
-              "themes":[
-                 {
-                    "title":"Ready to",
-                    "type":"OP V1",
-                    "mirror":[
-                       {
-                          "quality":"default",
-                          "mirrorUrl":"https://animethemes.moe/video/BrandNewAnimal-OP1.webm"
-                       }
-                    ],
-                    "episodes":"1-5",
-                    "notes":""
-                 },
-                 {
-                    "title":"Ready to",
-                    "type":"OP V2",
-                    "mirror":[
-                       {
-                          "quality":"default",
-                          "mirrorUrl":"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm"
-                       }
-                    ],
-                    "episodes":"6-11",
-                    "notes":""
-                 },
-                 ...
-              ]
-           },
-           ...
-       ]
+          {
+            "malId": 851,
+            "title": [
+              "Kyou kara Ore wa!!"
+            ],
+            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+            "season": "All",
+            "year": 90,
+            "themes": [
+              {
+                "title": "Bokura Wa Family",
+                "type": "ED",
+                "mirror": [
+                  {
+                    "quality": "BD, 1080",
+                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                    "appUrl": "851/0/0"
+                  }
+                ],
+                "episodes": "",
+                "notes": "",
+                "extras": {
+                  "views": 0,
+                  "likes": 0,
+                  "dislikes": 0,
+                  "malId": 851
+                },
+                "audio": {
+                  "artist": null,
+                  "title": null,
+                  "mirror": null
+                }
+              }
+            ]
+          },
+          ...
+        ]
     """
     userList = getUserList(user)
     return jsonify(userList)
@@ -912,61 +984,67 @@ def current_season():
         @apiGroup Anime
 
         @apiSuccess {int} malId MyAnimeList's id for the anime
-        @apiSuccess {String[]} title Title and synonims of the anime
-        @apiSuccess {String} cover URL of the anime cover
-        @apiSuccess {String} season Season of the anime
-        @apiSuccess {int} year Year of the anime
-        @apiSuccess {Object[]} themes List of themes
-        @apiSuccess {String} themes.title Title of the theme
-        @apiSuccess {String} themes.type Type of the theme
-        @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
-        @apiSuccess {String} themes.mirror.quality Quality of the mirror
-        @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
-        @apiSuccess {String} themes.episodes Episodes of the theme
-        @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {String[]} title Title and synonims of the anime
+    @apiSuccess {String} cover URL of the anime cover
+    @apiSuccess {String} season Season of the anime
+    @apiSuccess {int} year Year of the anime
+    @apiSuccess {Object[]} themes List of themes
+    @apiSuccess {String} themes.title Title of the theme
+    @apiSuccess {String} themes.type Type of the theme
+    @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
+    @apiSuccess {String} themes.mirror.quality Quality of the mirror
+    @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
+    @apiSuccess {String} themes.episodes Episodes of the theme
+    @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {Object[]} themes.extras Extras of the theme
+    @apiSuccess {int} themes.extras.views Views of the theme
+    @apiSuccess {int} themes.extras.likes Like count of the theme
+    @apiSuccess {int} themes.extras.dislikes Dislike count of the theme
+    @apiSuccess {int} themes.extras.malId MalID of the anime
+    @apiSuccess {Object[]} themes.audio Audio data of the theme
+    @apiSuccess {String} themes.audio.artist Artist of the original song
+    @apiSuccess {String} themes.audio.title Title of the original song
+    @apiSuccess {String} themes.audio.mirror Mirror link of the original song
 
-        @apiSuccessExample {json} Success-Response:
-            [
-                ...
-                {
-                  "malId":40060,
-                  "title":[
-                     "BNA",
-                     "Brand New Animal"
-                  ],
-                  "cover":"https://cdn.myanimelist.net/images/anime/1139/106986.jpg",
-                  "season":"Spring 2020",
-                  "year":2020,
-                  "themes":[
-                     {
-                        "title":"Ready to",
-                        "type":"OP V1",
-                        "mirror":[
-                           {
-                              "quality":"default",
-                              "mirrorUrl":"https://animethemes.moe/video/BrandNewAnimal-OP1.webm"
-                           }
-                        ],
-                        "episodes":"1-5",
-                        "notes":""
-                     },
-                     {
-                        "title":"Ready to",
-                        "type":"OP V2",
-                        "mirror":[
-                           {
-                              "quality":"default",
-                              "mirrorUrl":"https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm"
-                           }
-                        ],
-                        "episodes":"6-11",
-                        "notes":""
-                     },
-                     ...
-                  ]
-               },
-               ...
-           ]
+    @apiSuccessExample {json} Success-Response:
+        [
+          {
+            "malId": 851,
+            "title": [
+              "Kyou kara Ore wa!!"
+            ],
+            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+            "season": "All",
+            "year": 90,
+            "themes": [
+              {
+                "title": "Bokura Wa Family",
+                "type": "ED",
+                "mirror": [
+                  {
+                    "quality": "BD, 1080",
+                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                    "appUrl": "851/0/0"
+                  }
+                ],
+                "episodes": "",
+                "notes": "",
+                "extras": {
+                  "views": 0,
+                  "likes": 0,
+                  "dislikes": 0,
+                  "malId": 851
+                },
+                "audio": {
+                  "artist": null,
+                  "title": null,
+                  "mirror": null
+                }
+              }
+            ]
+          },
+          ...
+        ]
     """
     current_season, year = getCurrentSeason()
     return jsonify(getSeason(year, "Summer"))
@@ -974,6 +1052,74 @@ def current_season():
 
 @app.route('/api/v1/latest')
 def latest_themes():
+    """
+    @api {get}/latest Request list of the most recent added themes
+    @apiName latest_themes
+    @apiGroup Anime
+
+    @apiSuccess {int} malId MyAnimeList's id for the anime
+    @apiSuccess {String[]} title Title and synonims of the anime
+    @apiSuccess {String} cover URL of the anime cover
+    @apiSuccess {String} season Season of the anime
+    @apiSuccess {int} year Year of the anime
+    @apiSuccess {Object[]} themes List of themes
+    @apiSuccess {String} themes.title Title of the theme
+    @apiSuccess {String} themes.type Type of the theme
+    @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
+    @apiSuccess {String} themes.mirror.quality Quality of the mirror
+    @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
+    @apiSuccess {String} themes.episodes Episodes of the theme
+    @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {Object[]} themes.extras Extras of the theme
+    @apiSuccess {int} themes.extras.views Views of the theme
+    @apiSuccess {int} themes.extras.likes Like count of the theme
+    @apiSuccess {int} themes.extras.dislikes Dislike count of the theme
+    @apiSuccess {int} themes.extras.malId MalID of the anime
+    @apiSuccess {Object[]} themes.audio Audio data of the theme
+    @apiSuccess {String} themes.audio.artist Artist of the original song
+    @apiSuccess {String} themes.audio.title Title of the original song
+    @apiSuccess {String} themes.audio.mirror Mirror link of the original song
+
+    @apiSuccessExample {json} Success-Response:
+        [
+          {
+            "malId": 851,
+            "title": [
+              "Kyou kara Ore wa!!"
+            ],
+            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+            "season": "All",
+            "year": 90,
+            "themes": [
+              {
+                "title": "Bokura Wa Family",
+                "type": "ED",
+                "mirror": [
+                  {
+                    "quality": "BD, 1080",
+                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                    "appUrl": "851/0/0"
+                  }
+                ],
+                "episodes": "",
+                "notes": "",
+                "extras": {
+                  "views": 0,
+                  "likes": 0,
+                  "dislikes": 0,
+                  "malId": 851
+                },
+                "audio": {
+                  "artist": null,
+                  "title": null,
+                  "mirror": null
+                }
+              }
+            ]
+          },
+          ...
+        ]
+    """
     animes = Anime.query.order_by(Anime.id.desc()).limit(15)
     animeList = []
     for anime in animes:
@@ -1044,6 +1190,76 @@ def updateThemes():
 
 @app.route('/api/v1/top/<int:size>')
 def get_most_viewed(size):
+    """
+    @api {get}/top/:size Request list of the most watched themes
+    @apiName most_watched
+    @apiGroup Anime
+
+    @apiParam {int} size Size of the list
+
+    @apiSuccess {int} malId MyAnimeList's id for the anime
+    @apiSuccess {String[]} title Title and synonims of the anime
+    @apiSuccess {String} cover URL of the anime cover
+    @apiSuccess {String} season Season of the anime
+    @apiSuccess {int} year Year of the anime
+    @apiSuccess {Object[]} themes List of themes
+    @apiSuccess {String} themes.title Title of the theme
+    @apiSuccess {String} themes.type Type of the theme
+    @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
+    @apiSuccess {String} themes.mirror.quality Quality of the mirror
+    @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
+    @apiSuccess {String} themes.episodes Episodes of the theme
+    @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {Object[]} themes.extras Extras of the theme
+    @apiSuccess {int} themes.extras.views Views of the theme
+    @apiSuccess {int} themes.extras.likes Like count of the theme
+    @apiSuccess {int} themes.extras.dislikes Dislike count of the theme
+    @apiSuccess {int} themes.extras.malId MalID of the anime
+    @apiSuccess {Object[]} themes.audio Audio data of the theme
+    @apiSuccess {String} themes.audio.artist Artist of the original song
+    @apiSuccess {String} themes.audio.title Title of the original song
+    @apiSuccess {String} themes.audio.mirror Mirror link of the original song
+
+    @apiSuccessExample {json} Success-Response:
+        [
+          {
+            "malId": 851,
+            "title": [
+              "Kyou kara Ore wa!!"
+            ],
+            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+            "season": "All",
+            "year": 90,
+            "themes": [
+              {
+                "title": "Bokura Wa Family",
+                "type": "ED",
+                "mirror": [
+                  {
+                    "quality": "BD, 1080",
+                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                    "appUrl": "851/0/0"
+                  }
+                ],
+                "episodes": "",
+                "notes": "",
+                "extras": {
+                  "views": 0,
+                  "likes": 0,
+                  "dislikes": 0,
+                  "malId": 851
+                },
+                "audio": {
+                  "artist": null,
+                  "title": null,
+                  "mirror": null
+                }
+              }
+            ]
+          },
+          ...
+        ]
+    """
     queryList = Anime.query.all()
     themeList = []
     for anime in queryList:
@@ -1067,6 +1283,76 @@ def get_most_viewed(size):
 
 @app.route('/api/v1/themes/<path:name>')
 def search_by_theme(name):
+    """
+    @api {get} /themes/:theme_name Search for a theme by its name
+    @apiName search_theme
+    @apiGroup Anime
+
+    @apiParam {String} theme_search Search term
+
+    @apiSuccess {int} malId MyAnimeList's id for the anime
+    @apiSuccess {String[]} title Title and synonims of the anime
+    @apiSuccess {String} cover URL of the anime cover
+    @apiSuccess {String} season Season of the anime
+    @apiSuccess {int} year Year of the anime
+    @apiSuccess {Object[]} themes List of themes
+    @apiSuccess {String} themes.title Title of the theme
+    @apiSuccess {String} themes.type Type of the theme
+    @apiSuccess {Object[]} themes.mirror List of mirrors for the theme
+    @apiSuccess {String} themes.mirror.quality Quality of the mirror
+    @apiSuccess {String} themes.mirror.mirrorUrl URL of the mirror
+    @apiSuccess {String} themes.episodes Episodes of the theme
+    @apiSuccess {String} themes.notes Notes of the theme
+    @apiSuccess {Object[]} themes.extras Extras of the theme
+    @apiSuccess {int} themes.extras.views Views of the theme
+    @apiSuccess {int} themes.extras.likes Like count of the theme
+    @apiSuccess {int} themes.extras.dislikes Dislike count of the theme
+    @apiSuccess {int} themes.extras.malId MalID of the anime
+    @apiSuccess {Object[]} themes.audio Audio data of the theme
+    @apiSuccess {String} themes.audio.artist Artist of the original song
+    @apiSuccess {String} themes.audio.title Title of the original song
+    @apiSuccess {String} themes.audio.mirror Mirror link of the original song
+
+    @apiSuccessExample {json} Success-Response:
+        [
+          {
+            "malId": 851,
+            "title": [
+              "Kyou kara Ore wa!!"
+            ],
+            "cover": "https://cdn.myanimelist.net/images/anime/2/43779.jpg",
+            "season": "All",
+            "year": 90,
+            "themes": [
+              {
+                "title": "Bokura Wa Family",
+                "type": "ED",
+                "mirror": [
+                  {
+                    "quality": "BD, 1080",
+                    "mirrorUrl": "https://animethemes.moe/video/KyouKaraOreWa-ED1.webm",
+                    "appUrl": "851/0/0"
+                  }
+                ],
+                "episodes": "",
+                "notes": "",
+                "extras": {
+                  "views": 0,
+                  "likes": 0,
+                  "dislikes": 0,
+                  "malId": 851
+                },
+                "audio": {
+                  "artist": null,
+                  "title": null,
+                  "mirror": null
+                }
+              }
+            ]
+          },
+          ...
+        ]
+    """
     animeList = Anime.query.all()
     themeList = []
     for anime in animeList:

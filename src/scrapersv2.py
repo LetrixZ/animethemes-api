@@ -1,6 +1,6 @@
 import praw, requests, concurrent.futures, json
 from bs4 import BeautifulSoup
-from src.models import Anime, db
+from models import Anime, db
 from mal import Anime as AnimeMAL
 
 reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",

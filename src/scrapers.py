@@ -1,10 +1,12 @@
-import praw, requests, concurrent.futures, json
+import praw, requests, concurrent.futures, json, os
 from bs4 import BeautifulSoup
-from src.models import Anime
+from models import Anime
 from mal import Anime as AnimeMAL
 
+client_secret = os.getenv('CLIENT_SECRET')
+
 reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
-                     client_secret="Vs9q60YyROx780avM7AqsVFzfYM",
+                     client_secret=client_secret,
                      user_agent="Letrix's AnimeThemes API")
 
 
