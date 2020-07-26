@@ -28,8 +28,8 @@ def create_app(environment):
     return app
 
 
-# environment = config['production']
-environment = config['development']
+environment = config['production']
+# environment = config['development']
 
 app = create_app(environment)
 ApiDoc(app=app)
