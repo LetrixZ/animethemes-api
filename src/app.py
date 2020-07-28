@@ -116,6 +116,7 @@ def db_add_music_mirror():
     anime_list = Anime.query.all()
     for anime in anime_list:
         anime_title = json.loads(anime.title)[0]
+        anime_title = anime_title.replace(":", "")
         if len(anime_title) >= 3:
             themes = json.loads(anime.themes)
             for theme in themes:
