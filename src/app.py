@@ -6,17 +6,16 @@ import subprocess
 
 import fileioapi as fileioapi
 import requests
+from anilist import getListFromUser
+from audio_scraper import get_audio, get_music
+from config import config
 from flask import Flask, jsonify, request
 from flask_apidoc_extend import ApiDoc
-from werkzeug.utils import redirect
-
-from anilist import getListFromUser
-from audio_scraper import get_audio, get_audio_name, get_audio_anime, get_music
-from config import config
 from models import db, Anime, User, Playlist
-from scrapers import add_year, getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
+from scrapers import getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
     getCoverFromDB
 from scrapersv2 import get_year as v2_get_year
+from werkzeug.utils import redirect
 
 
 def create_app(environment):
@@ -105,6 +104,22 @@ def db_add_music():
             themes = json.loads(anime.themes)
             for theme in themes:
                 if not theme.get('audio'):
+                    item = get_music(anime)
+                    anime.themes = json.dumps(item)
+                    db.session.commit()
+                    break
+    return jsonify({'message': 'done'})
+
+
+@app.route('/music/mirror')
+def db_add_music_mirror():
+    anime_list = Anime.query.all()
+    for anime in anime_list:
+        anime_title = json.loads(anime.title)[0]
+        if len(anime_title) >= 3:
+            themes = json.loads(anime.themes)
+            for theme in themes:
+                if not theme.get('audio').get('mirror'):
                     item = get_music(anime)
                     anime.themes = json.dumps(item)
                     db.session.commit()
