@@ -1513,6 +1513,57 @@ def getAnimeThemes(id):
     return returnJson(getAnime(id))
 
 
+# APP ROUTES
+@app.route('/app_list/')
+def get_app_list():
+    # Latest list
+    animes = Anime.query.order_by(Anime.id.desc()).limit(15)
+    latestList = []
+    for anime in animes:
+        # themes = json.loads(anime.themes)
+        # for theme in themes:
+        #     print(theme.get('title'))
+        #     audio = get_audio(theme.get('title'))
+        #     theme['audio'] = audio[0]
+        latestList.append(
+            {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+             'year': anime.year, 'themes': json.loads(anime.themes)})
+        # animeList.append(
+        #     {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+        #      'year': anime.year, 'themes': themes})
+
+    # Top list
+    queryList = Anime.query.all()
+    themeList = []
+    for anime in queryList:
+        for theme in json.loads(anime.themes):
+            # if not len(theme.get('title')):
+            #    theme['title'] = theme['type']
+            themeList.append(theme)
+    # themeList = sorted(themeList, key=lambda k: k['title'], reverse=False)
+    themeList = sorted(themeList, key=lambda k: k['extras']['views'], reverse=True)
+    returnList = []
+    i = 0
+    while i < 15:
+        anime = Anime.query.filter_by(malId=themeList[i]['extras']['malId']).first()
+        entry = {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+                 'year': anime.year, 'themes': [themeList[i]]}
+        returnList.append(entry)
+        i += 1
+
+    # Current Season
+    current, year = getCurrentSeason()
+    print(current)
+    current = "Summer"
+    currentList = getSeason(year, current)
+
+    print("topList: {}, currentSeason: {}, latestList: {}".format(len(returnList), len(currentList), len(latestList)))
+
+    return jsonify(
+        [{'animeList': latestList, 'title': 'Latest added'}, {'animeList': returnList, 'title': 'Top 15 themes'},
+         {'animeList': currentList, 'title': "{} {}".format(current, year)}])
+
+
 @app.route('/')
 def index():
     return returnJson({'message': 'animethemes api', 'author': 'u/LetrixZ', 'docs': '/apidoc'})
