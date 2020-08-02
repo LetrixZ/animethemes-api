@@ -1559,9 +1559,15 @@ def get_app_list():
 
     print("topList: {}, currentSeason: {}, latestList: {}".format(len(returnList), len(currentList), len(latestList)))
 
-    return jsonify(
-        [{'animeList': latestList, 'title': 'Latest added'}, {'animeList': returnList, 'title': 'Top 15 themes'},
-         {'animeList': currentList, 'title': "{} {}".format(current, year)}])
+    # return jsonify({{'yearList': getAllSeasons()}, {'animeLists': [{'animeList': latestList, 'title': 'Latest added'},
+    #                                                                {'animeList': returnList, 'title': 'Top 15 themes'},
+    #                                                                {'animeList': currentList,
+    #                                                                 'title': "{} {}".format(current, year)}]}})
+
+    return jsonify({'yearList': getAllSeasons(), 'animeLists': [{'animeList': latestList, 'title': 'Latest added'},
+                                                                {'animeList': returnList, 'title': 'Top 15 themes'},
+                                                                {'animeList': currentList,
+                                                                 'title': "{} {}".format(current, year)}]})
 
 
 @app.route('/')
