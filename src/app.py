@@ -1564,8 +1564,8 @@ def get_app_list():
     #                                                                {'animeList': currentList,
     #                                                                 'title': "{} {}".format(current, year)}]}})
 
-    return jsonify({'yearList': getAllSeasons(), 'animeLists': [{'animeList': latestList, 'title': 'Latest added'},
-                                                                {'animeList': returnList, 'title': 'Top 15 themes'},
+    return jsonify({'yearList': getAllSeasons(), 'animeLists': [{'animeList': returnList, 'title': 'Top 15 themes'},
+                                                                {'animeList': latestList, 'title': 'Latest added'},
                                                                 {'animeList': currentList,
                                                                  'title': "{} {}".format(current, year)}]})
 
