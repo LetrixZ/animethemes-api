@@ -1474,19 +1474,42 @@ def getAnimeList(user):
     return returnJson(malList)
 
 
+@app.route('/api/v1/id/<int:id>/<string:type>/')
 @app.route('/id/<int:id>/<string:type>/')
 def videoById(id, type):
+    """
+        @api {get} /id/:id/:type/audio Extract audio from video file
+        @apiName get video
+        @apiGroup Media
+
+        @apiParam {int} id Anime MyAnimeList id
+        @apiParam {String} type Theme type
+
+        @apiSuccess {String} url Redirect
+    """
     type = type.lower()
     anime = Anime.query.filter_by(malId=id).first()
     themes = json.loads(anime.themes)
     for theme in themes:
         if theme['type'].lower() == type:
             return redirect(theme['mirror'][0]['mirrorUrl'])
-    return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
+    # return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
+    return redirect("/id/{}".format(id))
 
 
+@app.route('/api/v1/id/<int:id>/<string:type>/audio')
 @app.route('/id/<int:id>/<string:type>/audio')
 def audioById(id, type):
+    """
+        @api {get} /id/:id/:type/audio Extract audio from video file
+        @apiName extract audio
+        @apiGroup Media
+
+        @apiParam {int} id Anime MyAnimeList id
+        @apiParam {String} type Theme type
+
+        @apiSuccess {String} url Redirect
+    """
     type = type.lower()
     anime = Anime.query.filter_by(malId=id).first()
     themes = json.loads(anime.themes)
@@ -1495,7 +1518,8 @@ def audioById(id, type):
             title = [theme['title'], json.loads(anime.title)[0], theme['type']]
             url = theme['mirror'][0]['mirrorUrl']
             return redirect(getAudio(url, title))
-    return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
+    # return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
+    return redirect("/id/{}".format(id))
 
 
 @app.route('/id/<int:id>/')
@@ -1558,11 +1582,6 @@ def get_app_list():
     currentList = getSeason(year, current)
 
     print("topList: {}, currentSeason: {}, latestList: {}".format(len(returnList), len(currentList), len(latestList)))
-
-    # return jsonify({{'yearList': getAllSeasons()}, {'animeLists': [{'animeList': latestList, 'title': 'Latest added'},
-    #                                                                {'animeList': returnList, 'title': 'Top 15 themes'},
-    #                                                                {'animeList': currentList,
-    #                                                                 'title': "{} {}".format(current, year)}]}})
 
     return jsonify({'yearList': getAllSeasons(), 'animeLists': [{'animeList': returnList, 'title': 'Top 15 themes'},
                                                                 {'animeList': latestList, 'title': 'Latest added'},
