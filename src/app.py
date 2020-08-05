@@ -194,6 +194,7 @@ def add_year(year):
                 entry = Theme.create(theme.get('title'), theme.get('type'), anime.get('malId'),
                                      '{}/{}'.format(anime.malId, index), theme.get('notes'),
                                      json.dumps(theme.get('mirror')))
+                print(entry.json())
                 index += 1
     # db.session.add_all(themeList)
     # db.session.commit()

@@ -1,6 +1,6 @@
 import praw, requests, concurrent.futures, json
 from bs4 import BeautifulSoup
-from models import Anime, db
+from models import Anime, db, Theme
 from mal import Anime as AnimeMAL
 
 reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
@@ -145,6 +145,12 @@ def add_anime(item, year, season):
                 themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
         # }
         cover = get_cover(mal_id)
+        index = 0
+        for theme in themes:
+            Theme.create(theme.get('title'), theme.get('type'), mal_id,
+                         '{}/{}'.format(mal_id, index), theme.get('notes'),
+                         json.dumps(theme.get('mirror')))
+            index += 1
         return {'malId': mal_id, 'titles': anime_titles, 'themes': themes, 'cover': cover, 'year': year,
                 'season': season}
     else:
@@ -167,6 +173,12 @@ def add_anime(item, year, season):
                 themes[i]['mirror'] = new_themes[i]['mirror']
         row.themes = json.dumps(themes)
         db.session.commit()
+        index = 0
+        for theme in themes:
+            Theme.create(theme.get('title'), theme.get('type'), mal_id,
+                         '{}/{}'.format(mal_id, index), theme.get('notes'),
+                         json.dumps(theme.get('mirror')))
+            index += 1
 
 
 def get_season(entry, year):
