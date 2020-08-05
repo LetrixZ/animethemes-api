@@ -6,7 +6,6 @@ certifi==2020.6.20
 chardet==3.0.4
 click==7.1.2
 cssselect==1.1.0
-elasticsearch==6.3.1
 fileioapi==0.0.2
 Flask==1.1.2
 Flask-Apidoc-Extend==0.1.8
@@ -17,7 +16,7 @@ gunicorn==20.0.4
 idna==2.10
 itsdangerous==1.1.0
 Jinja2==2.11.2
-jsonschema==2.4.0
+jsonschema==3.2.0
 lxml==4.5.2
 mal-api==0.2.1
 MarkupSafe==1.1.1
@@ -25,7 +24,7 @@ praw==7.1.0
 prawcore==1.5.0
 psycopg2==2.8.5
 pytz==2020.1
-PyYAML==3.11
+PyYAML==5.3.1
 requests==2.24.0
 six==1.15.0
 soupsieve==2.0.1
