@@ -185,7 +185,6 @@ def get_all_covers():
 @app.route('/db/year/<string:year>')
 def add_year(year):
     anime_list = v2_get_year(year)
-    themeList = []
     for season_list in anime_list:
         index = 0
         for anime in season_list:
@@ -195,11 +194,9 @@ def add_year(year):
                 entry = Theme.create(theme.get('title'), theme.get('type'), anime.get('malId'),
                                      '{}/{}'.format(anime.malId, index), theme.get('notes'),
                                      json.dumps(theme.get('mirror')))
-                if entry:
-                    themeList.append(entry)
                 index += 1
-    db.session.add_all(themeList)
-    db.session.commit()
+    # db.session.add_all(themeList)
+    # db.session.commit()
     return jsonify(anime_list)
 
 

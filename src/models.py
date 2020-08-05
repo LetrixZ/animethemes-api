@@ -155,12 +155,12 @@ class Theme(db.Model):
     def save(self):
         row = Theme.query.filter_by(theme_id=self.theme_id).first()
         if not row:
-            # db.session.add(self)
-            return self
+            db.session.add(self)
+            # return self
         else:
             row.mirrors = self.mirrors
-            return None
-        # db.session.commit()
+            # return None
+        db.session.commit()
         return self
 
     def json(self):
