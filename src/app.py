@@ -16,12 +16,10 @@ from scrapers import getUserList, getAllYears, getAllSeasons, getYearSeasons, ge
     getCoverFromDB
 from scrapersv2 import get_year as v2_get_year
 from werkzeug.utils import redirect
-from flask_msearch import Search
 
 
 def create_app(environment):
     app = Flask(__name__)
-
     app.config.from_object(environment)
     with app.app_context():
         db.init_app(app)
@@ -29,14 +27,11 @@ def create_app(environment):
     return app
 
 
-environment = config['production']
-# environment = config['development']
+# environment = config['production']
+environment = config['development']
 
 app = create_app(environment)
 ApiDoc(app=app)
-
-search = Search()
-search.init_app(app)
 
 
 def random_string(stringLength=8):
@@ -542,10 +537,8 @@ def search_anime(name):
       ...
     ]
     """
-    print(name)
     term = '%{}%'.format(name)
-    # results = Anime.query.filter(Anime.title.ilike(term)).all()
-    results = Anime.query.msearch(name, fields=['title']).all()
+    results = Anime.query.filter(Anime.title.ilike("%{}%".format(name))).all()
     animeList = []
     for item in results:
         animeList.append(item.json())
@@ -1375,20 +1368,7 @@ def search_by_theme(name):
       ...
     ]
     """
-    # animeList = Anime.query.all()
-    # themeList = []
-    # for anime in animeList:
-    #     for theme in json.loads(anime.themes):
-    #         if name.lower() in theme.get('title').lower():
-    #             themeList.append(theme)
-    # searchList = []
-    # for theme in themeList:
-    #     anime = Anime.query.filter_by(malId=theme.get('extras')['malId']).first()
-    #     entry = {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-    #              'year': anime.year, 'themes': [theme]}
-    #     searchList.append(entry)
-    # results = Theme.query.filter(Theme.title.ilike(name)).all()
-    results = Theme.query.msearch(name, fields=['title'], limit=20).all()
+    results = Theme.query.filter(Theme.title.ilike("%{}%".format(name))).all()
     search_list = []
     for item in results:
         search_list.append(item.json())
@@ -1619,13 +1599,6 @@ def add_themes_db():
     db.session.commit()
     print('commited')
     return jsonify(themeList)
-
-
-@app.route('/create_index')
-def create_index():
-    search.create_index(Theme)
-    search.create_index(Anime)
-    return jsonify({'message': 'index created'})
 
 
 @app.route('/')
