@@ -144,11 +144,12 @@ class Theme(db.Model):
     mal_id = db.Column(db.Integer, nullable=False)
     theme_id = db.Column(db.String(), nullable=False, primary_key=True)
     notes = db.Column(db.String())
+    views = db.Column(db.Integer)
     mirrors = db.Column(db.String(), nullable=False)
 
     @classmethod
-    def create(cls, title, type, mal_id, theme_id, notes, mirrors):
-        theme = Theme(title=title, type=type, mal_id=mal_id, theme_id=theme_id, notes=notes, mirrors=mirrors)
+    def create(cls, title, type, mal_id, theme_id, notes, views, mirrors):
+        theme = Theme(title=title, type=type, mal_id=mal_id, theme_id=theme_id, notes=notes, views=views, mirrors=mirrors)
         # return theme
         return theme.save()
 
@@ -170,6 +171,7 @@ class Theme(db.Model):
             'mal_id': self.mal_id,
             'theme_id': self.theme_id,
             'notes': self.notes,
+            'views': self.views,
             'mirrors': json.loads(self.mirrors)
         }
 
@@ -183,5 +185,3 @@ class Theme(db.Model):
             return True
         except:
             return False
-
-

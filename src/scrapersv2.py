@@ -80,8 +80,10 @@ def get_themes(table, index, malId):
             themeNotes = tr.findAll('td')[3].getText()
         except IndexError:
             themeNotes = ''
-        themes.append({'title': themeTitle, 'type': themeType, 'mirror': themeMirror, 'episodes': themeEpisodes,
-                       'notes': themeNotes, 'extras': {'views': 0, 'likes': 0, 'dislikes': 0, 'malId': malId}})
+        Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, index), themeNotes, 0, json.dumps(themeMirror))
+        # themes.append({'title': themeTitle, 'type': themeType, 'mirror': themeMirror, 'episodes': themeEpisodes,
+        #                'notes': themeNotes, 'extras': {'views': 0, 'likes': 0, 'dislikes': 0, 'malId': malId}})
+        themes.append({'theme_title': themeTitle, 'theme_id': '{}-{}'.format(malId, index)})
         index += 1
     return themes
 
@@ -114,7 +116,8 @@ def get_anime(entry, season_name, year):
     if row:
         cover = row.cover
     else:
-        cover = get_cover(malId)
+        # cover = get_cover(malId)
+        cover = None
     return {'malId': malId, 'titles': title, 'themes': themes, 'cover': cover, 'year': year, 'season': season_name}
     # else:
     #    return None
@@ -144,17 +147,12 @@ def add_anime(item, year, season):
             elif theme_table_2.name == 'table':
                 themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
         # }
-        cover = get_cover(mal_id)
-        index = 0
-        for theme in themes:
-            Theme.create(theme.get('title'), theme.get('type'), mal_id,
-                         '{}/{}'.format(mal_id, index), theme.get('notes'),
-                         json.dumps(theme.get('mirror')))
-            index += 1
+        # cover = get_cover(mal_id)
+        cover = None
         return {'malId': mal_id, 'titles': anime_titles, 'themes': themes, 'cover': cover, 'year': year,
                 'season': season}
     else:
-        themes = json.loads(row.themes)
+        themes = Theme.query.filter_by(mal_id=mal_id).all()
         theme_table = item.find_next_sibling('table').find('tbody').findAll('tr')
         new_themes = get_themes(theme_table, 0, mal_id)
         theme_table_2 = item.find_next_sibling('table')
@@ -164,21 +162,20 @@ def add_anime(item, year, season):
                 break
             elif theme_table_2.name == 'table':
                 new_themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
-        if len(themes) != len(new_themes):
-            print("{}, different list".format(json.loads(row.title)[0]))
+        # if len(themes) != len(new_themes):
+        #     print("{}, different list".format(json.loads(row.title)[0]))
+        #     for theme in new_themes:
+        #         print(theme.get('title'))
+        # for i in range(len(themes)):
+        #     if len(themes[i].json().get('mirror')) != len(new_themes[i].get('mirror')):
+        #         print(json.loads(row.title))
+        #         print('{}, different mirrors'.format(themes[i].get('title')))
+        #         themes[i]['mirror'] = new_themes[i]['mirror']
+        if len(new_themes) != len(new_themes):
+            print("{}, different lists".format(json.loads(row.title)[0]))
         for i in range(len(themes)):
-            if len(themes[i].get('mirror')) != len(new_themes[i].get('mirror')):
-                print(json.loads(row.title))
-                print('{}, different mirrors'.format(themes[i].get('title')))
-                themes[i]['mirror'] = new_themes[i]['mirror']
-        row.themes = json.dumps(themes)
-        db.session.commit()
-        index = 0
-        for theme in themes:
-            Theme.create(theme.get('title'), theme.get('type'), mal_id,
-                         '{}/{}'.format(mal_id, index), theme.get('notes'),
-                         json.dumps(theme.get('mirror')))
-            index += 1
+            if len(new_themes[i].get('mirror')) != len(json.loads(themes[i].get('mirror'))):
+                print('{}, different mirrors'.format(themes[i].title))
 
 
 def get_season(entry, year):
