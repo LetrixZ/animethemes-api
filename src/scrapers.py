@@ -1,6 +1,6 @@
 import praw, requests, concurrent.futures, json, os
 from bs4 import BeautifulSoup
-from models import Anime
+from models import Anime, Theme
 from mal import Anime as AnimeMAL
 
 client_secret = os.getenv('CLIENT_SECRET')
@@ -174,37 +174,45 @@ def getAnimeID(id):
 
 
 def getUserList(user):
-    urlList = ['https://myanimelist.net/animelist/{}/load.json?offset={}&status=7'.format(user, i) for i in
-               range(0, 300 * 4, 300)]
-    bodies = getBodies(urlList)
+    url_list = ['https://myanimelist.net/animelist/{}/load.json?offset={}&status=7'.format(user, i) for i in
+                range(0, 300 * 10, 300)]
+    bodies = getBodies(url_list)
     content = []
     for body in bodies:
         content.append(body.decode("utf-8"))
-    malList = []
+    mal_list = []
     for page in content:
         for entry in json.loads(page):
-            anime = getAnimeID(entry['anime_id'])
+            anime = Anime.query.filter_by(malId=entry['anime_id']).first()
             if anime:
-                malList.append(anime)
-    malList = sorted(malList, key=lambda k: k['title'])
-    return malList
+                mal_list.append(get_entry(anime))
+                # themes = Theme.query.filter_by(mal_id=anime.malId).all()
+                # theme_list = []
+                # for theme in themes:
+                #     theme_list.append(theme.json())
+                # mal_list.append(
+                #     {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover,
+                #      'season': anime.season,
+                #      'year': anime.year, 'themes': theme_list})
+    mal_list = sorted(mal_list, key=lambda k: k['title'])
+    return mal_list
 
 
 def getAllYears():
     results = Anime.query.all()
-    yearList = []
+    year_list = []
     for item in results:
         year = item.year
-        if year not in yearList:
-            yearList.append(year)
-    yearList.sort(reverse=True)
-    return yearList
+        if year not in year_list:
+            year_list.append(year)
+    year_list.sort(reverse=True)
+    return year_list
 
 
 def getAllSeasons():
     results = Anime.query.all()
     years = getAllYears()
-    yearList = []
+    year_list = []
     for year in years:
         seasons = []
         for item in results:
@@ -213,31 +221,31 @@ def getAllSeasons():
                 seasons.append(season)
             if 'All' not in seasons and item.season == 'All' and year == item.year:
                 seasons.append("All")
-        yearList.append({'year': year, 'seasons': seasons})
-    return yearList
+        year_list.append({'year': year, 'seasons': seasons})
+    return year_list
 
 
 def getYearSeasons(year):
     results = Anime.query.filter_by(year=year).all()
     seasons = []
     for item in results:
-        seasonText = item.season[:-5]
-        if seasonText not in seasons and len(seasonText):
-            seasons.append(seasonText)
+        season_text = item.season[:-5]
+        if season_text not in seasons and len(season_text):
+            seasons.append(season_text)
         elif 'All' not in seasons and item.season == 'All':
             seasons.append("All")
-    seasonsList = []
+    seasons_list = []
     for season in seasons:
-        seasonList = []
+        season_list = []
         for item in results:
             if item.season[:-5] == season:
-                seasonList.append(item.json())
+                season_list.append(get_entry(item))
             elif item.season == 'All':
-                seasonList.append(item.json())
-        seasonList = sorted(seasonList, key=lambda k: k['title'][0])
-        seasonsList.append({'season': season, 'animes': seasonList})
-    seasonsList = sorted(seasonsList, key=lambda k: k['season'])
-    return {'year': year, 'seasons': seasonsList}
+                season_list.append(get_entry(item))
+        season_list = sorted(season_list, key=lambda k: k['title'][0])
+        seasons_list.append({'season': season, 'animes': season_list})
+    seasons_list = sorted(seasons_list, key=lambda k: k['season'])
+    return {'year': year, 'seasons': seasons_list}
 
 
 def getCurrentSeason():
@@ -250,12 +258,12 @@ def getCurrentSeason():
 
 def getSeason(year, season):
     results = Anime.query.filter_by(year=year).all()
-    animeList = []
+    anime_list = []
     for item in results:
         if season.capitalize() in item.season:
-            animeList.append(item.json())
-    animeList = sorted(animeList, key=lambda k: k['title'][0])
-    return animeList
+            anime_list.append(get_entry(item))
+    anime_list = sorted(anime_list, key=lambda k: k['title'][0])
+    return anime_list
 
 
 def getCoverFromDB():
@@ -268,3 +276,13 @@ def getCoverFromDB():
         else:
             print(" {} ".format(anime['malId'], anime['name']))
     return {'message': 'done'}
+
+
+def get_entry(anime):
+    themes = Theme.query.filter_by(mal_id=anime.malId).all()
+    theme_list = []
+    for theme in themes:
+        theme_list.append(theme.json())
+    return {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover,
+            'season': anime.season,
+            'year': anime.year, 'themes': theme_list}

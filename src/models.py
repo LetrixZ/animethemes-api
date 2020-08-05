@@ -149,7 +149,8 @@ class Theme(db.Model):
 
     @classmethod
     def create(cls, title, type, mal_id, theme_id, notes, views, mirrors):
-        theme = Theme(title=title, type=type, mal_id=mal_id, theme_id=theme_id, notes=notes, views=views, mirrors=mirrors)
+        theme = Theme(title=title, type=type, mal_id=mal_id, theme_id=theme_id, notes=notes, views=views,
+                      mirrors=mirrors)
         # return theme
         return theme.save()
 
@@ -173,6 +174,24 @@ class Theme(db.Model):
             'notes': self.notes,
             'views': self.views,
             'mirrors': json.loads(self.mirrors)
+        }
+
+    def single_json(self):
+        anime = Anime.query.filter_by(malId=self.mal_id).first()
+        return {
+            'malId': anime.malId,
+            'title': json.loads(anime.title),
+            'cover': anime.cover,
+            'season': anime.season,
+            'year': anime.year,
+            'themes': [{
+                'title': self.title,
+                'type': self.type,
+                'mal_id': self.mal_id,
+                'theme_id': self.theme_id,
+                'notes': self.notes,
+                'views': self.views,
+                'mirrors': json.loads(self.mirrors)}]
         }
 
     def update(self):

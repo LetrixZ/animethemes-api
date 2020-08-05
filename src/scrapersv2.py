@@ -173,9 +173,10 @@ def add_anime(item, year, season):
         #         themes[i]['mirror'] = new_themes[i]['mirror']
         if len(new_themes) != len(new_themes):
             print("{}, different lists".format(json.loads(row.title)[0]))
-        for i in range(len(themes)):
-            if len(new_themes[i].get('mirror')) != len(json.loads(themes[i].get('mirror'))):
-                print('{}, different mirrors'.format(themes[i].title))
+        # for i in range(len(themes)):
+        #     print(len(json.loads(themes[i].mirrors)))
+        #     if len(new_themes[i].get('mirror')) != len(json.loads(themes[i].mirrors)):
+        #         print('{}, different mirrors'.format(themes[i].title))
 
 
 def get_season(entry, year):
