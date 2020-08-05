@@ -27,8 +27,8 @@ def create_app(environment):
     return app
 
 
-# environment = config['production']
-environment = config['development']
+environment = config['production']
+# environment = config['development']
 
 app = create_app(environment)
 ApiDoc(app=app)
@@ -185,10 +185,21 @@ def get_all_covers():
 @app.route('/db/year/<string:year>')
 def add_year(year):
     anime_list = v2_get_year(year)
+    themeList = []
     for season_list in anime_list:
+        index = 0
         for anime in season_list:
             Anime.create(json.dumps(anime['titles']), anime['malId'], anime['cover'], anime['year'], anime['season'],
                          json.dumps(anime['themes']))
+            for theme in json.loads(anime.themes):
+                entry = Theme.create(theme.get('title'), theme.get('type'), anime.get('malId'),
+                                     '{}/{}'.format(anime.malId, index), theme.get('notes'),
+                                     json.dumps(theme.get('mirror')))
+                if entry:
+                    themeList.append(entry)
+                index += 1
+    db.session.add_all(themeList)
+    db.session.commit()
     return jsonify(anime_list)
 
 
