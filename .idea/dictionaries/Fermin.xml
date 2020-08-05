@@ -4,7 +4,9 @@
       <w>anilist</w>
       <w>anime</w>
       <w>fileioapi</w>
+      <w>msearch</w>
       <w>playid</w>
+      <w>tablename</w>
     </words>
   </dictionary>
 </component>

@@ -8,6 +8,7 @@ fileioapi==0.0.2
 Flask==1.1.2
 Flask-Apidoc-Extend==0.1.8
 Flask-SQLAlchemy==2.4.4
+flask-msearch==0.2.9
 gunicorn==20.0.4
 idna==2.10
 itsdangerous==1.1.0
@@ -16,14 +17,14 @@ lxml==4.5.2
 mal-api==0.2.1
 MarkupSafe==1.1.1
 praw==7.1.0
-prawcore==1.4.0
+prawcore==1.5.0
 psycopg2==2.8.5
 pytz==2020.1
 requests==2.24.0
 six==1.15.0
 soupsieve==2.0.1
 SQLAlchemy==1.3.18
-update-checker==0.17
+update-checker==0.18.0
 urllib3==1.25.10
 websocket-client==0.57.0
 Werkzeug==1.0.1

@@ -11,15 +11,17 @@ from audio_scraper import get_audio, get_music
 from config import config
 from flask import Flask, jsonify, request
 from flask_apidoc_extend import ApiDoc
-from models import db, Anime, User, Playlist
+from models import db, Anime, User, Playlist, Theme
 from scrapers import getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
     getCoverFromDB
 from scrapersv2 import get_year as v2_get_year
 from werkzeug.utils import redirect
+from flask_msearch import Search
 
 
 def create_app(environment):
     app = Flask(__name__)
+
     app.config.from_object(environment)
     with app.app_context():
         db.init_app(app)
@@ -32,6 +34,9 @@ environment = config['production']
 
 app = create_app(environment)
 ApiDoc(app=app)
+
+search = Search()
+search.init_app(app)
 
 
 def random_string(stringLength=8):
@@ -539,7 +544,8 @@ def search_anime(name):
     """
     print(name)
     term = '%{}%'.format(name)
-    results = Anime.query.filter(Anime.title.ilike(term)).all()
+    # results = Anime.query.filter(Anime.title.ilike(term)).all()
+    results = Anime.query.msearch(name, fields=['title']).all()
     animeList = []
     for item in results:
         animeList.append(item.json())
@@ -1369,19 +1375,24 @@ def search_by_theme(name):
       ...
     ]
     """
-    animeList = Anime.query.all()
-    themeList = []
-    for anime in animeList:
-        for theme in json.loads(anime.themes):
-            if name.lower() in theme.get('title').lower():
-                themeList.append(theme)
-    searchList = []
-    for theme in themeList:
-        anime = Anime.query.filter_by(malId=theme.get('extras')['malId']).first()
-        entry = {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-                 'year': anime.year, 'themes': [theme]}
-        searchList.append(entry)
-    return jsonify(searchList)
+    # animeList = Anime.query.all()
+    # themeList = []
+    # for anime in animeList:
+    #     for theme in json.loads(anime.themes):
+    #         if name.lower() in theme.get('title').lower():
+    #             themeList.append(theme)
+    # searchList = []
+    # for theme in themeList:
+    #     anime = Anime.query.filter_by(malId=theme.get('extras')['malId']).first()
+    #     entry = {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+    #              'year': anime.year, 'themes': [theme]}
+    #     searchList.append(entry)
+    # results = Theme.query.filter(Theme.title.ilike(name)).all()
+    results = Theme.query.msearch(name, fields=['title'], limit=20).all()
+    search_list = []
+    for item in results:
+        search_list.append(item.json())
+    return jsonify(search_list)
 
 
 # LEGACY ROUTES
@@ -1587,6 +1598,34 @@ def get_app_list():
                                                                 {'animeList': latestList, 'title': 'Latest added'},
                                                                 {'animeList': currentList,
                                                                  'title': "{} {}".format(current, year)}]})
+
+
+@app.route('/db/add_themes')
+def add_themes_db():
+    animeList = Anime.query.all()
+    themeList = []
+    for anime in animeList:
+        index = 0
+        for theme in json.loads(anime.themes):
+            entry = Theme.create(theme.get('title'), theme.get('type'), anime.malId,
+                                 '{}/{}'.format(anime.malId, index), theme.get('notes'),
+                                 json.dumps(theme.get('mirror')))
+            if entry:
+                themeList.append(entry)
+            index += 1
+    print('finished')
+    db.session.add_all(themeList)
+    print('all added {}'.format(len(themeList)))
+    db.session.commit()
+    print('commited')
+    return jsonify(themeList)
+
+
+@app.route('/create_index')
+def create_index():
+    search.create_index(Theme)
+    search.create_index(Anime)
+    return jsonify({'message': 'index created'})
 
 
 @app.route('/')
