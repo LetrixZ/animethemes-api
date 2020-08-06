@@ -468,13 +468,14 @@ def get_app_list():
     for anime in anime_list:
         current_list.append(get_entry(anime))
 
-    return jsonify({'yearList': getAllSeasons(), 'animeLists': [{'animeList': top_list, 'title': 'Top 15 themes'},
-                                                                {'animeList': latest_themes_list,
-                                                                 'title': 'Latest themes added'},
-                                                                {'animeList': latest_anime_added,
-                                                                 'title': 'Latest animes added'},
-                                                                {'animeList': current_list,
-                                                                 'title': "{} {}".format(current, year)}]})
+    return jsonify({'yearList': getAllSeasons(),
+                    'animeLists': [{'animeList': current_list, 'title': "{} {}".format(current, year), 'type': 2},
+                                   {'animeList': top_list,
+                                    'title': 'Top 15 themes', 'type': 3},
+                                   {'animeList': latest_anime_added,
+                                    'title': 'Latest animes added', 'type': 5},
+                                   {'animeList': latest_themes_list,
+                                    'title': 'Latest themes added', 'type': 4}]})
 
 
 @app.route('/app/count/<int:mal_id>/<int:theme>')
@@ -503,7 +504,7 @@ def update_pinned():
     for anime in anime_list:
         anime_entry = Anime.query.filter_by(malId=anime.get('malId')).first()
         result_list.append(get_entry(anime_entry))
-    return jsonify({'animeList': result_list, 'title': 'Pinned'})
+    return jsonify({'animeList': result_list, 'title': 'Pinned', 'type': 0})
 
 
 # DB ROUTES
@@ -611,7 +612,8 @@ def get_music_web(malId, name):
 
 @app.route('/')
 def index():
-    return returnJson({'message': 'animethemes api', 'author': 'u/LetrixZ', 'docs': '/apidoc'})
+    return returnJson(
+        {'message': 'animethemes api', 'author': 'u/LetrixZ', 'docs': 'https://github.com/LetrixZ/animethemes-api'})
 
 
 if __name__ == '__main__':
