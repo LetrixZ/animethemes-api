@@ -481,6 +481,7 @@ def get_app_list():
 
 @app.route('/app/count/<int:mal_id>/<int:theme>')
 def count_view(mal_id, theme):
+    print("{}, {}".format(mal_id, theme))
     anime = Anime.query.filter_by(malId=mal_id).first()
     if anime:
         theme = Theme.query.filter_by(theme_id='{}-{}'.format(mal_id, theme)).first()
