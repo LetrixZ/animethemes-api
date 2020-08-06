@@ -30,9 +30,9 @@ def get_cover(mal_id):
     else:
         try:
             anime = AnimeMAL(mal_id)
+            image = anime.image_url
         except requests.exceptions.ReadTimeout:
             image = None
-        image = anime.image_url
         return image
 
 
