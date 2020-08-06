@@ -352,6 +352,34 @@ def getBodies(urlList):
     return bodies
 
 
+def getList(user):
+    urlList = ['https://myanimelist.net/animelist/{}/load.json?offset={}&status=7'.format(user, i) for i in
+               range(0, 300 * 4, 300)]
+    bodies = getBodies(urlList)
+    content = []
+    for body in bodies:
+        content.append(body.decode("utf-8"))
+    malList = []
+    for data in content:
+        for entry in json.loads(data):
+            anime = getAnime(entry['anime_id'], False, entry)
+            if anime is not None:
+                malList.append(anime)
+    malList = sorted(malList, key=lambda k: k['name'])
+    return malList
+
+
+def returnJson(obj):
+    response = app.response_class(json.dumps(obj, sort_keys=False), mimetype=app.config['JSONIFY_MIMETYPE'])
+    return response
+
+
+
+def getAnimeList(user):
+    malList = getList(user)
+    return returnJson(malList)
+
+
 @app.route('/api/v1/anime/<int:id>/<string:type>/')
 @app.route('/api/v1/id/<int:id>/<string:type>/')
 @app.route('/id/<int:id>/<string:type>/')
