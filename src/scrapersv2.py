@@ -28,7 +28,10 @@ def get_cover(mal_id):
     if row and row.cover:
         return row.cover
     else:
-        anime = AnimeMAL(mal_id)
+        try:
+            anime = AnimeMAL(mal_id)
+        except requests.exceptions.ReadTimeout:
+            image = None
         image = anime.image_url
         return image
 
