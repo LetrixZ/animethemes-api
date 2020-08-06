@@ -421,7 +421,9 @@ def audioById(id, type):
 
 @app.route('/id/<int:id>/')
 def themesByID(id):
-    anime = getAnime(id)
+    # anime = getAnime(id)
+    entry = Anime.query.filter_by(malId=id).first()
+    anime = get_entry(entry)
     if anime is None:
         return returnJson(
             {'message': "this anime isn't available in r/AnimeThemes. Send me a message if it is to u/LetrixZ"})
