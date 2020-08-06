@@ -234,28 +234,32 @@ def latest_animes_list():
     return jsonify(result_list)
 
 
-@app.route('/api/v1/anime/<int:mal_id>/<int:theme>/<int:version>')
-def get_theme(mal_id, theme, version):
+@app.route('/api/v1/anime/<int:mal_id>/<string:theme_index>/<int:version>')
+def get_theme(mal_id, theme_index, version):
     anime = Anime.query.filter_by(malId=mal_id).first()
+    if len(theme_index) == 1:
+        theme_index = '0' + theme_index
     if anime:
-        theme = Theme.query.filter_by(theme_id='{}-{}'.format(mal_id, theme)).first()
+        theme = Theme.query.filter_by(theme_id='{}-{}'.format(mal_id, theme_index)).first()
         if theme:
             theme.views += 1
             theme.update()
             try:
                 return redirect(json.loads(theme.mirrors)[version].get('mirrorUrl'))
             except IndexError:
-                return jsonify({'message': 'bad index'})
+                return jsonify({'message': 'error bad index'})
         else:
             return jsonify({'message': 'bad index'})
     else:
         return jsonify({'message': 'anime not found'})
 
 
-@app.route('/api/v1/anime/<int:mal_id>/<int:theme>/<int:version>')
-def get_audio_theme(mal_id, theme, version):
+@app.route('/api/v1/anime/<int:mal_id>/<string:theme_index>/<int:version>')
+def get_audio_theme(mal_id, theme_index, version):
     anime = Anime.query.filter_by(malId=mal_id).first()
-    theme = Theme.query.filter_by(theme_id='{}-{}'.format(mal_id, theme)).first()
+    if len(theme_index) == 1:
+        theme_index = '0' + theme_index
+    theme = Theme.query.filter_by(theme_id='{}-{}'.format(mal_id, theme_index)).first()
     if theme:
         title = [theme.title, json.loads(anime.title)[0], theme.type]
         url = theme.mirrors[version]
@@ -375,6 +379,7 @@ def getAnimeList(user):
     return returnJson(malList)
 
 
+@app.route('/api/v1/anime/<int:id>/<string:type>/')
 @app.route('/api/v1/id/<int:id>/<string:type>/')
 @app.route('/id/<int:id>/<string:type>/')
 def videoById(id, type):
