@@ -209,13 +209,6 @@ def current_season():
     result_list = []
     for anime in anime_list:
         result_list.append(get_entry(anime))
-        # themes = Theme.query.filter_by(mal_id=anime.malId).all()
-        # theme_list = []
-        # for theme in themes:
-        #     theme_list.append(theme.json())
-        # result_list.append(
-        #     {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-        #      'year': anime.year, 'themes': theme_list})
     return jsonify(result_list)
 
 
@@ -427,51 +420,41 @@ def getAnimeThemes(id):
 @app.route('/app_list/')
 def get_app_list():
     # Latest list
-    animes = Anime.query.order_by(Anime.id.desc()).limit(15)
-    latestList = []
-    for anime in animes:
-        # themes = json.loads(anime.themes)
-        # for theme in themes:
-        #     print(theme.get('title'))
-        #     audio = get_audio(theme.get('title'))
-        #     theme['audio'] = audio[0]
-        latestList.append(
+    theme_list = Theme.query.order_by(Theme.id.desc()).limit(15)
+    latest_list = []
+    for theme in theme_list:
+        anime = Anime.query.filter_by(malId=theme.mal_id).first()
+        latest_list.append(
             {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-             'year': anime.year, 'themes': json.loads(anime.themes)})
-        # animeList.append(
-        #     {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-        #      'year': anime.year, 'themes': themes})
+             'year': anime.year, 'themes': [theme.json()]})
 
     # Top list
-    queryList = Anime.query.all()
-    themeList = []
-    for anime in queryList:
-        for theme in json.loads(anime.themes):
-            # if not len(theme.get('title')):
-            #    theme['title'] = theme['type']
-            themeList.append(theme)
-    # themeList = sorted(themeList, key=lambda k: k['title'], reverse=False)
-    themeList = sorted(themeList, key=lambda k: k['extras']['views'], reverse=True)
-    returnList = []
-    i = 0
-    while i < 15:
-        anime = Anime.query.filter_by(malId=themeList[i]['extras']['malId']).first()
-        entry = {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
-                 'year': anime.year, 'themes': [themeList[i]]}
-        returnList.append(entry)
-        i += 1
+    theme_list = Theme.query.order_by(Theme.views.desc()).limit(15)
+    top_list = []
+    for theme in theme_list:
+        anime = Anime.query.filter_by(malId=theme.mal_id).first()
+        top_list.append(
+            {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
+             'year': anime.year, 'themes': [theme.json()]})
 
     # Current Season
-    current, year = getCurrentSeason()
-    print(current)
-    current = "Summer"
-    currentList = getSeason(year, current)
+    seasons = ['Fall', 'Summer', 'Spring', 'Winter']
+    year = Anime.query.order_by(Anime.year.desc()).first().year
+    current = 'Winter'
+    for i in range(4):
+        if Anime.query.filter_by(season='{} {}'.format(seasons[i], year)).first():
+            current = seasons[i]
+            break
+    anime_list = Anime.query.filter_by(season='{} {}'.format(current, year)).all()
+    current_list = []
+    for anime in anime_list:
+        current_list.append(get_entry(anime))
 
-    print("topList: {}, currentSeason: {}, latestList: {}".format(len(returnList), len(currentList), len(latestList)))
+    print("topList: {}, currentSeason: {}, latestList: {}".format(len(top_list), len(current_list), len(latest_list)))
 
-    return jsonify({'yearList': getAllSeasons(), 'animeLists': [{'animeList': returnList, 'title': 'Top 15 themes'},
-                                                                {'animeList': latestList, 'title': 'Latest added'},
-                                                                {'animeList': currentList,
+    return jsonify({'yearList': getAllSeasons(), 'animeLists': [{'animeList': top_list, 'title': 'Top 15 themes'},
+                                                                {'animeList': latest_list, 'title': 'Latest added'},
+                                                                {'animeList': current_list,
                                                                  'title': "{} {}".format(current, year)}]})
 
 

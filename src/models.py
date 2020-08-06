@@ -138,7 +138,7 @@ class Theme(db.Model):
     __tablename__ = 'themes'
     __searchable__ = ['title']
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(), nullable=False)
     type = db.Column(db.String(), nullable=False)
     mal_id = db.Column(db.Integer, nullable=False)
