@@ -170,6 +170,7 @@ def get_year(year):
     return jsonify(anime_list)
 
 
+@app.route('/u/<path:user>/')
 @app.route('/api/v1/mal/<path:user>')
 def get_mal_list(user):
     mal_list = getUserList(user)
@@ -351,54 +352,17 @@ def getBodies(urlList):
     return bodies
 
 
-def getList(user):
-    urlList = ['https://myanimelist.net/animelist/{}/load.json?offset={}&status=7'.format(user, i) for i in
-               range(0, 300 * 4, 300)]
-    bodies = getBodies(urlList)
-    content = []
-    for body in bodies:
-        content.append(body.decode("utf-8"))
-    malList = []
-    for data in content:
-        for entry in json.loads(data):
-            anime = getAnime(entry['anime_id'], False, entry)
-            if anime is not None:
-                malList.append(anime)
-    malList = sorted(malList, key=lambda k: k['name'])
-    return malList
-
-
-def returnJson(obj):
-    response = app.response_class(json.dumps(obj, sort_keys=False), mimetype=app.config['JSONIFY_MIMETYPE'])
-    return response
-
-
-@app.route('/u/<path:user>/')
-def getAnimeList(user):
-    malList = getList(user)
-    return returnJson(malList)
-
-
 @app.route('/api/v1/anime/<int:id>/<string:type>/')
 @app.route('/api/v1/id/<int:id>/<string:type>/')
 @app.route('/id/<int:id>/<string:type>/')
-def videoById(id, type):
-    """
-        @api {get} /id/:id/:type/audio Extract audio from video file
-        @apiName get video
-        @apiGroup Media
-
-        @apiParam {int} id Anime MyAnimeList id
-        @apiParam {String} type Theme type
-
-        @apiSuccess {String} url Redirect
-    """
+def video_by_id(id, type):
     type = type.lower()
     anime = Anime.query.filter_by(malId=id).first()
-    themes = json.loads(anime.themes)
+    # themes = json.loads(anime.themes)
+    themes = Theme.query.filter_by(mal_id=id).all()
     for theme in themes:
-        if theme['type'].lower() == type:
-            return redirect(theme['mirror'][0]['mirrorUrl'])
+        if theme.type.lower() == type:
+            return redirect(json.loads(theme.mirrors)[0]['mirrorUrl'])
     # return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
     return redirect("/id/{}".format(id))
 
@@ -406,14 +370,14 @@ def videoById(id, type):
 @app.route('/api/v1/anime/<int:id>/<string:type>/audio')
 @app.route('/api/v1/id/<int:id>/<string:type>/audio')
 @app.route('/id/<int:id>/<string:type>/audio')
-def audioById(id, type):
+def audio_by_id(id, type):
     type = type.lower()
     anime = Anime.query.filter_by(malId=id).first()
-    themes = json.loads(anime.themes)
+    themes = Theme.query.filter_by(mal_id=id).all()
     for theme in themes:
-        if theme['type'].lower() == type:
-            title = [theme['title'], json.loads(anime.title)[0], theme['type']]
-            url = theme['mirror'][0]['mirrorUrl']
+        if theme.type.lower() == type:
+            title = [theme.title, json.loads(anime.title)[0], theme.type]
+            url = json.loads(theme.mirrors)[0]['mirrorUrl']
             return redirect(getAudio(url, title))
     # return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
     return redirect("/id/{}".format(id))
@@ -421,7 +385,7 @@ def audioById(id, type):
 
 @app.route('/anime/<int:id>/')
 @app.route('/id/<int:id>/')
-def themesByID(id):
+def themes_by_id(id):
     # anime = getAnime(id)
     entry = Anime.query.filter_by(malId=id).first()
     anime = get_entry(entry)
