@@ -439,9 +439,9 @@ def get_app_list():
 
     # Latest anime list
     anime_list = Anime.query.order_by(Anime.id.desc()).limit(15)
-    latest_anime_list = []
+    latest_anime_added = []
     for anime in anime_list:
-        latest_anime_list.append(get_entry(anime))
+        latest_anime_added.append(get_entry(anime))
 
     # Top list
     theme_list = Theme.query.order_by(Theme.views.desc()).limit(15)
@@ -466,10 +466,8 @@ def get_app_list():
         current_list.append(get_entry(anime))
 
     return jsonify({'yearList': getAllSeasons(), 'animeLists': [{'animeList': top_list, 'title': 'Top 15 themes'},
-                                                                {'animeList': latest_themes_list,
-                                                                 'title': 'Latest themes added'},
-                                                                {'animeList': latest_animes_list,
-                                                                 'title': 'Latest animes added'},
+                                                                {'animeList': latest_themes_list, 'title': 'Latest themes added'},
+                                                                {'animeList': latest_anime_added, 'title': 'Latest animes added'},
                                                                 {'animeList': current_list,
                                                                  'title': "{} {}".format(current, year)}]})
 
