@@ -479,19 +479,21 @@ def get_app_list():
                                     'title': 'Latest themes added', 'type': 4}]})
 
 
-@app.route('/app/count/<int:mal_id>/<int:theme>')
-def count_view(mal_id, theme):
-    print("{}, {}".format(mal_id, theme))
+@app.route('/app/count/<int:mal_id>/<string:theme_index>')
+def count_view(mal_id, theme_index):
+    if len(theme_index) == 1:
+        theme_index = '0' + theme_index
+    print("{}, {}".format(mal_id, theme_index))
     anime = Anime.query.filter_by(malId=mal_id).first()
     if anime:
-        theme = Theme.query.filter_by(theme_id='{}-{}'.format(mal_id, theme)).first()
+        theme = Theme.query.filter_by(theme_id='{}-{}'.format(mal_id, theme_index)).first()
         if theme:
             theme.views += 1
             theme.update()
             try:
-                return theme.views
+                return jsonify(theme.views)
             except IndexError:
-                return jsonify({'message': 'bad index'})
+                return jsonify({'message': 'error bad index'})
         else:
             return jsonify({'message': 'bad index'})
     else:
