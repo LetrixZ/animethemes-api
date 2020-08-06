@@ -147,8 +147,8 @@ def add_anime(item, year, season):
             elif theme_table_2.name == 'table':
                 themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
         # }
-        # cover = get_cover(mal_id)
-        cover = None
+        cover = get_cover(mal_id)
+        # cover = None
         return {'malId': mal_id, 'titles': anime_titles, 'themes': themes, 'cover': cover, 'year': year,
                 'season': season}
     else:

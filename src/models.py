@@ -42,9 +42,6 @@ class Anime(db.Model):
             'themes': json.loads(self.themes)
         }
 
-    def toJson(self):
-        return json.dumps(self, default=lambda o: o.__dict__)
-
     def update(self):
         self.save()
 

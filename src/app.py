@@ -374,7 +374,6 @@ def returnJson(obj):
     return response
 
 
-
 def getAnimeList(user):
     malList = getList(user)
     return returnJson(malList)
@@ -506,6 +505,17 @@ def update_pinned():
 
 
 # DB ROUTES
+
+@app.route('/db/list_covers')
+def list_faulty_covers():
+    anime_list = Anime.query.filter(Anime.cover.ilike("%?s=%")).all()
+    return_list = []
+    for item in anime_list:
+        item.cover = item.cover[:item.cover.find(".jpg") + 4]
+        return_list.append(item.json())
+    db.session.commit()
+    return jsonify(return_list)
+
 
 @app.route('/db/update_themes')
 def update_themes():
