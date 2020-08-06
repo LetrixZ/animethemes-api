@@ -86,6 +86,8 @@ def get_themes(table, index, malId):
         Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, index), themeNotes, 0, json.dumps(themeMirror))
         # themes.append({'title': themeTitle, 'type': themeType, 'mirror': themeMirror, 'episodes': themeEpisodes,
         #                'notes': themeNotes, 'extras': {'views': 0, 'likes': 0, 'dislikes': 0, 'malId': malId}})
+        if len(str(index)) == 1:
+            index = "0" + str(index)
         themes.append({'theme_title': themeTitle, 'theme_id': '{}-{}'.format(malId, index)})
         index += 1
     return themes
