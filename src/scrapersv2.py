@@ -83,12 +83,10 @@ def get_themes(table, index, malId):
             themeNotes = tr.findAll('td')[3].getText()
         except IndexError:
             themeNotes = ''
-        Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, index), themeNotes, 0, json.dumps(themeMirror))
-        # themes.append({'title': themeTitle, 'type': themeType, 'mirror': themeMirror, 'episodes': themeEpisodes,
-        #                'notes': themeNotes, 'extras': {'views': 0, 'likes': 0, 'dislikes': 0, 'malId': malId}})
         ind = str(index)
         if len(ind) == 1:
             ind = "0" + ind
+        Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind), themeNotes, 0, json.dumps(themeMirror))
         themes.append({'theme_title': themeTitle, 'theme_id': '{}-{}'.format(malId, ind)})
         index += 1
     return themes
