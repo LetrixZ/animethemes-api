@@ -416,11 +416,10 @@ def audio_by_id(id, type):
 def themes_by_id(id):
     # anime = getAnime(id)
     entry = Anime.query.filter_by(malId=id).first()
-    anime = get_entry(entry)
-    if anime is None:
+    if entry is None:
         return returnJson(
             {'message': "this anime isn't available in r/AnimeThemes. Send me a message if it is to u/LetrixZ"})
-    # return returnJson({'malId': id, 'name':anime.name, 'themes':json.loads(anime.themes)})
+    anime = get_entry(entry)
     return returnJson(anime)
 
 
