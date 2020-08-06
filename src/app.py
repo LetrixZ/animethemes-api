@@ -489,7 +489,7 @@ def count_view(mal_id, theme):
             theme.views += 1
             theme.update()
             try:
-                return redirect(str(theme.views))
+                return theme.views
             except IndexError:
                 return jsonify({'message': 'bad index'})
         else:
