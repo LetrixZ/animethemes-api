@@ -212,8 +212,8 @@ def current_season():
     return jsonify(result_list)
 
 
-@app.route('/api/v1/latest/')
-def latest_added():
+@app.route('/api/v1/latest/themes/')
+def latest_themes_added():
     theme_list = Theme.query.order_by(Theme.id.desc()).limit(15)
     result_list = []
     for theme in theme_list:
@@ -221,6 +221,15 @@ def latest_added():
         result_list.append(
             {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
              'year': anime.year, 'themes': [theme.json()]})
+    return jsonify(result_list)
+
+
+@app.route('/api/v1/latest/animes/')
+def latest_animes_list():
+    anime_list = Anime.query.order_by(Anime.id.desc()).limit(15)
+    result_list = []
+    for anime in anime_list:
+        result_list.append(get_entry(anime))
     return jsonify(result_list)
 
 
@@ -419,14 +428,20 @@ def getAnimeThemes(id):
 # APP ROUTES
 @app.route('/app_list/')
 def get_app_list():
-    # Latest list
+    # Latest themes list
     theme_list = Theme.query.order_by(Theme.id.desc()).limit(15)
-    latest_list = []
+    latest_themes_list = []
     for theme in theme_list:
         anime = Anime.query.filter_by(malId=theme.mal_id).first()
-        latest_list.append(
+        latest_themes_list.append(
             {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover, 'season': anime.season,
              'year': anime.year, 'themes': [theme.json()]})
+
+    # Latest anime list
+    anime_list = Anime.query.order_by(Anime.id.desc()).limit(15)
+    latest_anime_list = []
+    for anime in anime_list:
+        latest_anime_list.append(get_entry(anime))
 
     # Top list
     theme_list = Theme.query.order_by(Theme.views.desc()).limit(15)
@@ -450,12 +465,31 @@ def get_app_list():
     for anime in anime_list:
         current_list.append(get_entry(anime))
 
-    print("topList: {}, currentSeason: {}, latestList: {}".format(len(top_list), len(current_list), len(latest_list)))
-
     return jsonify({'yearList': getAllSeasons(), 'animeLists': [{'animeList': top_list, 'title': 'Top 15 themes'},
-                                                                {'animeList': latest_list, 'title': 'Latest added'},
+                                                                {'animeList': latest_themes_list,
+                                                                 'title': 'Latest themes added'},
+                                                                {'animeList': latest_animes_list,
+                                                                 'title': 'Latest animes added'},
                                                                 {'animeList': current_list,
                                                                  'title': "{} {}".format(current, year)}]})
+
+
+@app.route('/app/count/<int:mal_id>/<int:theme>')
+def count_view(mal_id, theme):
+    anime = Anime.query.filter_by(malId=mal_id).first()
+    if anime:
+        theme = Theme.query.filter_by(theme_id='{}-{}'.format(mal_id, theme)).first()
+        if theme:
+            theme.views += 1
+            theme.update()
+            try:
+                return redirect(str(theme.views))
+            except IndexError:
+                return jsonify({'message': 'bad index'})
+        else:
+            return jsonify({'message': 'bad index'})
+    else:
+        return jsonify({'message': 'anime not found'})
 
 
 # DB ROUTES
@@ -498,6 +532,7 @@ def print_all():
     for anime in anime_list:
         print_list.append(anime.json())
     return jsonify(print_list)
+
 
 @app.route('/db/music/')
 def db_add_music():
