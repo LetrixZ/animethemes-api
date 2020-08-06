@@ -254,7 +254,7 @@ def get_theme(mal_id, theme_index, version):
         return jsonify({'message': 'anime not found'})
 
 
-@app.route('/api/v1/anime/<int:mal_id>/<string:theme_index>/<int:version>')
+@app.route('/api/v1/anime/<int:mal_id>/<string:theme_index>/<int:version>/audio')
 def get_audio_theme(mal_id, theme_index, version):
     anime = Anime.query.filter_by(malId=mal_id).first()
     if len(theme_index) == 1:
