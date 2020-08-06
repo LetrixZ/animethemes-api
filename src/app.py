@@ -251,6 +251,18 @@ def get_theme(mal_id, theme, version):
         return jsonify({'message': 'anime not found'})
 
 
+@app.route('/api/v1/anime/<int:mal_id>/<int:theme>/<int:version>')
+def get_audio_theme(mal_id, theme, version):
+    anime = Anime.query.filter_by(malId=mal_id).first()
+    theme = Theme.query.filter_by(theme_id='{}-{}'.format(mal_id, theme)).first()
+    if theme:
+        title = [theme.title, json.loads(anime.title)[0], theme.type]
+        url = theme.mirrors[version]
+        return redirect(getAudio(url, title))
+    else:
+        return redirect("/anime/{}".format(id))
+
+
 @app.route('/api/v1/top/')
 def get_top():
     theme_list = Theme.query.order_by(Theme.views.desc()).limit(15)
@@ -385,19 +397,10 @@ def videoById(id, type):
     return redirect("/id/{}".format(id))
 
 
+@app.route('/api/v1/anime/<int:id>/<string:type>/audio')
 @app.route('/api/v1/id/<int:id>/<string:type>/audio')
 @app.route('/id/<int:id>/<string:type>/audio')
 def audioById(id, type):
-    """
-        @api {get} /id/:id/:type/audio Extract audio from video file
-        @apiName extract audio
-        @apiGroup Media
-
-        @apiParam {int} id Anime MyAnimeList id
-        @apiParam {String} type Theme type
-
-        @apiSuccess {String} url Redirect
-    """
     type = type.lower()
     anime = Anime.query.filter_by(malId=id).first()
     themes = json.loads(anime.themes)
@@ -466,8 +469,10 @@ def get_app_list():
         current_list.append(get_entry(anime))
 
     return jsonify({'yearList': getAllSeasons(), 'animeLists': [{'animeList': top_list, 'title': 'Top 15 themes'},
-                                                                {'animeList': latest_themes_list, 'title': 'Latest themes added'},
-                                                                {'animeList': latest_anime_added, 'title': 'Latest animes added'},
+                                                                {'animeList': latest_themes_list,
+                                                                 'title': 'Latest themes added'},
+                                                                {'animeList': latest_anime_added,
+                                                                 'title': 'Latest animes added'},
                                                                 {'animeList': current_list,
                                                                  'title': "{} {}".format(current, year)}]})
 
@@ -488,6 +493,17 @@ def count_view(mal_id, theme):
             return jsonify({'message': 'bad index'})
     else:
         return jsonify({'message': 'anime not found'})
+
+
+@app.route('/app/update_pinned', methods=['POST'])
+def update_pinned():
+    content = request.get_json()
+    anime_list = content.get('animeList')
+    result_list = []
+    for anime in anime_list:
+        anime_entry = Anime.query.filter_by(malId=anime.get('malId')).first()
+        result_list.append(get_entry(anime_entry))
+    return jsonify({'animeList': result_list, 'title': 'Pinned'})
 
 
 # DB ROUTES
