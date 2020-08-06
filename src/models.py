@@ -8,7 +8,7 @@ class Anime(db.Model):
     __tablename__ = 'animes'
     __searchable__ = ['title']
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(), nullable=False)
     malId = db.Column(db.Integer, nullable=False, unique=True)
     cover = db.Column(db.String())
