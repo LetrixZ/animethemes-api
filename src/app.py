@@ -16,6 +16,7 @@ from scrapers import getUserList, getAllYears, getAllSeasons, getYearSeasons, ge
     getCoverFromDB, get_entry
 from scrapersv2 import get_year as v2_get_year
 from werkzeug.utils import redirect
+from operator import itemgetter
 
 
 def create_app(environment):
@@ -508,6 +509,19 @@ def update_pinned():
 
 
 # DB ROUTES
+
+@app.route('/db/update_themes')
+def update_themes():
+    theme_list = Theme.query.all()
+    for theme in theme_list:
+        mal_id = theme.mal_id
+        index = theme.theme_id.split('-')[1]
+        if len(index) == 1:
+            index = "0" + index
+        theme.theme_id = str(mal_id) + '-' + index
+        # theme.save()
+    db.session.commit()
+
 
 @app.route('/db/add_themes/')
 def add_themes_db():

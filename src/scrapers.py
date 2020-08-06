@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 import praw, requests, concurrent.futures, json, os
 from bs4 import BeautifulSoup
 from models import Anime, Theme
@@ -283,6 +285,7 @@ def get_entry(anime):
     theme_list = []
     for theme in themes:
         theme_list.append(theme.json())
+    newlist = sorted(theme_list, key=itemgetter('theme_id'), reverse=False)
     return {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover,
             'season': anime.season,
-            'year': anime.year, 'themes': theme_list}
+            'year': anime.year, 'themes': newlist}
