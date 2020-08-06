@@ -419,6 +419,7 @@ def audioById(id, type):
     return redirect("/id/{}".format(id))
 
 
+@app.route('/anime/<int:id>/')
 @app.route('/id/<int:id>/')
 def themesByID(id):
     # anime = getAnime(id)
@@ -429,11 +430,6 @@ def themesByID(id):
             {'message': "this anime isn't available in r/AnimeThemes. Send me a message if it is to u/LetrixZ"})
     # return returnJson({'malId': id, 'name':anime.name, 'themes':json.loads(anime.themes)})
     return returnJson(anime)
-
-
-@app.route('/anime/<int:id>/')
-def getAnimeThemes(id):
-    return returnJson(getAnime(id))
 
 
 # APP ROUTES
