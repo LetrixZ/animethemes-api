@@ -139,7 +139,7 @@ class Theme(db.Model):
     title = db.Column(db.String(), nullable=False)
     type = db.Column(db.String(), nullable=False)
     mal_id = db.Column(db.Integer, nullable=False)
-    theme_id = db.Column(db.String(), nullable=False, primary_key=True)
+    theme_id = db.Column(db.String(), nullable=False, unique=True)
     notes = db.Column(db.String())
     views = db.Column(db.Integer)
     mirrors = db.Column(db.String(), nullable=False)
@@ -189,6 +189,50 @@ class Theme(db.Model):
                 'notes': self.notes,
                 'views': self.views,
                 'mirrors': json.loads(self.mirrors)}]
+        }
+
+    def update(self):
+        self.save()
+
+    def delete(self):
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except:
+            return False
+
+
+class Artist(db.Model):
+    __tablename__ = 'artist'
+
+    id = db.Column(db.Integer, primary_key=True)
+    mal_id = db.Column(db.Integer, nullable=False, unique=True)
+    name = db.Column(db.String(), nullable=False)
+    cover = db.Column(db.String())
+    themes = db.Column(db.String())
+
+    @classmethod
+    def create(cls, mal_id, name, cover, themes):
+        artist = Artist(mal_id=mal_id, name=name, cover=cover, themes=themes)
+        return artist.save()
+
+    def save(self):
+        row = Artist.query.filter_by(mal_id=self.mal_id).first()
+        if not row:
+            db.session.add(self)
+        else:
+            row.themes = self.themes
+            row.cover = self.cover
+        db.session.commit()
+        return self
+
+    def json(self):
+        return {
+            'mal_id': self.mal_id,
+            'name': self.name,
+            'cover': self.cover,
+            'themes': json.loads(self.themes)
         }
 
     def update(self):

@@ -7,16 +7,15 @@ import subprocess
 import fileioapi as fileioapi
 import requests
 from anilist import getListFromUser
-from audio_scraper import get_audio, get_music
+from artist_scraper import get_artists_list
+from audio_scraper import get_music
 from config import config
 from flask import Flask, jsonify, request
-from flask_apidoc_extend import ApiDoc
 from models import db, Anime, User, Playlist, Theme
-from scrapers import getUserList, getAllYears, getAllSeasons, getYearSeasons, getCurrentSeason, getSeason, \
-    getCoverFromDB, get_entry
+from scrapers import getUserList, getAllYears, getAllSeasons, getYearSeasons, getSeason, \
+    get_entry
 from scrapersv2 import get_year as v2_get_year
 from werkzeug.utils import redirect
-from operator import itemgetter
 
 
 def create_app(environment):
@@ -32,7 +31,6 @@ environment = config['production']
 # environment = config['development']
 
 app = create_app(environment)
-ApiDoc(app=app)
 
 
 def random_string(string_length=8):
@@ -505,6 +503,11 @@ def update_pinned():
 
 
 # DB ROUTES
+
+@app.route('/db/get_artists')
+def get_artists():
+    return jsonify(get_artists_list())
+
 
 @app.route('/db/list_covers')
 def list_faulty_covers():
