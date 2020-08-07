@@ -228,11 +228,17 @@ class Artist(db.Model):
         return self
 
     def json(self):
+        art_list = json.loads(self.themes)
+        theme_list = []
+        for art_theme in art_list:
+            theme_id = art_theme.get('theme_id')
+            theme = Theme.query.filter_by(theme_id=theme_id).first()
+            theme_list.append(theme.json())
         return {
             'mal_id': self.mal_id,
             'name': self.name,
             'cover': self.cover,
-            'themes': json.loads(self.themes)
+            'themes': theme_list
         }
 
     def update(self):

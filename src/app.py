@@ -11,9 +11,9 @@ from artist_scraper import get_artists_list
 from audio_scraper import get_music
 from config import config
 from flask import Flask, jsonify, request
-from models import db, Anime, User, Playlist, Theme
+from models import db, Anime, User, Playlist, Theme, Artist
 from scrapers import getUserList, getAllYears, getAllSeasons, getYearSeasons, getSeason, \
-    get_entry
+    get_entry, get_artist_entry
 from scrapersv2 import get_year as v2_get_year
 from werkzeug.utils import redirect
 
@@ -126,16 +126,6 @@ def get_anime(mal_id):
         return jsonify({'message': 'anime not found'})
 
 
-@app.route('/api/v1/s/<path:name>')
-def search_anime(name):
-    term = '%{}%'.format(name)
-    results = Anime.query.filter(Anime.title.ilike("%{}%".format(name))).all()
-    animeList = []
-    for item in results:
-        animeList.append(get_entry(item))
-    return jsonify(animeList)
-
-
 @app.route('/api/v1/seasons/<string:year>/<string:season>')
 def season(year, season):
     year = year.replace('s', '')
@@ -233,6 +223,7 @@ def latest_animes_list():
     return jsonify(result_list)
 
 
+@app.route('/api/v1/anime/<int:mal_id>/<string:theme_index>/<int:version>/video')
 @app.route('/api/v1/anime/<int:mal_id>/<string:theme_index>/<int:version>')
 def get_theme(mal_id, theme_index, version):
     anime = Anime.query.filter_by(malId=mal_id).first()
@@ -286,6 +277,28 @@ def search_theme(name):
     for item in results:
         search_list.append(item.single_json())
     return jsonify(search_list)
+
+
+@app.route('/api/v1/s/anime/<path:name>')
+@app.route('/api/v1/s/<path:name>')
+def search_anime(name):
+    term = '%{}%'.format(name)
+    results = Anime.query.filter(Anime.title.ilike("%{}%".format(name))).all()
+    animeList = []
+    for item in results:
+        animeList.append(get_entry(item))
+    return jsonify(animeList)
+
+
+@app.route('/api/v1/s/artist/<path:name>')
+def search_artist(name):
+    term = '%{}%'.format(name)
+    results = Artist.query.filter(Artist.name.ilike("%{}%".format(name))).all()
+    artist_list = []
+    for item in results:
+        # artist_list.append(get_artist_entry(item))
+        artist_list.append(item.json())
+    return jsonify(artist_list)
 
 
 # LEGACY ROUTES

@@ -289,3 +289,13 @@ def get_entry(anime):
     return {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover,
             'season': anime.season,
             'year': anime.year, 'themes': newlist}
+
+
+def get_artist_entry(artist):
+    art_list = json.loads(artist.themes)
+    theme_list = []
+    for art_theme in art_list:
+        theme_id = art_theme.get('theme_id')
+        theme = Theme.query.filter_by(theme_id=theme_id).first()
+        theme_list.append(theme.json())
+    return {'mal_id': artist.mal_id, 'name': artist.name, 'cover': artist.cover, 'themes': theme_list}
