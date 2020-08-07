@@ -6,21 +6,22 @@ import subprocess
 
 import fileioapi as fileioapi
 import requests
-from anilist import getListFromUser
-from artist_scraper import get_artists_list
-from audio_scraper import get_music
-from config import config
 from flask import Flask, jsonify, request
-from models import db, Anime, User, Playlist, Theme, Artist
-from scrapers import getUserList, getAllYears, getAllSeasons, getYearSeasons, getSeason, \
-    get_entry, get_artist_entry
-from scrapersv2 import get_year as v2_get_year
 from werkzeug.utils import redirect
 
+from src.anilist import getListFromUser
+from src.artist_scraper import get_artists_list, get_cover
+from src.audio_scraper import get_music
+from src.config import config
+from src.models import db, Anime, User, Playlist, Theme, Artist
+from src.scrapers import getUserList, getAllYears, getAllSeasons, getYearSeasons, getSeason, \
+    get_entry
+from src.scrapersv2 import get_year as v2_get_year
 
-def create_app(environment):
+
+def create_app(env):
     app = Flask(__name__)
-    app.config.from_object(environment)
+    app.config.from_object(env)
     with app.app_context():
         db.init_app(app)
         db.create_all()
@@ -536,6 +537,47 @@ def update_pinned():
 
 
 # DB ROUTES
+
+@app.route('/db/compress_anime')
+def compress_anime():
+    anime_list = Anime.query.all()
+    for anime in anime_list:
+        theme_entries = json.loads(anime.themes)
+        theme_list = []
+        for theme in theme_entries:
+            theme_id = theme.get('theme_id')
+            theme_index = theme_id.split('-')[1]
+            if len(theme_index) == 1:
+                theme_index = '0' + theme_index
+            theme_id = "{}-{}".format(anime.malId, theme_index)
+            theme_list.append(theme_id)
+        anime.themes = json.dumps(theme_list)
+        anime.save()
+    return jsonify('done')
+
+
+@app.route('/db/compress_artist')
+def compress_artist():
+    artist_list = Artist.query.all()
+    for artist in artist_list:
+        theme_entries = json.loads(artist.themes)
+        theme_list = []
+        for theme in theme_entries:
+            theme_list.append(theme.get('theme_id'))
+        artist.themes = json.dumps(theme_list)
+        artist.save()
+    return jsonify('done')
+
+
+@app.route('/db/artist_cover')
+def get_artist_cover():
+    artist_list = Artist.query.all()
+    for artist in artist_list:
+        if not artist.cover:
+            artist.cover = get_cover(artist.mal_id)
+            artist.save()
+    return jsonify('done')
+
 
 @app.route('/db/get_artists')
 def get_artists():

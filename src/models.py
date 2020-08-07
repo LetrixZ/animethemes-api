@@ -231,8 +231,7 @@ class Artist(db.Model):
         art_list = json.loads(self.themes)
         theme_list = []
         for art_theme in art_list:
-            theme_id = art_theme.get('theme_id')
-            theme = Theme.query.filter_by(theme_id=theme_id).first()
+            theme = Theme.query.filter_by(theme_id=art_theme).first()
             theme_list.append(theme.json())
         return {
             'mal_id': self.mal_id,

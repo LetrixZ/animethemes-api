@@ -1,11 +1,20 @@
 import json
 import praw
+import requests
 from bs4 import BeautifulSoup
 from models import Artist, Theme
 
 reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
                      client_secret="Vs9q60YyROx780avM7AqsVFzfYM",
                      user_agent="Letrix's AnimeThemes API")
+
+
+def get_cover(mal_id):
+    print(mal_id)
+    page = requests.get("https://myanimelist.net/people/{}".format(mal_id))
+    body = BeautifulSoup(page.content, 'html.parser')
+    cover = body.find('img', {'class': 'lazyload'}).get('data-src')
+    return cover
 
 
 def parse_themes(body):
@@ -46,8 +55,8 @@ def parse_artist(entry):
         if not mal_id:
             mal_id = body.find('h2').find('a').get('href').split('/')[-2]
         mal_id = int("".join(filter(str.isdigit, mal_id)))
-    Artist.create(mal_id, name, None, json.dumps(parse_themes(body)))
-    return {'name': name, 'cover': None, 'themes': parse_themes(body)}
+    Artist.create(mal_id, name, get_cover(mal_id), json.dumps(parse_themes(body)))
+    return {'name': name, 'cover': get_cover(mal_id), 'themes': parse_themes(body)}
 
 
 def get_artists_list():

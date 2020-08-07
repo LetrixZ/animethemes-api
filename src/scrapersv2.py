@@ -8,7 +8,7 @@ reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
                      user_agent="Letrix's AnimeThemes API")
 
 
-def getBodies(urlList):
+def get_bodies(urlList):
     def load_url(url, timeout):
         return requests.get(url, timeout=timeout)
 
@@ -87,44 +87,9 @@ def get_themes(table, index, malId):
         if len(ind) == 1:
             ind = "0" + ind
         Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind), themeNotes, 0, json.dumps(themeMirror))
-        themes.append({'theme_title': themeTitle, 'theme_id': '{}-{}'.format(malId, ind)})
+        themes.append('{}-{}'.format(malId, ind))
         index += 1
     return themes
-
-
-def get_anime(entry, season_name, year):
-    index = 0
-    malUrl = entry.find('a').get('href')
-    if 'myanimelist' not in malUrl:
-        return None
-    malId = malUrl[30:]
-    malId = malId.split('/')[0]
-    malId = int("".join(filter(str.isdigit, malId)))
-    name = entry.getText()
-    title = [name]
-    try:
-        title.extend(entry.nextSibling.nextSibling.find('strong').getText().split(', '))
-    except AttributeError:
-        # print('There are not another titles')
-        pass
-    table = entry.find_next_sibling('table').find('tbody').findAll('tr')
-    themes = get_themes(table, index, malId)
-    table2 = entry.find_next_sibling('table')
-    while True:
-        table2 = table2.nextSibling
-        if table2 is None or table2.name == 'h3':
-            break
-        elif table2.name == 'table':
-            themes += get_themes(table2.find('tbody').findAll('tr'), index, malId)
-    row = Anime.query.filter_by(malId=malId).first()
-    if row:
-        cover = row.cover
-    else:
-        # cover = get_cover(malId)
-        cover = None
-    return {'malId': malId, 'titles': title, 'themes': themes, 'cover': cover, 'year': year, 'season': season_name}
-    # else:
-    #    return None
 
 
 def add_anime(item, year, season):
@@ -152,7 +117,6 @@ def add_anime(item, year, season):
                 themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
         # }
         cover = get_cover(mal_id)
-        # cover = None
         return {'malId': mal_id, 'titles': anime_titles, 'themes': themes, 'cover': cover, 'year': year,
                 'season': season}
     else:
@@ -166,21 +130,8 @@ def add_anime(item, year, season):
                 break
             elif theme_table_2.name == 'table':
                 new_themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
-        # if len(themes) != len(new_themes):
-        #     print("{}, different list".format(json.loads(row.title)[0]))
-        #     for theme in new_themes:
-        #         print(theme.get('title'))
-        # for i in range(len(themes)):
-        #     if len(themes[i].json().get('mirror')) != len(new_themes[i].get('mirror')):
-        #         print(json.loads(row.title))
-        #         print('{}, different mirrors'.format(themes[i].get('title')))
-        #         themes[i]['mirror'] = new_themes[i]['mirror']
         if len(new_themes) != len(new_themes):
             print("{}, different lists".format(json.loads(row.title)[0]))
-        # for i in range(len(themes)):
-        #     print(len(json.loads(themes[i].mirrors)))
-        #     if len(new_themes[i].get('mirror')) != len(json.loads(themes[i].mirrors)):
-        #         print('{}, different mirrors'.format(themes[i].title))
 
 
 def get_season(entry, year):

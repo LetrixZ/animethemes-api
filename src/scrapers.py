@@ -2,7 +2,7 @@ from operator import itemgetter
 
 import praw, requests, concurrent.futures, json, os
 from bs4 import BeautifulSoup
-from models import Anime, Theme
+from src.models import Anime, Theme
 from mal import Anime as AnimeMAL
 
 client_secret = os.getenv('CLIENT_SECRET')
@@ -285,17 +285,7 @@ def get_entry(anime):
     theme_list = []
     for theme in themes:
         theme_list.append(theme.json())
-    newlist = sorted(theme_list, key=itemgetter('theme_id'), reverse=False)
+    new_list = sorted(theme_list, key=itemgetter('theme_id'), reverse=False)
     return {'malId': anime.malId, 'title': json.loads(anime.title), 'cover': anime.cover,
             'season': anime.season,
-            'year': anime.year, 'themes': newlist}
-
-
-def get_artist_entry(artist):
-    art_list = json.loads(artist.themes)
-    theme_list = []
-    for art_theme in art_list:
-        theme_id = art_theme.get('theme_id')
-        theme = Theme.query.filter_by(theme_id=theme_id).first()
-        theme_list.append(theme.json())
-    return {'mal_id': artist.mal_id, 'name': artist.name, 'cover': artist.cover, 'themes': theme_list}
+            'year': anime.year, 'themes': new_list}
