@@ -299,6 +299,28 @@ def search_artist(name):
     return jsonify(artist_list)
 
 
+@app.route('/api/v1/s/all/<path:name>')
+def search_all(name):
+    theme_query = Theme.query.filter(Theme.title.ilike("%{}%".format(name))).all()
+    theme_list = []
+    for theme in theme_query:
+        theme_list.append(theme.single_json())
+
+    anime_query = Anime.query.filter(Anime.title.ilike("%{}%".format(name))).all()
+    anime_list = []
+    for anime in anime_query:
+        anime_list.append(get_entry(anime))
+
+    artist_query = Artist.query.filter(Artist.name.ilike("%{}%".format(name))).all()
+    artist_list = []
+    for artist in artist_query:
+        artist_list.append(artist.json())
+
+    return jsonify([{'animeList': anime_list, 'title': 'Anime', 'type': 0},
+                    {'animeList': theme_list, 'title': 'Theme', 'type': 1},
+                    {'animeList': artist_list, 'title': 'Artist', 'type': 2}])
+
+
 # LEGACY ROUTES
 
 def getAnime(malId, poster=False, entry=None):
