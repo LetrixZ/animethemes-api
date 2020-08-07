@@ -14,7 +14,7 @@ from src.artist_scraper import get_artists_list, get_cover
 from src.audio_scraper import get_music
 from src.config import config
 from src.models import db, Anime, User, Playlist, Theme, Artist
-from src.scrapers import getUserList, getAllYears, getAllSeasons, getYearSeasons, getSeason, \
+from src.scrapers import get_user_list, get_all_years, get_all_seasons, get_year_seasons, get_season, \
     get_entry
 from src.scrapersv2 import get_year as v2_get_year
 
@@ -130,23 +130,23 @@ def get_anime(mal_id):
 @app.route('/api/v1/seasons/<string:year>/<string:season>')
 def season(year, season):
     year = year.replace('s', '')
-    return jsonify(getSeason(year, season))
+    return jsonify(get_season(year, season))
 
 
 @app.route('/api/v1/seasons/<string:year>')
 def year_seasons(year):
     year = year.replace('s', '')
-    return jsonify(getYearSeasons(year))
+    return jsonify(get_year_seasons(year))
 
 
 @app.route('/api/v1/years')
 def get_years():
-    return jsonify(getAllYears())
+    return jsonify(get_all_years())
 
 
 @app.route('/api/v1/seasons')
 def get_seasons():
-    return jsonify(getAllSeasons())
+    return jsonify(get_all_seasons())
 
 
 @app.route('/api/v1/year/<string:year>')
@@ -162,7 +162,7 @@ def get_year(year):
 @app.route('/u/<path:user>/')
 @app.route('/api/v1/mal/<path:user>')
 def get_mal_list(user):
-    mal_list = getUserList(user)
+    mal_list = get_user_list(user)
     return jsonify(mal_list)
 
 
@@ -494,7 +494,7 @@ def get_app_list():
     for anime in anime_list:
         current_list.append(get_entry(anime))
 
-    return jsonify({'yearList': getAllSeasons(),
+    return jsonify({'yearList': get_all_seasons(),
                     'animeLists': [{'animeList': current_list, 'title': "{} {}".format(current, year), 'type': 2},
                                    {'animeList': top_list,
                                     'title': 'Top 15 themes', 'type': 3},
