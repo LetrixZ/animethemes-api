@@ -316,9 +316,9 @@ def search_all(name):
     for artist in artist_query:
         artist_list.append(artist.json())
 
-    return jsonify([{'animeList': anime_list, 'title': 'Anime', 'type': 0},
-                    {'animeList': theme_list, 'title': 'Theme', 'type': 1},
-                    {'animeList': artist_list, 'title': 'Artist', 'type': 2}])
+    return jsonify({'anime_list': {'animeList': anime_list, 'title': 'Anime', 'type': 0},
+                    'theme_list': {'animeList': theme_list, 'title': 'Theme', 'type': 1},
+                    'artist_list': artist_list})
 
 
 # LEGACY ROUTES
