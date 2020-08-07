@@ -282,7 +282,6 @@ def search_theme(name):
 @app.route('/api/v1/s/anime/<path:name>')
 @app.route('/api/v1/s/<path:name>')
 def search_anime(name):
-    term = '%{}%'.format(name)
     results = Anime.query.filter(Anime.title.ilike("%{}%".format(name))).all()
     animeList = []
     for item in results:
@@ -292,7 +291,6 @@ def search_anime(name):
 
 @app.route('/api/v1/s/artist/<path:name>')
 def search_artist(name):
-    term = '%{}%'.format(name)
     results = Artist.query.filter(Artist.name.ilike("%{}%".format(name))).all()
     artist_list = []
     for item in results:

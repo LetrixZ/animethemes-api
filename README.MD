@@ -128,6 +128,63 @@ Deployed on Heroku
 ]
 ```
 
+### GET /s/artist/[name]
+[name] = Artist's name (Example: LiSA)
+
+#### Response
+```json5
+// Name = LiSA
+[
+  {
+    "mal_id": 35849,
+    "name": "Alisa Takigawa",
+    "cover": null,
+    "themes": [
+      {
+        "title": "No Side",
+        "type": "ED2",
+        "mal_id": 31588,
+        "theme_id": "31588-03",
+        "notes": "",
+        "views": 0,
+        "mirrors": [
+          {
+            "quality": "default",
+            "mirrorUrl": "https://animethemes.moe/video/AllOut-ED2.webm",
+            "appUrl": "31588/3/0"
+          }
+        ]
+      },
+      //...
+    ]
+  },
+  {
+    "mal_id": 10561,
+    "name": "LiSA",
+    "cover": null,
+    "themes": [
+      {
+        "title": "My Soul, Your Beats!",
+        "type": "OP2",
+        "mal_id": 6547,
+        "theme_id": "6547-01",
+        "notes": "",
+        "views": 0,
+        "mirrors": [
+          {
+            "quality": "BD, 1080",
+            "mirrorUrl": "https://animethemes.moe/video/AngelBeats-OP2.webm",
+            "appUrl": "6547/1/0"
+          }
+        ]
+      },
+      //...
+    ]
+    //...
+  }
+]
+```
+
 ### GET /anime/[id]/[theme]/[quality]
 [id] = MyAnimeList's anime ID (Example: [35062](https://myanimelist.net/anime/35062))
 
