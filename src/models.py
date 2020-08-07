@@ -1,5 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
 import json
+
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
@@ -229,15 +230,27 @@ class Artist(db.Model):
 
     def json(self):
         art_list = json.loads(self.themes)
-        theme_list = []
-        for art_theme in art_list:
-            theme = Theme.query.filter_by(theme_id=art_theme).first()
-            theme_list.append(theme.json())
+        anime_list = []
+        theme_ids = []
+        for theme_id in art_list:
+            mal_id = int(theme_id.split('-')[0])
+            theme_ids.append(mal_id)
+        theme_ids = list(dict.fromkeys(theme_ids))
+        for mal_id in theme_ids:
+            anime = Anime.query.filter_by(malId=mal_id).first()
+            theme_entries = Theme.query.filter_by(mal_id=mal_id).all()
+            theme_list = []
+            for theme in theme_entries:
+                if theme.theme_id in art_list:
+                    theme_list.append(theme.json())
+            anime_list.append(
+                {'anime_mal_id': anime.malId, 'anime_title': json.loads(anime.title), 'anime_cover': anime.cover,
+                 'theme_list': theme_list})
         return {
             'mal_id': self.mal_id,
             'name': self.name,
             'cover': self.cover,
-            'themes': theme_list
+            'themes': anime_list
         }
 
     def update(self):
