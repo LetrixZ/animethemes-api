@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath 'src/' app:app --timeout 120
+web: gunicorn --pythonpath 'src/' app:app --timeout 15
