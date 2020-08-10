@@ -159,6 +159,8 @@ class Theme(db.Model):
             # return self
         else:
             row.mirrors = self.mirrors
+            row.title = self.title
+            row.notes = self.notes
             # return None
         db.session.commit()
         return self

@@ -1,7 +1,11 @@
-import praw, requests, concurrent.futures, json
+import concurrent.futures
+import json
+
+import praw
+import requests
 from bs4 import BeautifulSoup
-from models import Anime, db, Theme
 from mal import Anime as AnimeMAL
+from models import Anime, Theme
 
 reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
                      client_secret="Vs9q60YyROx780avM7AqsVFzfYM",
@@ -36,7 +40,7 @@ def get_cover(mal_id):
         return image
 
 
-def get_themes(table, index, malId):
+def get_themes(table, index, malId, pos, extra, prev):
     themes = []
     for tr in table:
         if not len(tr.findAll('td')[0].getText()):
@@ -86,7 +90,25 @@ def get_themes(table, index, malId):
         ind = str(index)
         if len(ind) == 1:
             ind = "0" + ind
-        Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind), themeNotes, 0, json.dumps(themeMirror))
+        if pos is not None and index >= pos:
+            if themeNotes:
+                Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind),
+                             extra + ", " + themeNotes, 0,
+                             json.dumps(themeMirror))
+            else:
+                Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind),
+                             extra, 0,
+                             json.dumps(themeMirror))
+        elif prev:
+            if themeNotes:
+                Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind), prev + ", " + themeNotes, 0,
+                             json.dumps(themeMirror))
+            else:
+                Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind), prev, 0,
+                             json.dumps(themeMirror))
+        else:
+            Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind), themeNotes, 0,
+                         json.dumps(themeMirror))
         themes.append('{}-{}'.format(malId, ind))
         index += 1
     return themes
@@ -99,6 +121,7 @@ def add_anime(item, year, season):
     mal_id = int("".join(filter(str.isdigit, mal_url[30:].split('/')[0])))
     row = Anime.query.filter_by(malId=mal_id).first()
     if not row:
+        print("not")
         anime_name = item.getText()
         anime_titles = [anime_name]
         try:
@@ -106,32 +129,48 @@ def add_anime(item, year, season):
         except AttributeError:
             pass
         theme_table = item.find_next_sibling('table').find('tbody').findAll('tr')
-        themes = get_themes(theme_table, 0, mal_id)
-        # # Getting extra themes {
-        # theme_table_2 = item.find_next_sibling('table')
-        # while True:
-        #     theme_table_2 = theme_table_2.nextSibling
-        #     if theme_table_2 is None or theme_table_2.name == 'h3':
-        #         break
-        #     elif theme_table_2.name == 'table':
-        #         themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
-        # # }
+        pos = len(theme_table)
+        entries = theme_table
+        # Getting extra themes {
+        theme_table_2 = item.find_next_sibling('table')
+        extra = ""
+        while True:
+            theme_table_2 = theme_table_2.nextSibling
+            if theme_table_2 is not None and theme_table_2.name == 'p':
+                extra = theme_table_2.text
+            if theme_table_2 is None or theme_table_2.name == 'h3':
+                break
+            elif theme_table_2.name == 'table':
+                entries += theme_table_2.find('tbody').findAll('tr')
+        # }
+        themes = get_themes(entries, 0, mal_id, pos, extra)
         cover = get_cover(mal_id)
         return {'malId': mal_id, 'titles': anime_titles, 'themes': themes, 'cover': cover, 'year': year,
                 'season': season}
     else:
-        themes = Theme.query.filter_by(mal_id=mal_id).all()
         theme_table = item.find_next_sibling('table').find('tbody').findAll('tr')
-        new_themes = get_themes(theme_table, 0, mal_id)
+        prev = item.find_next_sibling('table').previousSibling.previousSibling
+        if prev.name == 'p':
+            prev = prev.text
+            pass
+        else:
+            prev = None
+        pos = len(theme_table)
+        entries = theme_table
+        # themes = get_themes(theme_table, 0, mal_id)
+        # Getting extra themes {
         theme_table_2 = item.find_next_sibling('table')
+        extra = ""
         while True:
             theme_table_2 = theme_table_2.nextSibling
+            if theme_table_2 is not None and theme_table_2.name == 'p':
+                extra = theme_table_2.text
             if theme_table_2 is None or theme_table_2.name == 'h3':
                 break
             elif theme_table_2.name == 'table':
-                new_themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
-        if len(new_themes) != len(new_themes):
-            print("{}, different lists".format(json.loads(row.title)[0]))
+                entries += theme_table_2.find('tbody').findAll('tr')
+        # }
+        get_themes(entries, 0, mal_id, pos, extra, prev)
 
 
 def get_season(entry, year):
