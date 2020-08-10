@@ -174,6 +174,17 @@ class Theme(db.Model):
             'mirrors': json.loads(self.mirrors)
         }
 
+    def json_mini(self):
+        anime = Anime.query.filter_by(malId=self.mal_id).first()
+        return {
+            'anime': json.loads(anime.title)[0],
+            'cover': anime.cover,
+            'theme_id': self.theme_id,
+            'notes': self.notes,
+            'views': self.views,
+            'mirrors': json.loads(self.mirrors)
+        }
+
     def single_json(self):
         anime = Anime.query.filter_by(malId=self.mal_id).first()
         return {
