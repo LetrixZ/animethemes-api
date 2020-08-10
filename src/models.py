@@ -160,7 +160,7 @@ class Theme(db.Model):
         else:
             row.mirrors = self.mirrors
             row.title = self.title
-            row.notes = self.notes
+            # row.notes = self.notes
             # return None
         db.session.commit()
         return self
