@@ -107,15 +107,15 @@ def add_anime(item, year, season):
             pass
         theme_table = item.find_next_sibling('table').find('tbody').findAll('tr')
         themes = get_themes(theme_table, 0, mal_id)
-        # Getting extra themes {
-        theme_table_2 = item.find_next_sibling('table')
-        while True:
-            theme_table_2 = theme_table_2.nextSibling
-            if theme_table_2 is None or theme_table_2.name == 'h3':
-                break
-            elif theme_table_2.name == 'table':
-                themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
-        # }
+        # # Getting extra themes {
+        # theme_table_2 = item.find_next_sibling('table')
+        # while True:
+        #     theme_table_2 = theme_table_2.nextSibling
+        #     if theme_table_2 is None or theme_table_2.name == 'h3':
+        #         break
+        #     elif theme_table_2.name == 'table':
+        #         themes += get_themes(theme_table_2.find('tbody').findAll('tr'), 0, mal_id)
+        # # }
         cover = get_cover(mal_id)
         return {'malId': mal_id, 'titles': anime_titles, 'themes': themes, 'cover': cover, 'year': year,
                 'season': season}
