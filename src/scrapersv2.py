@@ -40,7 +40,7 @@ def get_cover(mal_id):
         return image
 
 
-def get_themes(table, index, malId, pos, extra, prev):
+def get_themes(table, index, malId, pos, extra):
     themes = []
     for tr in table:
         if not len(tr.findAll('td')[0].getText()):
@@ -99,13 +99,6 @@ def get_themes(table, index, malId, pos, extra, prev):
                 Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind),
                              extra, 0,
                              json.dumps(themeMirror))
-        elif prev:
-            if themeNotes:
-                Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind), prev + ", " + themeNotes, 0,
-                             json.dumps(themeMirror))
-            else:
-                Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind), prev, 0,
-                             json.dumps(themeMirror))
         else:
             Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind), themeNotes, 0,
                          json.dumps(themeMirror))
@@ -149,15 +142,8 @@ def add_anime(item, year, season):
                 'season': season}
     else:
         theme_table = item.find_next_sibling('table').find('tbody').findAll('tr')
-        prev = item.find_next_sibling('table').previousSibling.previousSibling
-        if prev.name == 'p':
-            prev = prev.text
-            pass
-        else:
-            prev = None
         pos = len(theme_table)
         entries = theme_table
-        # themes = get_themes(theme_table, 0, mal_id)
         # Getting extra themes {
         theme_table_2 = item.find_next_sibling('table')
         extra = ""
@@ -170,7 +156,7 @@ def add_anime(item, year, season):
             elif theme_table_2.name == 'table':
                 entries += theme_table_2.find('tbody').findAll('tr')
         # }
-        get_themes(entries, 0, mal_id, pos, extra, prev)
+        get_themes(entries, 0, mal_id, pos, extra)
 
 
 def get_season(entry, year):
