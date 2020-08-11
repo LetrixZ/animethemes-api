@@ -19,7 +19,6 @@ mal-api==0.2.1
 MarkupSafe==1.1.1
 praw==7.1.0
 prawcore==1.5.0
-psycopg2==2.8.5
 pytz==2020.1
 PyYAML==5.3.1
 requests==2.24.0
