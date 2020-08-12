@@ -257,8 +257,8 @@ class Artist(db.Model):
                 if theme.theme_id in art_list:
                     theme_list.append(theme.json())
             anime_list.append(
-                {'anime_mal_id': anime.malId, 'anime_title': json.loads(anime.title), 'anime_cover': anime.cover,
-                 'theme_list': theme_list})
+                {'cover': anime.cover, 'malId': anime.malId, 'season': None, 'themes': theme_list,
+                 'title': json.loads(anime.title), 'year': None})
         return {
             'mal_id': self.mal_id,
             'name': self.name,
