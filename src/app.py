@@ -226,6 +226,7 @@ def latest_animes_list():
 
 @app.route('/api/v1/anime/<int:mal_id>/<string:theme_index>/<int:version>/video')
 @app.route('/api/v1/anime/<int:mal_id>/<string:theme_index>/<int:version>')
+@app.route('/anime/<int:mal_id>/<string:theme_index>/<int:version>')
 def get_theme(mal_id, theme_index, version):
     anime = Anime.query.filter_by(malId=mal_id).first()
     if len(theme_index) == 1:
@@ -246,6 +247,7 @@ def get_theme(mal_id, theme_index, version):
 
 
 @app.route('/api/v1/anime/<int:mal_id>/<string:theme_index>/<int:version>/audio')
+@app.route('/anime/<int:mal_id>/<string:theme_index>/<int:version>/audio')
 def get_audio_theme(mal_id, theme_index, version):
     anime = Anime.query.filter_by(malId=mal_id).first()
     if len(theme_index) == 1:
