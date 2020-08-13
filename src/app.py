@@ -585,6 +585,16 @@ def update_pinned():
 
 # DB ROUTES
 
+@app.route('/db/add_artist')
+def add_artist():
+    artist_list = Artist.query.all()
+    for artist in artist_list:
+        for theme in json.loads(artist.themes):
+            theme_entry = Theme.query.filter_by(theme_id=theme).first()
+            theme_entry.artist = artist.name
+    db.session.commit()
+
+
 @app.route('/db/compress_anime')
 def compress_anime():
     anime_list = Anime.query.all()

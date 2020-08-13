@@ -27,7 +27,7 @@ class Anime(db.Model):
         if not row:
             db.session.add(self)
         else:
-            row.cover = self.cover
+            # row.cover = self.cover
             row.season = self.season
             row.themes = self.themes
         db.session.commit()
@@ -144,11 +144,12 @@ class Theme(db.Model):
     notes = db.Column(db.String())
     views = db.Column(db.Integer)
     mirrors = db.Column(db.String(), nullable=False)
+    artist = db.Column(db.String())
 
     @classmethod
-    def create(cls, title, type, mal_id, theme_id, notes, views, mirrors):
+    def create(cls, title, type, mal_id, theme_id, notes, views, mirrors, artist):
         theme = Theme(title=title, type=type, mal_id=mal_id, theme_id=theme_id, notes=notes, views=views,
-                      mirrors=mirrors)
+                      mirrors=mirrors, artist=artist)
         # return theme
         return theme.save()
 
@@ -160,6 +161,7 @@ class Theme(db.Model):
         else:
             row.mirrors = self.mirrors
             row.title = self.title
+            row.artist = self.artist
             # row.notes = self.notes
             # return None
         db.session.commit()
@@ -173,7 +175,8 @@ class Theme(db.Model):
             'theme_id': self.theme_id,
             'notes': self.notes,
             'views': self.views,
-            'mirrors': json.loads(self.mirrors)
+            'mirrors': json.loads(self.mirrors),
+            'artist': self.artist
         }
 
     def json_mini(self):
@@ -184,7 +187,8 @@ class Theme(db.Model):
             'theme_id': self.theme_id,
             'notes': self.notes,
             'views': self.views,
-            'mirrors': json.loads(self.mirrors)
+            'mirrors': json.loads(self.mirrors),
+            'artist': self.artist
         }
 
     def single_json(self):
@@ -202,7 +206,8 @@ class Theme(db.Model):
                 'theme_id': self.theme_id,
                 'notes': self.notes,
                 'views': self.views,
-                'mirrors': json.loads(self.mirrors)}]
+                'mirrors': json.loads(self.mirrors)}],
+                'artist': self.artist
         }
 
     def update(self):
