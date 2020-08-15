@@ -4,6 +4,7 @@ import random
 import string
 import subprocess
 
+from subprocess import PIPE, run
 import fileioapi as fileioapi
 import requests
 from flask import Flask, jsonify, request
@@ -250,12 +251,14 @@ def get_theme(mal_id, theme_index, version):
 @app.route('/anime/<int:mal_id>/<string:theme_index>/<int:version>/audio')
 def get_audio_theme(mal_id, theme_index, version):
     anime = Anime.query.filter_by(malId=mal_id).first()
+    print(mal_id, theme_index, version)
     if len(theme_index) == 1:
         theme_index = '0' + theme_index
     theme = Theme.query.filter_by(theme_id='{}-{}'.format(mal_id, theme_index)).first()
     if theme:
         title = [theme.title, json.loads(anime.title)[0], theme.type]
-        url = theme.mirrors[version]
+        mirrors = json.loads(theme.mirrors)
+        url = mirrors[version].get('mirrorUrl')
         return redirect(getAudio(url, title))
     else:
         return redirect("/anime/{}".format(id))
@@ -358,7 +361,10 @@ def getVideo(malId, themeType):
 
 def getAudio(url, title):
     videoFile = ['curl', url, '--output', './assets/video.webm']
+    # print(url)
     subprocess.run(videoFile, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # result = run(videoFile, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    # print(result.returncode, result.stdout, result.stderr)
     printable = set(string.printable)
     fileTitle = ''.join(filter(lambda x: x in printable, title[0]))
     animeTitle = ''.join(filter(lambda x: x in printable, title[1]))
@@ -439,6 +445,7 @@ def audio_by_id(id, type):
         if theme.type.lower() == type:
             title = [theme.title, json.loads(anime.title)[0], theme.type]
             url = json.loads(theme.mirrors)[0]['mirrorUrl']
+            print(url)
             return redirect(getAudio(url, title))
     # return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
     return redirect("/id/{}".format(id))
