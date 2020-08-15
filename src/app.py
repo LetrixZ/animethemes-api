@@ -361,10 +361,10 @@ def getVideo(malId, themeType):
 
 def getAudio(url, title):
     videoFile = ['curl', url, '--output', './assets/video.webm']
-    # print(url)
-    subprocess.run(videoFile, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # result = run(videoFile, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-    # print(result.returncode, result.stdout, result.stderr)
+    print(url)
+    # subprocess.run(videoFile, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    result = run(videoFile, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    print(result.returncode, result.stdout, result.stderr)
     printable = set(string.printable)
     fileTitle = ''.join(filter(lambda x: x in printable, title[0]))
     animeTitle = ''.join(filter(lambda x: x in printable, title[1]))
