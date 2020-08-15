@@ -3,21 +3,21 @@ import json
 import random
 import string
 import subprocess
-
 from subprocess import PIPE, run
+
 import fileioapi as fileioapi
 import requests
 from flask import Flask, jsonify, request
 from werkzeug.utils import redirect
 
-from src.anilist import getListFromUser
-from src.artist_scraper import get_artists_list, get_cover
-from src.audio_scraper import get_music
-from src.config import config
-from src.models import db, Anime, User, Playlist, Theme, Artist
-from src.scrapers import get_user_list, get_all_years, get_all_seasons, get_year_seasons, get_season, \
+from anilist import getListFromUser
+from artist_scraper import get_artists_list, get_cover
+from audio_scraper import get_music
+from config import config
+from models import db, Anime, User, Playlist, Theme, Artist
+from scrapers import get_user_list, get_all_years, get_all_seasons, get_year_seasons, get_season, \
     get_entry
-from src.scrapersv2 import get_year as v2_get_year
+from scrapersv2 import get_year as v2_get_year
 
 
 def create_app(env):
@@ -360,7 +360,9 @@ def getVideo(malId, themeType):
 
 
 def getAudio(url, title):
-    videoFile = ['curl', url, '--output', './assets/video.webm']
+    # result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    # print(result.returncode, result.stdout, result.stderr)
+    videoFile = ['curl', url, '-o', './assets/video.webm']
     print(url)
     # subprocess.run(videoFile, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     result = run(videoFile, stdout=PIPE, stderr=PIPE, universal_newlines=True)
@@ -445,7 +447,6 @@ def audio_by_id(id, type):
         if theme.type.lower() == type:
             title = [theme.title, json.loads(anime.title)[0], theme.type]
             url = json.loads(theme.mirrors)[0]['mirrorUrl']
-            print(url)
             return redirect(getAudio(url, title))
     # return returnJson({'type not found': 'check /id/{}/ for available themes'.format(id)})
     return redirect("/id/{}".format(id))

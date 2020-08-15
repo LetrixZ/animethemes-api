@@ -6,7 +6,7 @@ import os
 import praw
 import requests
 
-from src.models import Anime, Theme
+from models import Anime, Theme
 
 client_secret = os.getenv('CLIENT_SECRET')
 
