@@ -362,7 +362,7 @@ def getVideo(malId, themeType):
 def getAudio(url, title):
     # result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     # print(result.returncode, result.stdout, result.stderr)
-    videoFile = ['curl', url, '-o', './assets/video.webm']
+    videoFile = ['curl', url, '-o', 'video.webm']
     print(url)
     # subprocess.run(videoFile, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     result = run(videoFile, stdout=PIPE, stderr=PIPE, universal_newlines=True)
@@ -370,12 +370,12 @@ def getAudio(url, title):
     printable = set(string.printable)
     fileTitle = ''.join(filter(lambda x: x in printable, title[0]))
     animeTitle = ''.join(filter(lambda x: x in printable, title[1]))
-    filename = './assets/{} - {} ({}).mp3'.format(fileTitle, animeTitle, title[2])
-    ffmpeg = ['ffmpeg', '-i', './assets/video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a', '320k',
+    filename = '{} - {} ({}).mp3'.format(fileTitle, animeTitle, title[2])
+    ffmpeg = ['ffmpeg', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a', '320k',
               '-metadata', "title='" + title[0] + "'", filename, "-y"]
     subprocess.run(ffmpeg)
     response = fileioapi.upload(filename, "1w")
-    subprocess.run(['rm', './assets/video.webm', filename])
+    subprocess.run(['rm', 'video.webm', filename])
     return response.get("link")
 
 
@@ -684,7 +684,7 @@ def add_themes_db():
         for theme in json.loads(anime.themes):
             entry = Theme.create(theme.get('title'), theme.get('type'), anime.malId,
                                  '{}/{}'.format(anime.malId, index), theme.get('notes'),
-                                 json.dumps(theme.get('mirror')))
+                                 json.dumps(theme.get('mirror')), None)
             if entry:
                 themeList.append(entry)
             index += 1

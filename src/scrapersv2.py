@@ -82,7 +82,7 @@ def get_themes(table, index, malId, pos, extra):
         except AttributeError:
             # print('There is not another mirror')
             pass
-        themeEpisodes = tr.findAll('td')[2].getText()
+        # themeEpisodes = tr.findAll('td')[2].getText()
         try:
             themeNotes = tr.findAll('td')[3].getText()
         except IndexError:
@@ -94,14 +94,14 @@ def get_themes(table, index, malId, pos, extra):
             if themeNotes:
                 Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind),
                              extra + ", " + themeNotes, 0,
-                             json.dumps(themeMirror))
+                             json.dumps(themeMirror), None)
             else:
                 Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind),
                              extra, 0,
-                             json.dumps(themeMirror))
+                             json.dumps(themeMirror), None)
         else:
             Theme.create(themeTitle, themeType, malId, '{}-{}'.format(malId, ind), themeNotes, 0,
-                         json.dumps(themeMirror))
+                         json.dumps(themeMirror), None)
         themes.append('{}-{}'.format(malId, ind))
         index += 1
     return themes
