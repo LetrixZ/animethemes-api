@@ -168,6 +168,12 @@ class Theme(db.Model):
         return self
 
     def json(self):
+        mirrors = json.loads(self.mirrors)
+        mirror_list = []
+        for index, mirror in enumerate(mirrors):
+            mirror[
+                'audioUrl'] = f"https://animethemes-api.herokuapp.com/api/v1/anime/{self.mal_id}/{self.theme_id.split('-')[1]}/{index}/audio"
+            mirror_list.append(mirror)
         return {
             'title': self.title,
             'type': self.type,
@@ -175,19 +181,8 @@ class Theme(db.Model):
             'theme_id': self.theme_id,
             'notes': self.notes,
             'views': self.views,
-            'mirrors': json.loads(self.mirrors),
-            'artist': self.artist
-        }
-
-    def json_mini(self):
-        anime = Anime.query.filter_by(malId=self.mal_id).first()
-        return {
-            'anime': json.loads(anime.title)[0],
-            'cover': anime.cover,
-            'theme_id': self.theme_id,
-            'notes': self.notes,
-            'views': self.views,
-            'mirrors': json.loads(self.mirrors),
+            'mirrors': mirror_list,
+            # 'mirrors': json.loads(self.mirrors),
             'artist': self.artist
         }
 
@@ -247,28 +242,28 @@ class Artist(db.Model):
         return self
 
     def json(self):
-        art_list = json.loads(self.themes)
-        anime_list = []
-        theme_ids = []
-        for theme_id in art_list:
-            mal_id = int(theme_id.split('-')[0])
-            theme_ids.append(mal_id)
-        theme_ids = list(dict.fromkeys(theme_ids))
-        for mal_id in theme_ids:
-            anime = Anime.query.filter_by(malId=mal_id).first()
-            theme_entries = Theme.query.filter_by(mal_id=mal_id).all()
-            theme_list = []
-            for theme in theme_entries:
-                if theme.theme_id in art_list:
-                    theme_list.append(theme.json())
-            anime_list.append(
-                {'cover': anime.cover, 'malId': anime.malId, 'season': None, 'themes': theme_list,
-                 'title': json.loads(anime.title), 'year': None})
+        # art_list = json.loads(self.themes)
+        # anime_list = []
+        # theme_ids = []
+        # for theme_id in art_list:
+        #     mal_id = int(theme_id.split('-')[0])
+        #     theme_ids.append(mal_id)
+        # theme_ids = list(dict.fromkeys(theme_ids))
+        # for mal_id in theme_ids:
+        #     anime = Anime.query.filter_by(malId=mal_id).first()
+        #     theme_entries = Theme.query.filter_by(mal_id=mal_id).all()
+        #     theme_list = []
+        #     for theme in theme_entries:
+        #         if theme.theme_id in art_list:
+        #             theme_list.append(theme.json())
+        #     anime_list.append(
+        #         {'cover': anime.cover, 'malId': anime.malId, 'season': None, 'themes': theme_list,
+        #          'title': json.loads(anime.title), 'year': None})
         return {
             'mal_id': self.mal_id,
             'name': self.name,
             'cover': self.cover,
-            'themes': anime_list
+            'themes': json.loads(self.themes)
         }
 
     def update(self):
