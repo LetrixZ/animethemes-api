@@ -1,0 +1,42 @@
+{% load my_filter %}
+<style>
+
+    .item-img {
+        width: 100px;
+        height: 141px;
+        object-fit: cover; /* Do not scale the image */
+        object-position: center; /* Center the image within the element */
+    }
+
+    .card {
+        background-color: #111111;
+    }
+
+    .text-container {
+        height: 70px;
+        width: 110px;
+        margin: .25em 0;
+        display: flex;
+        justify-content: center; /* align horizontal */
+        align-items: center; /* align vertical */
+    }
+
+    .entry-item {
+        margin: 0 8px;
+    }
+</style>
+
+{% if value %}
+    <div class="entry-item text-center">
+        <a href="{% url 'theme-app' value.mal_id %}">
+            <img class="rounded mx-auto d-block item-img " src={{ value.cover }}>
+            <div class="text-container">
+                <p class="text-white font-weight-light text-crop line-clamp-2">{{ value.title }}</p>
+            </div>
+        </a>
+    </div>
+{% else %}
+    <div class="entry-list">
+        <h2>Not found!</h2>
+    </div>
+{% endif %}

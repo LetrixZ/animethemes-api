@@ -1,0 +1,5 @@
+/src/.vscode/
+/.idea/
+/venv/
+**/__pycache__
+/static/

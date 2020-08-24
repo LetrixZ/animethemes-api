@@ -1,0 +1,58 @@
+{% load my_filter %}
+{% load static %}
+<style>
+    .theme-img {
+        width: 140px;
+        height: 80px;
+        object-fit: cover; /* Do not scale the image */
+        object-position: center; /* Center the image within the element */
+        filter: brightness(50%);
+    }
+
+    .centered {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 95%;
+    }
+
+    .theme-container {
+        position: relative;
+        text-align: center;
+        color: white;
+    }
+
+    .theme-item {
+        padding: 8px;
+    }
+
+    .line-clamp-1 {
+        -webkit-line-clamp: 1;
+    }
+</style>
+
+{% if value %}
+    <div class="theme-item">
+        <form class="rounded cn" id="id-{{ value.themes.0.theme_id }}" action="{% url 'theme-post' value.mal_id %}"
+              method="post">{% csrf_token %}
+            <input type="hidden" name="theme_id" value="{{ value.themes.0.theme_id|get_theme_index }}">
+            <a href="#" onclick="document.forms['id-{{ value.themes.0.theme_id }}'].submit();">
+                <div class="theme-container">
+                    <img class="rounded theme-img" src={{ value.cover }} alt="{{ value.title }}">
+                    <div class="centered">
+                        <span class="text-crop line-clamp-1"
+                              style="font-weight: 700; font-size: 1.15em">{{ value.themes.0.title }}</span>
+                        <span class="text-crop line-clamp-1"
+                              style="font-size: 1em">{{ value.title }} ({{ value.themes.0.type }})</span>
+                        <span class="text-crop line-clamp-1"
+                              style="font-size: .85em">{{ value.themes.0.views|get_views }}</span></div>
+                </div>
+            </a>
+        </form>
+    </div>
+{% else %}
+    <div class="entry-list">
+        <h2>Not found!</h2>
+    </div>
+{% endif %}

@@ -1,0 +1,137 @@
+import praw
+import requests
+from bs4 import BeautifulSoup
+from mal import Anime as AnimeMAL
+
+from api.models import Anime, Theme
+
+reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
+                     client_secret="Vs9q60YyROx780avM7AqsVFzfYM",
+                     user_agent="Letrix's AnimeThemes API")
+
+
+def get_cover(mal_id):
+    row = Anime.objects.filter(mal_id=mal_id).first()
+    if row and row.cover:
+        return row.cover
+    else:
+        try:
+            anime = AnimeMAL(mal_id)
+            image = anime.image_url
+        except requests.exceptions.ReadTimeout:
+            image = None
+        return image
+
+
+def get_mal_id(link):
+    if 'myanimelist' in link:
+        tmp = link.split('/')
+        if tmp[-1]:
+            try:
+                return int(tmp[-1])
+            except ValueError:
+                return int(tmp[-2])
+        elif tmp[-2]:
+            try:
+                return int(tmp[-2])
+            except ValueError:
+                return int(tmp[-3])
+    else:
+        print(link)
+        return None
+
+
+def get_theme(entry, mal_id, theme_id, category):
+    if entry.find('td').text:
+        try:
+            title = entry.find('td').text.split(' "')[1][:-1]
+        except IndexError:
+            title = entry.find('td').text.split('"')[1][:-1]
+        type = entry.find('td').text.split(' "')[0]
+        mirror_info = entry.findAll('td')[1].find('a')
+        if not mirror_info:
+            return
+        mirrors = [{'quality': mirror_info.text.partition("(")[2].partition(")")[0].split(', '),
+                    'mirror': mirror_info.get('href')}]
+        episodes = entry.findAll('td')[2].text
+        try:
+            notes = entry.findAll('td')[3].text
+        except IndexError:
+            episodes = ""
+            notes = entry.findAll('td')[2].text
+        # Next mirror
+        next = entry.nextSibling.nextSibling
+        if next and next.name == 'tr':
+            if next.find('td').text == '':
+                mirror_info = next.findAll('td')[1].find('a')
+                mirrors.append({'quality': mirror_info.text.partition("(")[2].partition(")")[0].split(', '),
+                                'mirror': mirror_info.get('href')})
+        Theme.objects.update_or_create(theme_id=theme_id, defaults={
+            'mal_id': mal_id,
+            'title': title,
+            'type': type,
+            'episodes': episodes,
+            'notes': notes,
+            'category': category,
+            'mirrors': mirrors
+        })
+
+
+def get_anime(entry, year, season):
+    mal_id = get_mal_id(entry.find('a').get('href'))
+    if mal_id:
+        title = [entry.text]
+        entry = entry.nextSibling.nextSibling
+        # Extra names
+        if entry.name == 'p':
+            title.extend(entry.text.split(', '))
+            entry = entry.nextSibling.nextSibling
+        category = ""
+        if entry.name == 'p':
+            category = entry.text
+            entry = entry.nextSibling.nextSibling
+        theme_size = 0
+        for index, item in enumerate(entry.findAll('tr')[1:]):
+            get_theme(item, mal_id, f'{mal_id}-{f"{index:02d}"}', category=category)
+            theme_size += 1
+        entry = entry.nextSibling.nextSibling
+        if entry:
+            if entry.name == 'p':
+                category = entry.text
+                entry = entry.nextSibling.nextSibling
+            for index, item in enumerate(entry.findAll('tr')[1:], start=theme_size):
+                get_theme(item, mal_id, f'{mal_id}-{f"{index:02d}"}', category=category)
+        return Anime.objects.update_or_create(mal_id=mal_id, defaults={
+            'title': title,
+            'year': year,
+            'season': season
+        })
+    else:
+        return None, None
+
+
+def get_year(year):
+    added = []
+    page = BeautifulSoup(reddit.subreddit('AnimeThemes').wiki[year].content_html, 'html.parser')
+    if page.findAll('h2'):
+        for item in page.findAll('h2'):
+            season = f'{item.text.split(" ")[1]} {int(str(year).replace("s", ""))}'
+            print(season)
+            aux = item
+            while True:
+                aux = aux.nextSibling
+                if aux is None or aux.name == 'h2':
+                    break
+                elif aux.name == 'h3':
+                    anime, created = get_anime(aux, year, season)
+                    if created:
+                        added.append(anime.json())
+    else:
+        season = f'All {year}'
+        print(season)
+        year = int(str(year).replace('s', ''))
+        for entry in page.findAll('h3'):
+            anime, created = get_anime(entry, year, season)
+            if created:
+                added.append(anime.json())
+    return added

@@ -1,0 +1,16 @@
+{% extends 'base-noheader.html' %}
+{% load my_filter %}
+{% block content %}
+{#    {% include 'main/snippets/search-header.html' %}#}
+    {#    {% include 'main/snippets/back-header.html' %}#}
+    <div style="margin-top: 1em;overflow-x: hidden">
+        {% for season in seasons %}
+            <h3 class="font-weight-light ml-3 mb-3">{{ season|get_value:0 }} {{ year }}</h3>
+            <div class="row d-flex justify-content-center">
+                {% for anime in season|get_value:1 %}
+                    {% include 'main/snippets/anime_item.html' with value=anime %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

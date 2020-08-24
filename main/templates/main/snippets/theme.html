@@ -1,0 +1,24 @@
+{% load my_filter %}
+<style>
+    .container video {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<div>
+    <p class="ml-2 mr-2 mb-2">
+    <h5 class="text-center" id="theme-title">{{ theme_list|get_at:current|get_value_by_name:'title' }}
+        ({{ theme_list|get_at:current|get_value_by_name:'type' }})</h5>
+    <h6 class="text-center font-weight-normal" id="theme-quality">{{ theme_list|get_at:current|get_item:0 }}</h6>
+    </p>
+    {#    <div class="container mb-4">#}
+    {#        <video id="video-player" autoplay="true" controls="true" preload="metadata"/>#}
+    {#        <video id="video-player" autoplay="false" controls="true" preload="metadata"#}
+    {#               src={{ theme_list|get_at:current|get_value_by_name:'mirrors'|get_at:mirror|get_value_by_name:'mirror' }}></video>#}
+    {#    </div>#}
+
+    <div class="container mb-4">
+        <video id="video-player" controls></video>
+    </div>
+</div>

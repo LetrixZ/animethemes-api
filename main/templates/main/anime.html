@@ -1,0 +1,120 @@
+{% extends 'base-noheader.html' %}
+{% load my_filter %}
+{% block content %}
+    {% include 'main/snippets/search-header.html' %}
+    <div class="mr-2 ml-2" style="margin-top: 1em">
+        {#        <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 border-bottom shadow-sm">#}
+        {#        <img src={{anime.cover}} class="anime" style="margin-left:-15px;" />#}
+        {#        <div class="mt-sm-2 mr-2 ml-4 mt-lg-0 mt-4">#}
+        {#            <h2 class="text-lg-left text-center">{{anime.title}}</h2>#}
+        {#            <h4 class="text-lg-left text-center"><a#}
+        {#                    href="https://myanimelist.net/anime/{{anime.mal_id}}">{{anime.mal_id}}</a></h4>#}
+        {#        </div>#}
+        {#    </div>#}
+        <h3 class="text-center" id="anime-title">{{ anime.title }}</h3>
+        {% if theme %}
+            {% include 'main/snippets/theme.html' with theme_list=theme_list current=current mirror=selected %}
+        {% endif %}
+        <h5 class="ml-2"></h5>
+        <ul class="list theme" id="theme-list">
+        </ul>
+    </div>
+
+    <script id="jresp" type="application/json">{{ theme_list_json|safe }}</script>
+
+    <script>
+        const themeList = JSON.parse(document.getElementById('jresp').innerHTML);
+        const ulList = document.getElementById('theme-list');
+        const video = document.getElementById('video-player');
+        const themeItems = [];
+        var current = '{{ current }}';
+        var mirrorIndex = '{{ mirror_index }}'
+
+        video.addEventListener('ended', nextHandler, false);
+
+        themeList.forEach(function (theme) {
+            const liElem = document.createElement('li');
+            liElem.className = "list-item";
+            const aElem = document.createElement('a');
+            aElem.text = theme['title'] + " (" + theme['type'] + ")";
+            aElem.className = 'text-white';
+            liElem.appendChild(aElem);
+            const ulMirror = document.createElement('ul');
+            ulMirror.className = "list mx-auto justify-lg-content-left";
+            theme['mirrors'].forEach(function (mirror, index) {
+                const source = document.createElement('source')
+                video.appendChild(source)
+                const liMirror = document.createElement('li');
+                liMirror.className = "mirror-item";
+                const aMirror = document.createElement('a');
+                aMirror.setAttribute('href', theme['mirrors'][index]['mirror']);
+                aMirror.text = translate(mirror['quality']);
+                aMirror.onclick = handler;
+                liMirror.appendChild(aMirror);
+                ulMirror.appendChild(liMirror);
+            })
+            liElem.appendChild(ulMirror);
+            ulList.appendChild(liElem);
+            themeItems.push(liElem);
+        })
+
+        {#console.log(current, mirrorIndex)#}
+        changeTheme(themeList[current]['mirrors'][mirrorIndex]['mirror'], current, themeList[current]['mirrors'][mirrorIndex]['quality'])
+
+        function handler(e) {
+            e.preventDefault();
+            const videoTarget = this.getAttribute('href');
+            current = themeItems.indexOf(this.parentElement.parentElement.parentElement);
+            {#console.log(current)#}
+            var quality = 'default';
+            themeList[current]['mirrors'].forEach(function (mirror) {
+                if (mirror['mirror'] === videoTarget) {
+                    quality = mirror['quality'];
+                }
+            })
+            changeTheme(videoTarget, current, quality);
+        }
+
+        function nextHandler(e) {
+            {#console.info("video ended");#}
+            if (current < themeList.length - 1) {
+                current++;
+                const videoTarget = themeList[current]['mirrors'][0]['mirror'];
+                changeTheme(videoTarget, current, themeList[current]['mirrors'][0]['quality']);
+            }
+        }
+
+        function changeTheme(videoTarget, current, quality) {
+            {#var url_mask = "{% url 'count-view' 1010 2121 %}".replace(/1010/, themeList[current]['mal_id'].toString()).replace(/2121/, themeList[current]['theme_id'].split('-')[1].toString());#}
+            {#const oReq = new XMLHttpRequest();#}
+            {#oReq.onload = dialResponse;#}
+            {#oReq.open("get", url_mask, true);#}
+            {#oReq.send();#}
+            document.getElementById('theme-title').textContent = themeList[current]["title"] + " (" + themeList[current]['type'] + ")";
+            document.getElementById('theme-quality').textContent = translate(quality);
+            const source = document.querySelectorAll('#video-player source');
+            source[0].src = videoTarget;
+            video.load();
+            video.play();
+        }
+
+        function translate(quality) {
+            if (quality[0] === "") return "Default"
+            quality = quality.join(', ');
+            return quality.replace('NC', 'No Credits')
+                .replace('BD', 'Blu-Ray')
+                .replace('Trans', 'Transition')
+                .replace('Over', 'Voice-Over')
+            {#for (let i = 0; i < quality.length; i++) {#}
+            {#    quality[i] = quality[i]#}
+            {#}#}
+            {#return quality#}
+        }
+
+        function dialResponse() {
+            {#console.log(this.responseText);//should be return value of 1#}
+        }
+
+    </script>
+
+{% endblock content %}

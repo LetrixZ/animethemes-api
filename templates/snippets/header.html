@@ -1,0 +1,64 @@
+{% load static %}
+<style type="text/css">
+    @media (min-width: 768px) {
+        html {
+            font-size: 16px;
+        }
+    }
+
+    .search-bar {
+        max-width: 400px;
+        width: 100%;
+    }
+
+    form {
+        width: 100%;
+    }
+
+    .form-control {
+        background-color: #222222;
+        color: white;
+        border: 0;
+    }
+
+    .form-control:focus {
+        background-color: #252525;
+        color: white;
+    }
+
+    .form-control::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+        color: white;
+    }
+
+    .form-control:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+        color: white;
+        opacity: 1;
+    }
+
+    .form-control::-moz-placeholder { /* Mozilla Firefox 19+ */
+        color: white;
+        opacity: 1;
+    }
+
+    .form-control:-ms-input-placeholder { /* Internet Explorer 10-11 */
+        color: white;
+    }
+
+    .form-control::-ms-input-placeholder { /* Microsoft Edge */
+        color: white;
+    }
+
+    .form-control::placeholder { /* Most modern browsers support this now. */
+        color: white;
+    }
+</style>
+
+<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 border-bottom shadow-sm">
+    <div class="my-lg-3 mb-3 mr-md-auto"><a href="{% url 'search-app' %}"><img style="width: 15em;"
+                                                                               src="{% static 'logo.png' %}"></a></div>
+    <div class="search-bar mt-sm-2 mr-2">
+        <form method="get" action="{% url 'search-app' %}">
+            <input class="form-control form-control-sm" type="text" name="q" id="id_q" placeholder="Search">
+        </form>
+    </div>
+</div>

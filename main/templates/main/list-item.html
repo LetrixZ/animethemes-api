@@ -1,0 +1,41 @@
+{% load my_filter %}
+{% if value %}
+    <style>
+        .search-img {
+            width: 105px;
+            height: 148px;
+            object-fit: cover; /* Do not scale the image */
+            object-position: center; /* Center the image within the element */
+        }
+
+        .anime-cn {
+            width: 100%;
+            height: 75px;
+            position: relative;
+            text-align: center;
+            color: white;
+        }
+
+        .anime-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+        }
+    </style>
+    <div class="mr-2 ml-2">
+        <a href="{% url 'theme-app' value.mal_id %}">
+            <img class="rounded mx-auto d-block search-img " src={{ value.cover }}>
+            <div class="anime-cn">
+                <div class="anime-inner">
+                    <a class="text-crop line-clamp-3" style="font-size: .9em">{{ value.title }}</a>
+                </div>
+            </div>
+        </a>
+    </div>
+{% else %}
+    <div class="entry">
+        <h2>Not found!</h2>
+    </div>
+{% endif %}

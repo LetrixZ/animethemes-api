@@ -1,0 +1,68 @@
+{% extends 'base-noheader.html' %}
+{% block content %}
+    {% load my_filter %}
+    <style>
+        .scrolling-wrapper {
+            overflow-x: auto;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .scrolling-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+
+    {% if is_query %}
+        {% include 'main/snippets/search-header.html' %}
+        {% include 'main/snippets/search.html' with anime_list=anime_list theme_list=theme_list %}
+    {% else %}
+        {% include 'snippets/header.html' %}
+        <div class="container-fluid">
+            {% for list in lists %}
+                <h4 class="font-weight-light">{{ list|get_key:0 }}</h4>
+                {# YEAR LIST #}
+                {% if forloop.first %}
+                    <div class="scrolling-wrapper row flex-row flex-nowrap mb-3 pl-1">
+                        {% for year in list|get_value:0 %}
+                            {% include 'main/snippets/year_item.html' with value=year year=year %}
+                        {% endfor %}
+                    </div>
+                    {# CURRENT LIST #}
+                {% elif forloop.counter0 == 1 %}
+                    <div class="scrolling-wrapper row flex-row flex-nowrap pl-1">
+                        {% for item in list|get_value:0 %}
+                            <div class="mt-2">
+                                {% include 'main/snippets/anime_item.html' with value=item %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {# TOP THEME LIST #}
+                {% elif forloop.counter0 == 2 %}
+                    <div class="scrolling-wrapper row flex-row flex-nowrap mb-3 pl-1">
+                        {% for theme in list|get_value:0 %}
+                            {% include 'main/snippets/theme_item.html' with value=theme %}
+                        {% endfor %}
+                    </div>
+                {% elif forloop.counter0 == 3 %}
+                    <div class="scrolling-wrapper row flex-row flex-nowrap pl-1">
+                        {% for item in list|get_value:0 %}
+                            <div class="mt-2">
+                                {% include 'main/snippets/anime_item.html' with value=item %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="scrolling-wrapper row flex-row flex-nowrap mb-3 pl-1">
+                        {% for theme in list|get_value:0 %}
+                            {% include 'main/snippets/theme_item.html' with value=theme %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+        </div>
+    {% endif %}
+
+{% endblock content %}

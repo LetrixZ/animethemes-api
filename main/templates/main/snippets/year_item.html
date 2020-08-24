@@ -1,0 +1,43 @@
+{% load my_filter %}
+{% load static %}
+<style>
+    .year-img {
+        width: 140px;
+        height: 80px;
+        object-fit: cover; /* Do not scale the image */
+        object-position: center; /* Center the image within the element */
+        filter: brightness(50%);
+    }
+
+    .centered {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .year-container {
+        position: relative;
+        text-align: center;
+        color: white;
+    }
+
+    .year-item {
+        padding: 8px;
+    }
+</style>
+
+{% if value %}
+    <div class="year-item">
+        <div class="year-container">
+            <a href="{% url 'year-app' value %}">
+                <img class="rounded year-img" src={% static value|get_image %}>
+                <div class="centered"><h5 style="font-weight: 700; font-size: 1.15em">{{ value }}</h5></div>
+            </a>
+        </div>
+    </div>
+{% else %}
+    <div class="entry-list">
+        <h2>Not found!</h2>
+    </div>
+{% endif %}

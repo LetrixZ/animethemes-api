@@ -1,0 +1,57 @@
+{% load my_filter %}
+{% if value %}
+    <style>
+        .cn {
+            margin: 4px;
+            background-color: #252525;
+            width: 43%;
+            height: 90px;
+            position: relative;
+            text-align: center;
+            color: white;
+        }
+
+        .inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95%;
+        }
+
+        .theme-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Do not scale the image */
+            object-position: center; /* Center the image within the element */
+            -webkit-filter: brightness(50%) blur(0px);
+            filter: brightness(50%) blur(0px);
+        }
+
+        .line-clamp-1 {
+            -webkit-line-clamp: 1;
+        }
+    </style>
+    <form class="rounded cn" id="id-{{ value.theme_id }}" action="{% url 'theme-post' value.mal_id %}"
+          method="post">{% csrf_token %}
+        <input type="hidden" name="theme_id" value="{{ value.theme_id|get_theme_index }}">
+        <a href="#" onclick="document.forms['id-{{ value.theme_id }}'].submit();">
+            {#        <a href="{% url 'theme-app' value.mal_id value.theme_id|get_theme_index 0 %}" class="rounded cn">#}
+            {#        <div class="rounded cn"#}
+            {#             onclick="window.location='{% url 'theme-app' value.mal_id value.theme_id|get_theme_index 0 %}';">#}
+            <img src="{{ value.cover }}" class="rounded theme-img"/>
+            <div class="inner">
+                <h7 class="font-weight-bold text-crop line-clamp-1"
+                    style="font-size: .9em">{{ value.title }}</h7>
+                <h7 class="font-weight-normal text-crop line-clamp-1"
+                    style="font-size: .85em">{{ value.mal_id|get_name }}</h7>
+                <h7 class="font-weight-normal" style="font-size: .85em">({{ value.type }})</h7>
+            </div>
+            {#        </div>#}
+        </a>
+    </form>
+{% else %}
+    <div class="entry">
+        <h2>Not found!</h2>
+    </div>
+{% endif %}
