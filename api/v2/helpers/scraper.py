@@ -3,11 +3,8 @@ import json
 
 import praw
 import requests
-from bs4 import BeautifulSoup
-from django.http import JsonResponse
 from mal import Anime as AnimeMAL
 
-from api.helpers.artist_scraper import get_list
 from api.models import Anime, Theme
 
 reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
@@ -177,48 +174,3 @@ def get_season(entry, year):
             Anime.create(json.dumps(anime['title']), anime['malId'], anime['cover'], anime['year'], anime['season'],
                          json.dumps(anime['themes']))
     return anime_list
-
-
-def get_year(request, year):
-    page = reddit.subreddit('AnimeThemes').wiki[year].content_html
-    body = BeautifulSoup(page, 'html.parser')
-    seasons = body.findAll('h2')
-    year = int(str(year).replace('s', ''))
-    entry_list = {}
-    added_list = []
-    if not seasons:
-        entry_list['All'] = body.findAll('h3')
-        for entry in entry_list.items():
-            added_list.append(get_season(entry, year))
-        return JsonResponse([added_list], safe=False)
-    for season in seasons:
-        season_text = season.getText()
-        season_name = season_text[5:season_text.find(
-            'Season')] + season_text[:4]
-        item = season
-        entry_list[season_name] = []
-        while True:
-            item = item.nextSibling
-            if item is None or item.name == 'h2':
-                break
-            elif item.name == 'h3':
-                entry_list[season_name].append(item)
-    for entry in entry_list.items():
-        print(entry[0])
-        season_list = get_season(entry, year)
-        added_list.append(season_list)
-    return JsonResponse([added_list], safe=False)
-
-
-def retrieve_covers(request):
-    page = requests.get('http://animethemes-api.herokuapp.com/db/print_all/')
-    anime_list = json.loads(page.content)
-    for anime in anime_list:
-        item = Anime.objects.filter(mal_id=anime['malId']).first()
-        item.cover = anime['cover']
-        item.save()
-    return JsonResponse({'message': 'done'})
-
-
-def get_artists(request):
-    return JsonResponse(get_list())
