@@ -53,7 +53,7 @@ def get_current():
 
 
 def get_audio_file(url, title):
-    video = ['curl', url, '-o', 'tmp/video.webm']
+    video = ['curl', url, '-o', 'video.webm']
     print(url)
     result = run(video, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     print(result.returncode, result.stdout, result.stderr)
