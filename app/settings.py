@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
@@ -22,7 +24,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = '@hbz!w@$gdjf+*^v#ot%5il0zu=ypg84%id+5k8=_4(oiedvpp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.1.40', 'animethemes-django.herokuapp.com']
 
@@ -76,34 +78,46 @@ TEMPLATE_DIRS = [
     'os.path.join(BASE_DIR, "templates")',
 ]
 
-
 WSGI_APPLICATION = 'app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'animethemes-app',
-            'USER': 'postgres',
-            'PASSWORD': '1234',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
+# if DEBUG:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#             'NAME': 'animethemes-app',
+#             'USER': 'postgres',
+#             'PASSWORD': '1234',
+#             'HOST': 'localhost',
+#             'PORT': '5432',
+#         }
+#     }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#             'NAME': 'iqlggvoh',
+#             'USER': 'iqlggvoh',
+#             'PASSWORD': 'VVXycgLVAb3kyU5DRvQsSPUBINuy4Y4T',
+#             'HOST': 'balarama.db.elephantsql.com',
+#             'PORT': '5432',
+#         }
+#     }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'animethemes-app',
+        'USER': 'postgres',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'iqlggvoh',
-            'USER': 'iqlggvoh',
-            'PASSWORD': 'VVXycgLVAb3kyU5DRvQsSPUBINuy4Y4T',
-            'HOST': 'balarama.db.elephantsql.com',
-            'PORT': '5432',
-        }
-    }
+}
+db_from_env = dj_database_url.config(conn_max_age=600)
+print(db_from_env)
+DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -139,12 +153,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+# STATIC_URL = '/static/'
+#
+# STATIC_ROOT = os.path.join(BASE_DIR, "static-files")
+#
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, "static"),
+# )
+
 STATIC_URL = '/static/'
-
-STATIC_ROOT = os.path.join(BASE_DIR, "static-files")
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-)
+# location where django collect all static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# location where you will store your static files
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app/static')
+                    ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
