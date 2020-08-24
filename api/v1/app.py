@@ -10,8 +10,7 @@ from django.shortcuts import redirect
 from api.models import Anime, Theme
 from api.models import Artist
 from api.v1.anilist import getListFromUser
-from api.v1.scrapers import get_user_list, get_all_years, get_all_seasons, get_year_seasons, get_season, \
-    get_entry
+from api.v1.scrapers import get_entry, get_season, get_year_seasons, get_all_years, get_all_seasons, get_user_list
 
 
 # GENERAL ROUTES
