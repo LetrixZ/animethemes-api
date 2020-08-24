@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = '@hbz!w@$gdjf+*^v#ot%5il0zu=ypg84%id+5k8=_4(oiedvpp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['192.168.1.40', 'animethemes-django.herokuapp.com']
 
@@ -83,28 +83,6 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-# if DEBUG:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#             'NAME': 'animethemes-app',
-#             'USER': 'postgres',
-#             'PASSWORD': '1234',
-#             'HOST': 'localhost',
-#             'PORT': '5432',
-#         }
-#     }
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#             'NAME': 'iqlggvoh',
-#             'USER': 'iqlggvoh',
-#             'PASSWORD': 'VVXycgLVAb3kyU5DRvQsSPUBINuy4Y4T',
-#             'HOST': 'balarama.db.elephantsql.com',
-#             'PORT': '5432',
-#         }
-#     }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -116,7 +94,6 @@ DATABASES = {
     }
 }
 db_from_env = dj_database_url.config(conn_max_age=600)
-print(db_from_env)
 DATABASES['default'].update(db_from_env)
 
 # Password validation
@@ -141,31 +118,17 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-# STATIC_URL = '/static/'
-#
-# STATIC_ROOT = os.path.join(BASE_DIR, "static-files")
-#
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, "static"),
-# )
-
 STATIC_URL = '/static/'
-# location where django collect all static files
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# location where you will store your static files
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'app/static')
-                    ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static-files")
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
