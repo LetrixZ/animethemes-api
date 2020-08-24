@@ -86,7 +86,7 @@ class Theme(models.Model):
         mirror_list = []
         for index, mirror in enumerate(self.mirrors):
             mirror[
-                'audio'] = f"https://animethemes-api.herokuapp.com/api/v1/anime/{self.mal_id}/{self.theme_id.split('-')[1]}/{index}/audio "
+                'audio'] = f"https://animethemes-api.herokuapp.com/api/v2/anime/{self.mal_id}/{self.theme_id.split('-')[1]}/{index}/audio "
             mirror_list.append(mirror)
         return {
             'mal_id': self.mal_id,
