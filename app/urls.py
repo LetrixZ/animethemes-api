@@ -1,11 +1,13 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from api.v2.urls import main
+from api.v1.urls import main as main_v1
+from api.v2.urls import main as main_v2
 from api.views import api_index, stats
 from main.views import year, index, theme
 
-version = 'api/v2/'
+v1 = 'api/v1/'
+v2 = 'api/v2/'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -13,7 +15,8 @@ urlpatterns = [
     # API
     path('api/', api_index, name='api-index'),
     path('api/stats', stats, name='api-stats'),
-    path(f'{version}', include(main)),
+    path(f'{v2}', include(main_v2)),
+    path(f'{v1}', include(main_v1)),
 
     path('', index, name='search-app'),
     path('id/<int:mal_id>/', theme, name='theme-app'),

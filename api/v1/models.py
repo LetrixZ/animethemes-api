@@ -1,0 +1,184 @@
+import json
+
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+
+class Anime(db.Model):
+    __tablename__ = 'animes'
+    __searchable__ = ['title']
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(), nullable=False)
+    malId = db.Column(db.Integer, nullable=False, unique=True)
+    cover = db.Column(db.String())
+    year = db.Column(db.Integer, nullable=False)
+    season = db.Column(db.String())
+    themes = db.Column(db.String())
+
+    @classmethod
+    def create(cls, title, malId, cover, year, season, themes):
+        anime = Anime(title=title, malId=malId, cover=cover, year=year, season=season, themes=themes)
+        return anime.save()
+
+    def save(self):
+        row = Anime.query.filter_by(malId=self.malId).first()
+        if not row:
+            db.session.add(self)
+        else:
+            # row.cover = self.cover
+            row.season = self.season
+            row.themes = self.themes
+        db.session.commit()
+        return self
+
+    def json(self):
+        return {
+            'malId': self.malId,
+            'title': json.loads(self.title),
+            'cover': self.cover,
+            'season': self.season,
+            'year': self.year,
+            'themes': json.loads(self.themes)
+        }
+
+    def update(self):
+        self.save()
+
+    def delete(self):
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except:
+            return False
+
+
+class Theme(db.Model):
+    __tablename__ = 'themes'
+    __searchable__ = ['title']
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(), nullable=False)
+    type = db.Column(db.String(), nullable=False)
+    mal_id = db.Column(db.Integer, nullable=False)
+    theme_id = db.Column(db.String(), nullable=False, unique=True)
+    notes = db.Column(db.String())
+    views = db.Column(db.Integer)
+    mirrors = db.Column(db.String(), nullable=False)
+    artist = db.Column(db.String())
+
+    @classmethod
+    def create(cls, title, type, mal_id, theme_id, notes, views, mirrors, artist):
+        theme = Theme(title=title, type=type, mal_id=mal_id, theme_id=theme_id, notes=notes, views=views,
+                      mirrors=mirrors, artist=artist)
+        # return theme
+        return theme.save()
+
+    def save(self):
+        row = Theme.query.filter_by(theme_id=self.theme_id).first()
+        if not row:
+            db.session.add(self)
+            # return self
+        else:
+            row.mirrors = self.mirrors
+            row.title = self.title
+            row.artist = self.artist
+            # row.notes = self.notes
+            # return None
+        db.session.commit()
+        return self
+
+    def json(self):
+        mirrors = json.loads(self.mirrors)
+        mirror_list = []
+        for index, mirror in enumerate(mirrors):
+            mirror[
+                'audioUrl'] = f"https://animethemes-api.herokuapp.com/api/v1/anime/{self.mal_id}/{self.theme_id.split('-')[1]}/{index}/audio"
+            mirror_list.append(mirror)
+        return {
+            'title': self.title,
+            'type': self.type,
+            'mal_id': self.mal_id,
+            'theme_id': self.theme_id,
+            'notes': self.notes,
+            'views': self.views,
+            'mirrors': mirror_list,
+            # 'mirrors': json.loads(self.mirrors),
+            'artist': self.artist
+        }
+
+    def single_json(self):
+        anime = Anime.query.filter_by(malId=self.mal_id).first()
+        return {
+            'malId': anime.malId,
+            'title': json.loads(anime.title),
+            'cover': anime.cover,
+            'season': anime.season,
+            'year': anime.year,
+            'themes': [{
+                'title': self.title,
+                'type': self.type,
+                'mal_id': self.mal_id,
+                'theme_id': self.theme_id,
+                'notes': self.notes,
+                'views': self.views,
+                'mirrors': json.loads(self.mirrors)}],
+            'artist': self.artist
+        }
+
+    def update(self):
+        self.save()
+
+    def delete(self):
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except:
+            return False
+
+
+class Artist(db.Model):
+    __tablename__ = 'artist'
+
+    id = db.Column(db.Integer, primary_key=True)
+    mal_id = db.Column(db.Integer, nullable=False, unique=True)
+    name = db.Column(db.String(), nullable=False)
+    cover = db.Column(db.String())
+    themes = db.Column(db.String())
+
+    @classmethod
+    def create(cls, mal_id, name, cover, themes):
+        artist = Artist(mal_id=mal_id, name=name, cover=cover, themes=themes)
+        return artist.save()
+
+    def save(self):
+        row = Artist.query.filter_by(mal_id=self.mal_id).first()
+        if not row:
+            db.session.add(self)
+        else:
+            row.themes = self.themes
+            row.cover = self.cover
+        db.session.commit()
+        return self
+
+    def json(self):
+        return {
+            'mal_id': self.mal_id,
+            'name': self.name,
+            'cover': self.cover,
+            'themes': json.loads(self.themes)
+        }
+
+    def update(self):
+        self.save()
+
+    def delete(self):
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except:
+            return False
