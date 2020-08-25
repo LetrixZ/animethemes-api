@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.urls import path, include
 
+from api.v2.routes import scrapers
 from api.v2.urls import search_urls, get_urls
 
 version = __name__.split('.')[1]
@@ -26,11 +27,11 @@ urlpatterns = [
     path('s/', include(search_urls)),
 
     # # SCRAPER
-    # path('db/year/<str:year>', scrapers.year_scrape),
-    # path('db/artist', scrapers.artist_scrape),
-    # # COPY
-    # path('db/copy/anime', scrapers.scrape_anime_covers),
-    # path('db/copy/artist', scrapers.scrape_artist_covers),
-    # # MODIFY
-    # path('db/modify/artist_id', scrapers.assign_artist_id),
+    path('db/year/<str:year>', scrapers.year_scrape),
+    path('db/artist', scrapers.artist_scrape),
+    # COPY
+    path('db/copy/anime', scrapers.scrape_anime_covers),
+    path('db/copy/artist', scrapers.scrape_artist_covers),
+    # MODIFY
+    path('db/modify/artist_id', scrapers.assign_artist_id),
 ]
