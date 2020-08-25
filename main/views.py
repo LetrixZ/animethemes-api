@@ -13,7 +13,7 @@ ANIME_PER_PAGE = 9
 THEME_PER_PAGE = 20
 
 
-def index(request):
+def home(request):
     context = {'is_query': False}
 
     query = ""
