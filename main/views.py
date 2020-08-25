@@ -16,51 +16,51 @@ THEME_PER_PAGE = 20
 def home(request):
     context = {'is_query': False}
 
-    query = ""
-    if request.GET:
-        query = request.GET.get('q', '')
-        context['query'] = str(query)
-
-    if len(query) > 1:
-        query_list = get_queryset(query)
-        anime_list = []
-        for anime in query_list[0]:
-            anime_list.append(anime.json())
-        context['anime_list'] = anime_list
-        theme_list = []
-        for theme in query_list[1]:
-            theme_list.append(theme.json())
-        context['theme_list'] = theme_list
-        context['is_query'] = True
-    else:
-        entries = Anime.objects.all().order_by('-id')[:10]
-        anime_list = []
-        theme_list = []
-        for anime in entries:
-            anime_list.append(anime.json())
-
-    # Pagination
-    if query:
-        page = request.GET.get('page', 1)
-        anime_list_paginator = Paginator(anime_list, ANIME_PER_PAGE)
-        try:
-            anime_list = anime_list_paginator.page(page)
-        except PageNotAnInteger:
-            anime_list = anime_list_paginator.page(ANIME_PER_PAGE)
-        except EmptyPage:
-            anime_list = anime_list_paginator.page(
-                anime_list_paginator.num_pages)
-
-        theme_list_pagination = Paginator(theme_list, THEME_PER_PAGE)
-        try:
-            theme_list = theme_list_pagination.page(page)
-        except PageNotAnInteger:
-            theme_list = theme_list_pagination.page(THEME_PER_PAGE)
-        except EmptyPage:
-            theme_list = theme_list_pagination.page(
-                theme_list_pagination.num_pages)
-    context['anime_list'] = anime_list
-    context['theme_list'] = theme_list
+    # query = ""
+    # if request.GET:
+    #     query = request.GET.get('q', '')
+    #     context['query'] = str(query)
+    #
+    # if len(query) > 1:
+    #     query_list = get_queryset(query)
+    #     anime_list = []
+    #     for anime in query_list[0]:
+    #         anime_list.append(anime.json())
+    #     context['anime_list'] = anime_list
+    #     theme_list = []
+    #     for theme in query_list[1]:
+    #         theme_list.append(theme.json())
+    #     context['theme_list'] = theme_list
+    #     context['is_query'] = True
+    # else:
+    #     entries = Anime.objects.all().order_by('-id')[:10]
+    #     anime_list = []
+    #     theme_list = []
+    #     for anime in entries:
+    #         anime_list.append(anime.json())
+    #
+    # # Pagination
+    # if query:
+    #     page = request.GET.get('page', 1)
+    #     anime_list_paginator = Paginator(anime_list, ANIME_PER_PAGE)
+    #     try:
+    #         anime_list = anime_list_paginator.page(page)
+    #     except PageNotAnInteger:
+    #         anime_list = anime_list_paginator.page(ANIME_PER_PAGE)
+    #     except EmptyPage:
+    #         anime_list = anime_list_paginator.page(
+    #             anime_list_paginator.num_pages)
+    #
+    #     theme_list_pagination = Paginator(theme_list, THEME_PER_PAGE)
+    #     try:
+    #         theme_list = theme_list_pagination.page(page)
+    #     except PageNotAnInteger:
+    #         theme_list = theme_list_pagination.page(THEME_PER_PAGE)
+    #     except EmptyPage:
+    #         theme_list = theme_list_pagination.page(
+    #             theme_list_pagination.num_pages)
+    # context['anime_list'] = anime_list
+    # context['theme_list'] = theme_list
 
     context['lists'] = [get_year_list(), current_list(), top_theme(), latest_list(), latest_theme()]
 
@@ -98,7 +98,7 @@ def theme(request, mal_id=1, theme_index=0, mirror=0):
         pass
     context['theme_list_json'] = SafeString(json.dumps(theme_list))
 
-    return render(request, "main/anime.html", context)
+    return render(request, "main/templates/anime.html", context)
 
 
 def year(request, year):
@@ -109,7 +109,7 @@ def year(request, year):
         anime_list.append(entry.json())
     context['list'] = anime_list
     context['seasons'] = year_seasons(None, year)
-    return render(request, "main/year_list.html", context)
+    return render(request, "main/templates/year_list.html", context)
 
 
 def year_seasons(request, year):

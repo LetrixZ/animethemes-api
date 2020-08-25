@@ -15,8 +15,8 @@
     </style>
 
     {% if is_query %}
-        {% include 'main/snippets/search-header.html' %}
-        {% include 'main/snippets/search.html' with anime_list=anime_list theme_list=theme_list %}
+        {% include 'main/search-header.html' %}
+        {% include 'main/search.html' with anime_list=anime_list theme_list=theme_list %}
     {% else %}
         {% include 'snippets/header.html' %}
         <div class="container-fluid">
@@ -26,7 +26,7 @@
                 {% if forloop.first %}
                     <div class="scrolling-wrapper row flex-row flex-nowrap mb-3 pl-1">
                         {% for year in list|get_value:0 %}
-                            {% include 'main/snippets/year_item.html' with value=year year=year %}
+                            {% include 'main/year_item.html' with value=year year=year %}
                         {% endfor %}
                     </div>
                     {# CURRENT LIST #}
@@ -34,7 +34,7 @@
                     <div class="scrolling-wrapper row flex-row flex-nowrap pl-1">
                         {% for item in list|get_value:0 %}
                             <div class="mt-2">
-                                {% include 'main/snippets/anime_item.html' with value=item %}
+                                {% include 'main/anime_item.html' with value=item %}
                             </div>
                         {% endfor %}
                     </div>

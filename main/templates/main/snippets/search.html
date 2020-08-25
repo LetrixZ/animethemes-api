@@ -5,18 +5,18 @@
         <h3 class="font-weight-light ml-3 mb-3">Anime</h3>
         <div class="row d-flex justify-content-center">
             {% for anime in anime_list %}
-                {% include 'main/snippets/anime_item.html' with value=anime %}
+                {% include 'main/anime_item.html' with value=anime %}
             {% endfor %}
         </div>
-        {% include "main/snippets/anime_pagination.html" with anime_list=anime_list %}
+        {% include "main/anime_pagination.html" with anime_list=anime_list %}
     {% endif %}
     {% if theme_list|length > 0 %}
         <h3 class="font-weight-light ml-3 mb-3">Themes</h3>
         <div class="row d-flex justify-content-center mb-3">
             {% for theme in theme_list %}
-                {% include 'main/snippets/theme-list-item.html' with value=theme %}
+                {% include 'main/theme-list-item.html' with value=theme %}
             {% endfor %}
         </div>
-        {% include "main/snippets/anime_pagination.html" with anime_list=theme_list %}
+        {% include "main/anime_pagination.html" with anime_list=theme_list %}
     {% endif %}
 </div>

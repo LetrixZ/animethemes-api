@@ -1,8 +1,8 @@
 {% extends 'base-noheader.html' %}
 {% load my_filter %}
 {% block content %}
-{#    {% include 'main/snippets/search-header.html' %}#}
-    {#    {% include 'main/snippets/back-header.html' %}#}
+{#    {% include 'main/search-header.html' %}#}
+    {#    {% include 'main/back-header.html' %}#}
     <div style="margin-top: 1em;overflow-x: hidden">
         {% for season in seasons %}
             <h3 class="font-weight-light ml-3 mb-3">{{ season|get_value:0 }} {{ year }}</h3>
