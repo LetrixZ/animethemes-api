@@ -124,17 +124,10 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-#
-# STATIC_ROOT = os.path.join(BASE_DIR, "static-files")
-#
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, "static"),
-# )
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(BASE_DIR, "static-files")
 
-STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'staticfiles'))
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, "static"),
 )
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'

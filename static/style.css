@@ -1,0 +1,127 @@
+body {
+    overflow-x: hidden;
+    background-color: #111111;
+}
+
+
+h1 {
+    color: #F45;
+    font-family: 'Roboto', sans-serif;
+}
+
+hr {
+    margin-top: .1em;
+    border-top: 1px solid white;
+}
+
+h2, h3, h4, h5, h6, a, p, strong, span {
+    color: #FFF;
+    font-family: 'Roboto', sans-serif;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+
+ul {
+    list-style: none;
+    counter-reset: li
+}
+
+.theme li::before {
+    content: "\2022";
+    color: #F45;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em
+}
+
+.entry {
+    width: 20em;
+    height: 25em;
+    padding: 1em 1em;
+    margin: 1em;
+    border-radius: .5em;
+    background-color: #252525;
+}
+
+img.list {
+    object-fit: none; /* Do not scale the image */
+    object-position: center; /* Center the image within the element */
+    width: 200px;
+    max-height: 280px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.text-crop {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    -webkit-box-orient: vertical;
+}
+
+.align-left {
+    float: left;
+}
+
+.align-right {
+    float: right;
+}
+
+.pagination > li.active > a,
+.pagination > li > a {
+    color: white;
+    background-color: #222222 !important;
+}
+
+.pagination > li > a {
+    background-color: white;
+    color: #BBBBBB;
+}
+
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pagination > li > span:focus,
+.pagination > li > span:hover {
+    color: white;
+    background-color: #eee;
+    border-color: #ddd;
+}
+
+.pagination > .active > a {
+    color: white;
+    background-color: #F45 !Important;
+    border: solid 1px #F45 !Important;
+}
+
+.pagination > .active > a:hover {
+    background-color: #F45 !Important;
+    border: solid 1px #F45;
+}
+
+.scrolling-wrapper {
+    overflow-x: auto;
+}
+
+.text-crop {
+    overflow: hidden;
+    text-overflow: clip;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+.line-clamp-1 {
+    -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+    -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+    -webkit-line-clamp: 3;
+}
