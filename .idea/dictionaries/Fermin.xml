@@ -4,11 +4,15 @@
       <w>anilist</w>
       <w>anime</w>
       <w>animes</w>
+      <w>ffmpeg</w>
       <w>fileioapi</w>
+      <w>libmp</w>
       <w>msearch</w>
+      <w>myanimelist</w>
       <w>playid</w>
       <w>subrredit</w>
       <w>tablename</w>
+      <w>webm</w>
     </words>
   </dictionary>
 </component>
