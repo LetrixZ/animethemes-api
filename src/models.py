@@ -125,6 +125,17 @@ class Theme(db.Model):
             'mirrors': self.mirrors
         }
 
+    def json_info_extended(self):
+        anime = Anime.query.filter_by(mal_id=self.mal_id).first()
+        return {
+            'mal_id': self.mal_id,
+            'title': anime.title[0],
+            'cover': anime.cover,
+            'year': anime.year,
+            'season': anime.season,
+            'themes': [self.json()]
+        }
+
     def update(self):
         self.save()
 
@@ -155,11 +166,12 @@ class Artist(db.Model):
             return self, False
 
     def json(self):
+        theme_list = [Theme.query.filter_by(theme_id=item).first().json() for item in self.themes]
         return {
             'mal_id': self.mal_id,
             'name': self.name,
             'cover': self.cover,
-            'themes': self.themes
+            'themes': theme_list
         }
 
     def app_json(self):

@@ -8,7 +8,7 @@ Deployed on Heroku
 
 [https://animethemes-api.herokuapp.com/api/v1](https://animethemes-api.herokuapp.com/api/v1)
 
-## Usage
+## Usage (OUTDATED)
 
 #### GET /anime/[id]
 [id] = MyAnimeList's anime ID (Example: [40060](https://myanimelist.net/anime/40060))

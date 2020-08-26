@@ -28,7 +28,6 @@ def get_mal_list(user, list_filter):
     # LIST REQUEST
     url_list = [f'https://myanimelist.net/animelist/{user}/load.json?offset={i}&status={list_filter}'
                 for i in range(0, 300 * 10, 300)]
-    print(url_list)
     bodies = get_bodies(url_list)
     content = []
     for body in bodies:
@@ -37,6 +36,8 @@ def get_mal_list(user, list_filter):
     # FILTERING
     for page in content:
         for entry in json.loads(page):
+            if entry == 'errors':
+                return {'error': 'user not found'}
             anime = Anime.query.filter_by(mal_id=entry['anime_id']).first()
             if anime:
                 mal_list.append(anime.json())
