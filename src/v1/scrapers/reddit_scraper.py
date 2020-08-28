@@ -1,4 +1,3 @@
-import json
 import praw
 import requests
 from bs4 import BeautifulSoup
@@ -77,8 +76,10 @@ def get_theme(entry, mal_id, theme_id, category):
                                     'mirror': mirror_info.get('href')})
         except:
             pass
-        Theme.create(mal_id=mal_id, title=title, theme_id=theme_id, type=type, notes=notes, category=category,
-                     mirrors=mirrors, episodes=episodes)
+        # Theme.create(mal_id=mal_id, title=title, theme_id=theme_id, type=type, notes=notes, category=category,
+        #              mirrors=mirrors, episodes=episodes)
+        Theme.update_or_create(mal_id=mal_id, title=title, theme_id=theme_id, type=type, notes=notes, category=category,
+                               mirrors=mirrors, episodes=episodes)
 
 
 def get_anime(entry, year, season):
@@ -96,8 +97,8 @@ def get_anime(entry, year, season):
             entry = entry.nextSibling.nextSibling
         theme_size = 0
         for index, item in enumerate(entry.findAll('tr')[1:]):
-            theme = get_theme(item, mal_id, f'{mal_id}-{f"{index:02d}"}', category=category)
-            if theme:
+            if item.find('td').text != "":
+                theme = get_theme(item, mal_id, f'{mal_id}-{f"{theme_size:02d}"}', category=category)
                 theme_size += 1
         entry = entry.nextSibling.nextSibling
         if entry:
@@ -106,8 +107,6 @@ def get_anime(entry, year, season):
                 entry = entry.nextSibling.nextSibling
             for index, item in enumerate(entry.findAll('tr')[1:], start=theme_size):
                 theme = get_theme(item, mal_id, f'{mal_id}-{f"{index:02d}"}', category=category)
-                # if theme:
-                #     theme_size += 1
         return Anime.create(mal_id=mal_id, title=title, year=year, season=season, cover=get_cover(mal_id))
     else:
         return None, None
@@ -116,10 +115,10 @@ def get_anime(entry, year, season):
 def get_year(year):
     added = []
     page = BeautifulSoup(reddit.subreddit('AnimeThemes').wiki[year].content_html, 'html.parser')
+    print(year)
     if page.findAll('h2'):
         for item in page.findAll('h2'):
             season = f'{item.text.split(" ")[1]} {int(str(year).replace("s", ""))}'
-            print(season)
             aux = item
             while True:
                 aux = aux.nextSibling
@@ -131,7 +130,6 @@ def get_year(year):
                         added.append(anime.json())
     else:
         season = f'All {year}'
-        print(season)
         year = int(str(year).replace('s', ''))
         for entry in page.findAll('h3'):
             anime, created = get_anime(entry, year, season)

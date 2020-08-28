@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from models import Artist, Theme
+from models import Artist, Theme, db
 from v1.scrapers.artist_scraper import get_list as artist_scrape
 from v1.scrapers.reddit_scraper import get_year
 from v1.scrapers.restore_data import get_anime_covers, get_artists
@@ -48,4 +48,6 @@ def assign_artist():
                 item.save()
             except:
                 return jsonify(artist.name, theme)
+    # db.session.commit()
     return jsonify({'message': 'done'})
+

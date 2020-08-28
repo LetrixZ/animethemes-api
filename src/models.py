@@ -62,7 +62,7 @@ class Theme(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     mal_id = db.Column(db.Integer, nullable=False)
     theme_id = db.Column(db.String(), nullable=False, unique=True)
-    artist_id = db.Column(db.Integer, default=-1)
+    artist_id = db.Column(db.Integer, nullable=False, default=0)
     title = db.Column(db.String(), nullable=False)
     type = db.Column(db.String(), nullable=False)
     notes = db.Column(db.String())
@@ -75,7 +75,21 @@ class Theme(db.Model):
     def create(cls, title, type, mal_id, theme_id, notes, mirrors, episodes, category):
         theme = Theme(title=title, type=type, mal_id=mal_id, theme_id=theme_id, notes=notes,
                       mirrors=mirrors, category=category, episodes=episodes)
-        return theme.save()
+        # return theme.save()
+
+    def update_or_create(mal_id, theme_id, title, type, notes, episodes, category, mirrors):
+        theme = db.session.query(Theme).filter_by(theme_id=theme_id).first()
+        if not theme:
+            theme = Theme(title=title, type=type, mal_id=mal_id, theme_id=theme_id, notes=notes,
+                          mirrors=mirrors, category=category, episodes=episodes)
+            db.session.add(theme)
+            db.session.commit()
+            return theme, True
+        else:
+            theme.mirrors = mirrors
+            theme.episodes = episodes
+            db.session.commit()
+            return theme, False
 
     def save(self):
         row = Theme.query.filter_by(theme_id=self.theme_id).first()
@@ -86,8 +100,6 @@ class Theme(db.Model):
         else:
             row.mirrors = self.mirrors
             row.episodes = self.episodes
-            row.artist_id = self.artist_id
-            row.views = self.views
             db.session.commit()
             return self, False
 
