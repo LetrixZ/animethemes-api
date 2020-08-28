@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 
+from app_v1.routes.main import app_v1
 from config import config
 from models import db
 from v1.routes.anime import anime
@@ -39,6 +40,8 @@ app.register_blueprint(search, url_prefix=f'{version}/s')
 app.register_blueprint(search, url_prefix=f'{version}/search')
 
 app.register_blueprint(scrapers, url_prefix='/api/db')
+
+app.register_blueprint(app_v1, url_prefix='/api/app/')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")

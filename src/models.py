@@ -45,6 +45,15 @@ class Anime(db.Model):
             'themes': theme_list
         }
 
+    def app_json(self):
+        return {
+            'mal_id': self.mal_id,
+            'title': self.title[0],
+            'cover': self.cover,
+            'year': self.year,
+            'season': self.season,
+        }
+
     def artist_json(self, theme_list):
         return {
             'mal_id': self.mal_id,
@@ -148,6 +157,20 @@ class Theme(db.Model):
             'themes': [self.json()]
         }
 
+    def app_top_json(self):
+        anime = Anime.query.filter_by(mal_id=self.mal_id).first()
+        return {
+            # THEME INFO
+            'theme_id': self.theme_id,
+            'title': self.title,
+            'type': self.type,
+            'views': self.views,
+            # ANIME INFO
+            'mal_id': self.mal_id,
+            'name': anime.title[0],
+            'cover': anime.cover,
+        }
+
     def update(self):
         self.save()
 
@@ -186,7 +209,7 @@ class Artist(db.Model):
             'themes': theme_list
         }
 
-    def app_json(self):
+    def app_detail_json(self):
         art_list = self.themes
         anime_list = []
         theme_ids = []
@@ -207,6 +230,13 @@ class Artist(db.Model):
             'name': self.name,
             'cover': self.cover,
             'themes': anime_list
+        }
+
+    def app_json(self):
+        return {
+            'mal_id': self.mal_id,
+            'name': self.name,
+            'cover': self.cover
         }
 
     def update(self):
