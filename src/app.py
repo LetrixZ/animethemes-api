@@ -27,7 +27,7 @@ app = create_app(environment)
 @app.route('/')
 def index():
     return jsonify(
-        {'message': 'animethemes api', 'author': 'u/LetrixZ', 'docs': 'https://github.com/LetrixZ/animethemes-api'})
+        {'message': 'animethemes api', 'author': 'Fermin Cirella (reddit: u/LetrixZ)', 'docs': 'https://github.com/LetrixZ/animethemes-api'})
 
 
 version = '/api/v1'
