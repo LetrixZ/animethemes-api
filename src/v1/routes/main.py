@@ -70,7 +70,9 @@ def get_year(year=None):
         year_list = set()
         for entry in entries:
             year_list.add(entry.year)
-        return jsonify(list(year_list))
+        year_list = list(year_list)
+        year_list.reverse()
+        return jsonify(year_list)
 
 
 @v1.route('seasons/<int:year>')

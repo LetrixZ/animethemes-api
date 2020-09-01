@@ -116,6 +116,7 @@ class Theme(db.Model):
         mirror_list = []
         for index, mirror in enumerate(self.mirrors):
             mirror['audio'] = f"{base_url}/{self.mal_id}/{self.theme_id.split('-')[1]}/{index}/audio"
+            mirror['quality'] = ', '.join(mirror['quality'])
             mirror_list.append(mirror)
         artist = Artist.query.filter_by(mal_id=self.artist_id).first()
         return {
@@ -131,6 +132,7 @@ class Theme(db.Model):
         mirror_list = []
         for index, mirror in enumerate(self.mirrors):
             mirror['audio'] = f"{base_url}/{self.mal_id}/{self.theme_id.split('-')[1]}/{index}/audio"
+            mirror['quality'] = ', '.join(mirror['quality'])
             mirror_list.append(mirror)
         anime = Anime.query.filter_by(mal_id=self.mal_id).first()
         artist = Artist.query.filter_by(mal_id=self.artist_id).first()
@@ -159,12 +161,16 @@ class Theme(db.Model):
 
     def app_top_json(self):
         anime = Anime.query.filter_by(mal_id=self.mal_id).first()
+        mirror = self.mirrors[0]
+        mirror['audio'] = f"{base_url}/{self.mal_id}/{self.theme_id.split('-')[1]}/{0}/audio"
+        mirror['quality'] = ', '.join(mirror['quality'])
         return {
             # THEME INFO
             'theme_id': self.theme_id,
             'title': self.title,
             'type': self.type,
             'views': self.views,
+            'mirrors': [mirror],
             # ANIME INFO
             'mal_id': self.mal_id,
             'name': anime.title[0],
