@@ -18,8 +18,8 @@ def create_app(env):
     return app
 
 
-# environment = config['production']
-environment = config['development']
+environment = config['production']
+# environment = config['development']
 
 app = create_app(environment)
 
