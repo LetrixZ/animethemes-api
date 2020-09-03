@@ -41,7 +41,9 @@ def get_year_seasons(year):
     results = Anime.query.filter_by(year=year).all()
     seasons = []
     for item in results:
-        season_text = item.season[:-5]
+        season_text = item.season[:-4]
+        if "All" not in season_text:
+            season_text = item.season[:-5]
         if season_text not in seasons and len(season_text):
             seasons.append(season_text)
         elif 'All' not in seasons and item.season == 'All':
@@ -50,7 +52,7 @@ def get_year_seasons(year):
     for season in seasons:
         season_list = []
         for item in results:
-            if item.season[:-5] == season:
+            if item.season[:-5] == season or item.season[:-4] == season:
                 season_list.append(item.json())
             elif item.season == 'All':
                 season_list.append(item.json())

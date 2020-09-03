@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify
 from sqlalchemy import desc
 
 from models import Anime, Artist, Theme
+from v1.helpers.year_season import get_year_seasons
 
 app_v1 = Blueprint('app_v1', __name__)
 
@@ -32,6 +33,11 @@ def artist(mal_id):
 @app_v1.route('theme/<string:theme_id>')
 def theme(theme_id):
     return Theme.query.filter_by(theme_id=theme_id).first().json_info_extended()
+
+
+@app_v1.route('year/<int:year>')
+def year(year):
+    return jsonify(get_year_seasons(year))
 
 
 def latest_anime(limit):
