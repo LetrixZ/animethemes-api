@@ -53,13 +53,14 @@ def get_year_seasons(year):
         season_list = []
         for item in results:
             if item.season[:-5] == season or item.season[:-4] == season:
-                season_list.append(item.json())
+                season_list.append(item.app_json())
             elif item.season == 'All':
-                season_list.append(item.json())
+                season_list.append(item.app_json())
         season_list = sorted(season_list, key=lambda k: k['title'][0])
         seasons_list.append({'season': season, 'animes': season_list})
     seasons_list = sorted(seasons_list, key=lambda k: k['season'])
     return {'year': year, 'seasons': seasons_list}
+
 
 
 def get_season(year, season):
