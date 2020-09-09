@@ -84,5 +84,5 @@ def get_current_season():
     anime_list = Anime.query.filter_by(season='{} {}'.format(current, year)).all()
     result_list = []
     for anime in anime_list:
-        result_list.append(anime.json())
+        result_list.append(anime.app_json())
     return result_list

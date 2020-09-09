@@ -1,16 +1,21 @@
+import json
+
 from flask import Blueprint, jsonify
 # from v1.helpers.others import *
 from sqlalchemy import desc
 
 from models import Anime, Artist, Theme
-from v1.helpers.year_season import get_year_seasons
+from v1.helpers.anilist import get_anilist
+from v1.helpers.myanimelist import get_bodies
+from v1.helpers.year_season import get_year_seasons, get_current_season
 
 app_v1 = Blueprint('app_v1', __name__)
 
 
 @app_v1.route('home')
 def home_list():
-    return jsonify({'year_list': get_year_list(), 'top_themes': top_themes(10), 'latest_anime': latest_anime(9),
+    return jsonify({'year_list': get_year_list(), 'current_season': get_current_season(), 'top_themes': top_themes(10),
+                    'latest_anime': latest_anime(9),
                     'latest_themes': latest_themes(10), 'latest_artist': latest_artist(6)})
 
 
@@ -38,6 +43,43 @@ def theme(theme_id):
 @app_v1.route('year/<int:year>')
 def year(year):
     return jsonify(get_year_seasons(year))
+
+
+@app_v1.route('mal/<string:user>')
+def mal(user):
+    # LIST REQUEST
+    url_list = [f'https://myanimelist.net/animelist/{user}/load.json?offset={i}&status=7'
+                for i in range(0, 300 * 10, 300)]
+    bodies = get_bodies(url_list)
+    content = []
+    for body in bodies:
+        content.append(body.decode("utf-8"))
+    mal_list = []
+    # FILTERING
+    for page in content:
+        for entry in json.loads(page):
+            if entry == 'errors':
+                return {'error': 'user not found'}
+            item = Anime.query.filter_by(mal_id=entry['anime_id']).first()
+            if item:
+                mal_list.append(item.app_json())
+    mal_list = sorted(mal_list, key=lambda k: k['title'])
+    return jsonify(mal_list)
+
+
+@app_v1.route('anilist/<string:user>')
+def anilist_list(user):
+    # API REQUEST
+    ani_list = get_anilist(user)
+    # FILTERING
+    anime_list = []
+    for item in ani_list:
+        mal_id = item['media']['idMal']
+        item = Anime.query.filter_by(mal_id=mal_id).first()
+        if item:
+            anime_list.append(item.app_json())
+    anime_list = sorted(anime_list, key=lambda k: k['title'])
+    return jsonify(anime_list)
 
 
 def latest_anime(limit):
