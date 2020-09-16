@@ -28,6 +28,24 @@ def scrape_all_years():
     return jsonify(added)
 
 
+@scrapers.route('print_all')
+def print_all():
+    entries = Anime.query.all()
+    anime_list = []
+    for anime in entries:
+        anime_list.append(anime.app_json())
+    return jsonify(anime_list)
+
+
+@scrapers.route('print_all_artist')
+def print_all():
+    entries = Artist.query.all()
+    artist_list = []
+    for artist in entries:
+        artist_list.append(artist.app_json())
+    return jsonify(artist_list)
+
+
 @scrapers.route('restore_covers')
 def restore_covers():
     return jsonify(get_anime_covers())
