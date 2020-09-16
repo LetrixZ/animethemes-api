@@ -29,7 +29,7 @@ def scrape_all_years():
 
 
 @scrapers.route('print_all')
-def print_all():
+def print_all_animes():
     entries = Anime.query.all()
     anime_list = []
     for anime in entries:
@@ -38,7 +38,7 @@ def print_all():
 
 
 @scrapers.route('print_all_artist')
-def print_all():
+def print_all_artists():
     entries = Artist.query.all()
     artist_list = []
     for artist in entries:
