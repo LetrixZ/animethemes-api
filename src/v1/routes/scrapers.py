@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from models import Artist, Theme, db
+from models import Anime, Artist, Theme, db
 from v1.scrapers.artist_scraper import get_list as artist_scrape
 from v1.scrapers.reddit_scraper import get_year
 from v1.scrapers.restore_data import get_anime_covers, get_artists
@@ -26,6 +26,24 @@ def scrape_all_years():
     for year in years:
         added[year] = get_year(year)
     return jsonify(added)
+
+
+@scrapers.route('print_all')
+def print_all_animes():
+    entries = Anime.query.all()
+    anime_list = []
+    for anime in entries:
+        anime_list.append(anime.app_json())
+    return jsonify(anime_list)
+
+
+@scrapers.route('print_all_artist')
+def print_all_artists():
+    entries = Artist.query.all()
+    artist_list = []
+    for artist in entries:
+        artist_list.append(artist.app_json())
+    return jsonify(artist_list)
 
 
 @scrapers.route('restore_covers')
