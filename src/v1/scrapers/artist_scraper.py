@@ -2,7 +2,7 @@ import praw
 import requests
 from bs4 import BeautifulSoup
 
-from models import Theme, Artist
+from models import Theme, Artist, Anime
 
 reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
                      client_secret="Vs9q60YyROx780avM7AqsVFzfYM",
@@ -32,8 +32,7 @@ def parse_themes(body):
         if 'myanimelist' not in mal_url:
             continue
         mal_id = int("".join(filter(str.isdigit, mal_url)))
-        # print(mal_id)
-        theme_entries = Theme.query.filter_by(mal_id=mal_id).all()
+        theme_entries = Anime.query.filter_by(mal_id=mal_id).first().themes
         wiki_themes = anime.nextSibling.nextSibling.findAll('tr')[1:]
         if not wiki_themes:
             wiki_themes = anime.nextSibling.nextSibling.nextSibling.nextSibling.findAll('tr')[1:]
@@ -41,9 +40,9 @@ def parse_themes(body):
             theme_type = theme.find('td').getText().split('"')[0][:-1]
             if not theme_type:
                 continue
-            for entry in theme_entries:
-                if entry.type in theme_type:
-                    theme_list.append(entry.theme_id)
+            for index, entry in enumerate(theme_entries):
+                if entry['type'] in theme_type:
+                    theme_list.append(f'{mal_id}-{index:02d}')
                     break
     return theme_list
 

@@ -14,7 +14,7 @@ class DevelopmentConfig(Config):
 
 class Production(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI')
     JSON_SORT_KEYS = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

@@ -48,6 +48,5 @@ def assign_artist():
                 item.save()
             except:
                 return jsonify(artist.name, theme)
-    # db.session.commit()
     return jsonify({'message': 'done'})
 

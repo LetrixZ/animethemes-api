@@ -1,4 +1,5 @@
 import json
+from difflib import SequenceMatcher
 
 from flask import Blueprint, jsonify
 # from v1.helpers.others import *
@@ -14,9 +15,11 @@ app_v1 = Blueprint('app_v1', __name__)
 
 @app_v1.route('home')
 def home_list():
-    return jsonify({'year_list': get_year_list(), 'current_season': get_current_season(), 'top_themes': top_themes(10),
-                    'latest_anime': latest_anime(9),
-                    'latest_themes': latest_themes(10), 'latest_artist': latest_artist(6)})
+    # return jsonify({'year_list': get_year_list(), 'current_season': get_current_season(), 'top_themes': top_themes(10),
+    #                 'latest_anime': latest_anime(9),
+    #                 'latest_themes': latest_themes(10), 'latest_artist': latest_artist(6)})
+    return jsonify({'year_list': get_year_list(), 'current_season': get_current_season(),
+                    'latest_anime': latest_anime(9), 'latest_artist': latest_artist(6)})
 
 
 @app_v1.route('search/<path:term>')
@@ -35,9 +38,9 @@ def artist(mal_id):
     return Artist.query.filter_by(mal_id=mal_id).first().app_detail_json()
 
 
-@app_v1.route('theme/<string:theme_id>')
-def theme(theme_id):
-    return Theme.query.filter_by(theme_id=theme_id).first().json_info_extended()
+# @app_v1.route('theme/<string:theme_id>')
+# def theme(theme_id):
+#     return Theme.query.filter_by(theme_id=theme_id).first().json_info_extended()
 
 
 @app_v1.route('year/<int:year>')
@@ -133,11 +136,30 @@ def search_anime(name):
     return anime_list
 
 
+base_url = 'https://animethemes-api.herokuapp.com/api/v1/anime'
+
+
 def search_theme(name):
-    results = Theme.query.filter(Theme.title.ilike("%{}%".format(name))).all()
+    anime_list = Anime.query.all()
     theme_list = []
-    for theme in results:
-        theme_list.append(theme.app_top_json())
+    for anime in anime_list:
+        for index, theme in enumerate(anime.themes):
+            if SequenceMatcher(a=theme['title'].lower(), b=name.lower()).ratio() > 0.8:
+                theme['cover'] = anime.cover
+                theme['name'] = anime.title[0]
+                theme_list.append(theme)
+            elif name.lower() in theme['title'].lower() and theme['title'] != "":
+                theme['cover'] = anime.cover
+                theme['name'] = anime.title[0]
+                theme_list.append(theme)
+            else:
+                continue
+            mirror_list = []
+            for mirror_index, mirror in enumerate(theme['mirrors']):
+                mirror['audio'] = f"{base_url}/{anime.mal_id}/{index}/{mirror_index}/audio"
+                mirror['quality'] = ', '.join(mirror['quality'])
+                mirror_list.append(mirror)
+            theme['mirrors'] = mirror_list
     return theme_list
 
 

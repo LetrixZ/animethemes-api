@@ -21,9 +21,12 @@ def get_anime(mal_id):
 
 @anime.route('<int:mal_id>/<int:theme_index>')
 def theme_info(mal_id, theme_index):
-    theme = Theme.query.filter_by(theme_id=f'{mal_id}-{theme_index:02d}').first()
+    item = Anime.query.filter_by(mal_id=mal_id).first()
+    theme = item.themes[theme_index]
     if theme:
-        return jsonify(theme.json_info())
+        theme['cover'] = item.cover
+        theme['name'] = item.title[0]
+        return jsonify(theme)
     else:
         return jsonify({'error': 'theme not in database'})
 
@@ -31,10 +34,11 @@ def theme_info(mal_id, theme_index):
 @anime.route('<int:mal_id>/<int:theme_index>/<int:quality>/video')
 @anime.route('<int:mal_id>/<int:theme_index>/video')
 def get_video(mal_id, theme_index, quality=0):
-    theme = Theme.query.filter_by(theme_id=f'{mal_id}-{theme_index:02d}').first()
+    item = Anime.query.filter_by(mal_id=mal_id).first()
+    theme = item.themes[theme_index]
     if theme:
         try:
-            mirror = theme.mirrors[quality]
+            mirror = theme['mirrors'][quality]
             return redirect(mirror['mirror'])
         except IndexError:
             return jsonify({'error': 'invalid quality'})
@@ -45,13 +49,14 @@ def get_video(mal_id, theme_index, quality=0):
 @anime.route('<int:mal_id>/<int:theme_index>/<int:quality>/audio')
 @anime.route('<int:mal_id>/<int:theme_index>/audio')
 def get_audio_theme(mal_id, theme_index, quality=0):
-    theme = Theme.query.filter_by(theme_id=f'{mal_id}-{theme_index:02d}').first()
+    item = Anime.query.filter_by(mal_id=mal_id).first()
+    theme = item.themes[theme_index]
     if theme:
         try:
-            mirror = theme.mirrors[quality]
+            mirror = theme['mirrors'][quality]
             return redirect(extract_audio(mirror['mirror'],
-                                          [theme.title, Anime.query.filter_by(mal_id=mal_id).first().title[0],
-                                           theme.type]))
+                                          [theme['title'], Anime.query.filter_by(mal_id=mal_id).first().title[0],
+                                           theme['type']]))
         except IndexError:
             return jsonify({'error': 'invalid quality'})
     else:

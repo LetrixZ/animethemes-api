@@ -14,13 +14,14 @@ class Anime(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     mal_id = db.Column(db.Integer, nullable=False, unique=True)
     title = db.Column(JSONB, nullable=False)
-    cover = db.Column(db.String(), default="")
+    cover = db.Column(db.String(), nullable=True, default="")
     year = db.Column(db.Integer, nullable=False)
     season = db.Column(db.String())
+    themes = db.Column(JSONB, nullable=False)
 
     @classmethod
-    def create(cls, title, mal_id, cover, year, season):
-        anime = Anime(title=title, mal_id=mal_id, cover=cover, year=year, season=season)
+    def create(cls, title, mal_id, cover, year, season, themes):
+        anime = Anime(title=title, mal_id=mal_id, cover=cover, year=year, season=season, themes=themes)
         return anime.save()
 
     def save(self):
@@ -30,19 +31,25 @@ class Anime(db.Model):
             db.session.commit()
             return self, True
         else:
+            row.themes = self.themes
             db.session.commit()
             return self, False
 
     def json(self):
-        theme_list = [theme.json() for theme in Theme.query.filter_by(mal_id=self.mal_id).all()]
-        theme_list = sorted(theme_list, key=itemgetter('theme_id'), reverse=False)
+        for theme_index, theme in enumerate(self.themes):
+            mirror_list = []
+            for mirror_index, mirror in enumerate(theme['mirrors']):
+                mirror['audio'] = f"{base_url}/{self.mal_id}/{theme_index}/{mirror_index}/audio"
+                mirror['quality'] = ', '.join(mirror['quality'])
+                mirror_list.append(mirror)
+            theme['mirrors'] = mirror_list
         return {
             'mal_id': self.mal_id,
             'title': self.title[0],
             'cover': self.cover,
             'year': self.year,
             'season': self.season,
-            'themes': theme_list
+            'themes': self.themes
         }
 
     def app_json(self):
@@ -128,26 +135,6 @@ class Theme(db.Model):
             'mirrors': self.mirrors
         }
 
-    def json_info(self):
-        mirror_list = []
-        for index, mirror in enumerate(self.mirrors):
-            mirror['audio'] = f"{base_url}/{self.mal_id}/{self.theme_id.split('-')[1]}/{index}/audio"
-            mirror['quality'] = ', '.join(mirror['quality'])
-            mirror_list.append(mirror)
-        anime = Anime.query.filter_by(mal_id=self.mal_id).first()
-        artist = Artist.query.filter_by(mal_id=self.artist_id).first()
-        return {
-            'theme_id': self.theme_id,
-            'anime': anime.title[0],
-            'mal_id': self.mal_id,
-            'cover': anime.cover,
-            'title': self.title,
-            'type': self.type,
-            'notes': self.notes,
-            'artist': artist.name if artist else None,
-            'mirrors': self.mirrors
-        }
-
     def json_info_extended(self):
         anime = Anime.query.filter_by(mal_id=self.mal_id).first()
         return {
@@ -206,13 +193,23 @@ class Artist(db.Model):
             db.session.commit()
             return self, False
 
+    def get_artist_themes(self):
+        theme_list = []
+        for theme_id in self.themes:
+            mal_id = int(theme_id.split("-")[0])
+            anime = Anime.query.filter_by(mal_id=mal_id).first()
+            theme = anime.themes[int(theme_id.split("-")[1])]
+            theme['cover'] = anime.cover
+            theme['anime'] = anime.title[0]
+            theme_list.append(theme)
+        return theme_list
+
     def json(self):
-        theme_list = [Theme.query.filter_by(theme_id=item).first().json() for item in self.themes]
         return {
             'mal_id': self.mal_id,
             'name': self.name,
             'cover': self.cover,
-            'themes': theme_list
+            'themes': self.get_artist_themes()
         }
 
     def app_detail_json(self):
@@ -225,11 +222,17 @@ class Artist(db.Model):
         theme_ids = list(dict.fromkeys(theme_ids))
         for mal_id in theme_ids:
             anime = Anime.query.filter_by(mal_id=mal_id).first()
-            theme_entries = Theme.query.filter_by(mal_id=mal_id).all()
+            theme_entries = self.get_artist_themes()
             theme_list = []
-            for theme in theme_entries:
-                if theme.theme_id in art_list:
-                    theme_list.append(theme.json())
+            for index, theme in enumerate(theme_entries):
+                if f'{mal_id}-{index:02d}' in art_list:
+                    mirror_list = []
+                    for mirror_index, mirror in enumerate(theme['mirrors']):
+                        mirror['audio'] = f"{base_url}/{self.mal_id}/{index}/{mirror_index}/audio"
+                        mirror['quality'] = ', '.join(mirror['quality'])
+                        mirror_list.append(mirror)
+                    theme['mirrors'] = mirror_list
+                    theme_list.append(theme)
             anime_list.append(anime.artist_json(theme_list))
         return {
             'mal_id': self.mal_id,

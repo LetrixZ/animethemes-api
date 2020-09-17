@@ -76,15 +76,14 @@ def get_theme(entry, mal_id, theme_id, category):
                                     'mirror': mirror_info.get('href')})
         except:
             pass
-        # Theme.create(mal_id=mal_id, title=title, theme_id=theme_id, type=type, notes=notes, category=category,
-        #              mirrors=mirrors, episodes=episodes)
-        Theme.update_or_create(mal_id=mal_id, title=title, theme_id=theme_id, type=type, notes=notes, category=category,
-                               mirrors=mirrors, episodes=episodes)
+        return {'title': title, 'type': type, 'episodes': episodes, 'notes': notes,
+                'category': category, 'mirrors': mirrors}
 
 
 def get_anime(entry, year, season):
     mal_id = get_mal_id(entry.find('a').get('href'))
     if mal_id:
+        theme_list = []
         title = [entry.text]
         entry = entry.nextSibling.nextSibling
         # Extra names
@@ -99,6 +98,8 @@ def get_anime(entry, year, season):
         for index, item in enumerate(entry.findAll('tr')[1:]):
             if item.find('td').text != "":
                 theme = get_theme(item, mal_id, f'{mal_id}-{f"{theme_size:02d}"}', category=category)
+                if theme:
+                    theme_list.append(theme)
                 theme_size += 1
         entry = entry.nextSibling.nextSibling
         if entry:
@@ -107,7 +108,10 @@ def get_anime(entry, year, season):
                 entry = entry.nextSibling.nextSibling
             for index, item in enumerate(entry.findAll('tr')[1:], start=theme_size):
                 theme = get_theme(item, mal_id, f'{mal_id}-{f"{index:02d}"}', category=category)
-        return Anime.create(mal_id=mal_id, title=title, year=year, season=season, cover=get_cover(mal_id))
+                if theme:
+                    theme_list.append(theme)
+        return Anime.create(mal_id=mal_id, title=title, year=year, season=season, cover=get_cover(mal_id),
+                            themes=theme_list)
     else:
         return None, None
 

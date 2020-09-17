@@ -1,13 +1,17 @@
-from sqlalchemy import text, String, func
+from difflib import SequenceMatcher
 
-from models import Artist, Anime, Theme, db
+from models import Artist, Anime
 
 
 def search_theme(name):
-    results = Theme.query.filter(Theme.title.ilike("%{}%".format(name))).all()
+    anime_list = Anime.query.all()
     theme_list = []
-    for theme in results:
-        theme_list.append(theme.json())
+    for anime in anime_list:
+        for theme in anime.themes:
+            if SequenceMatcher(a=theme['title'].lower(), b=name.lower()).ratio() > 0.8:
+                theme_list.append(theme)
+            elif name.lower() in theme['title'].lower() and theme['title'] != "":
+                theme_list.append(theme)
     return theme_list
 
 
