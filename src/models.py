@@ -242,7 +242,8 @@ class Artist(db.Model):
         return {
             'mal_id': self.mal_id,
             'name': self.name,
-            'cover': self.cover
+            'cover': self.cover,
+            'themes': self.themes
         }
 
     def update(self):
