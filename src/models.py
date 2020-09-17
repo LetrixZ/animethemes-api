@@ -246,7 +246,6 @@ class Artist(db.Model):
             'mal_id': self.mal_id,
             'name': self.name,
             'cover': self.cover,
-            'themes': self.themes
         }
 
     def update(self):
