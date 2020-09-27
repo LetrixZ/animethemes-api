@@ -45,7 +45,10 @@ def myanimelist_list(user, list_filter="all"):
 @v1.route('anilist/<string:user>')
 def anilist_list(user, filter=None):
     # API REQUEST
-    ani_list = get_anilist(user, filter.upper())
+    if filter:
+        ani_list = get_anilist(user, filter.upper())
+    else: 
+        ani_list = get_anilist(user)
     if not ani_list:
         return {'available filters': anilist_filters}
     # FILTERING
