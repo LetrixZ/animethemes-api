@@ -5,8 +5,8 @@ from mal import Anime as AnimeMAL
 
 from models import Anime, Theme
 
-reddit = praw.Reddit(client_id="mS1uQkjEv2vxhg",
-                     client_secret="Vs9q60YyROx780avM7AqsVFzfYM",
+reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
+                     client_secret=os.getenv('CLIENT_SECRET'),
                      user_agent="Letrix's AnimeThemes API")
 
 
