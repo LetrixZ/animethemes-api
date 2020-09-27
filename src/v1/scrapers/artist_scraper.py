@@ -1,5 +1,6 @@
 import praw
 import requests
+import os
 from bs4 import BeautifulSoup
 
 from models import Theme, Artist, Anime
