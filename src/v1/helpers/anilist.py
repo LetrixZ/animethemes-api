@@ -6,8 +6,8 @@ query = '''
 query userList($user: String) {
   MediaListCollection(userName: $user, type: ANIME) {
     lists {
+      entries {
         status
-        entries {
         media {
           idMal
           title {
@@ -30,9 +30,10 @@ def get_anilist(user, filter=None):
     entries = response.json()['data']['MediaListCollection']['lists']
     anime_list = {}
     for entry in entries:
-        anime_list[entry['status']] = []
+        status = entry[0]['status']
+        anime_list[status] = []
         for anime in entry['entries']:
-            anime_list[entry['status']].append(anime)
+            anime_list[status].append(anime)
     if filter:
         return anime_list.get(filter)
     else:
