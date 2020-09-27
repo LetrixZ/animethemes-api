@@ -30,7 +30,8 @@ def get_anilist(user, filter=None):
     entries = response.json()['data']['MediaListCollection']['lists']
     anime_list = {}
     for entry in entries:
-        status = entry[0]['status']
+        print(entry)
+        status = entry['entries'][0]['status']
         anime_list[status] = []
         for anime in entry['entries']:
             anime_list[status].append(anime)
