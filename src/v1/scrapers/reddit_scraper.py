@@ -21,6 +21,8 @@ def get_cover(mal_id):
             image = anime.image_url
         except requests.exceptions.ReadTimeout:
             image = None
+        except TypeError:
+            image = None
         return image
 
 

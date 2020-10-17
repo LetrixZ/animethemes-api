@@ -166,3 +166,45 @@ class Artist(db.Model):
 
     def update(self):
         self.save()
+
+
+class OsaSong(db.Model):
+    __tablename__ = 'api_osasong'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    song_id = db.Column(db.Integer, nullable=False, unique=True)
+    title = db.Column(db.String(), nullable=False)
+    artist = db.Column(db.String(), nullable=False)
+    # anime = db.Column(db.String(), nullable=False, default="")
+    info = db.Column(db.String(), nullable=False)
+    cover = db.Column(db.String(), nullable=False, default="")
+    duration = db.Column(db.Integer, nullable=False)
+    mirror = db.Column(db.String(), nullable=False)
+
+    @classmethod
+    def create(cls, song_id, title, artist, cover, duration, mirror, info):
+        osasong = OsaSong(song_id=song_id, title=title, artist=artist, cover=cover, duration=duration, mirror=mirror,
+                          info=info)
+        return osasong.save()
+
+    def save(self):
+        row = OsaSong.query.filter_by(song_id=self.song_id).first()
+        if not row:
+            db.session.add(self)
+            db.session.commit()
+            return self, True
+        else:
+            db.session.commit()
+            row.duration = self.duration
+            return self, False
+
+    def json(self):
+        return {
+            'song_id': self.song_id,
+            'title': self.title,
+            'artist': self.artist,
+            'info': self.info,
+            'cover': self.cover,
+            'duration': self.duration,
+            'mirror': self.mirror
+        }

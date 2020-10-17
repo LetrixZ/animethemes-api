@@ -1,9 +1,10 @@
 from flask import Blueprint, jsonify
 
-from models import Anime, Artist, Theme, db
+from models import Anime, Artist, Theme, db, OsaSong
 from v1.scrapers.artist_scraper import get_list as artist_scrape
 from v1.scrapers.reddit_scraper import get_year
 from v1.scrapers.restore_data import get_anime_covers, get_artists
+from v1.scrapers.osa_scrapper import parse_songs
 
 scrapers = Blueprint('scraper', __name__)
 
@@ -68,3 +69,38 @@ def assign_artist():
                 return jsonify(artist.name, theme)
     return jsonify({'message': 'done'})
 
+
+@scrapers.route('osanime')
+def parse_osa_multi():
+    songs = []
+    for i in range(269, 278):
+        songs.append(parse_songs(i))
+    return jsonify(songs)
+
+
+@scrapers.route('osanime/<int:page>')
+def parse_osa(page):
+    return jsonify(parse_songs(page))
+
+
+@scrapers.route('song/<int:songid>')
+def get_song(songid):
+    song = OsaSong.query.filter_by(song_id=songid).first()
+    return jsonify(song.json())
+
+
+@scrapers.route('match')
+def match_songs():
+    to_remove = ['Ending', 'Opening', 'Theme Song', 'Ost.', 'Insert Song']
+    song_list = OsaSong.query.all()
+    anime_list = Anime.query.all()
+    for song in song_list:
+        if song.info == '' or song.info is None:
+            continue
+        # else:
+        # print(song.json())
+        anime_name = ' '.join(i for i in song.info.split() if i not in to_remove).strip()
+        for anime in anime_list:
+            if len(anime_name) > 1 and anime_name.lower() in str(anime.title):
+                print(song.json())
+                return jsonify(anime.json())

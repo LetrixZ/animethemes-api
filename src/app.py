@@ -3,6 +3,7 @@ from flask import Flask, jsonify
 from app_v1.routes.main import app_v1
 from config import config
 from models import db
+from v1.routes.music_app import music_app
 from v1.routes.anime import anime
 from v1.routes.main import v1 as main
 from v1.routes.scrapers import scrapers
@@ -27,7 +28,8 @@ app = create_app(environment)
 @app.route('/')
 def index():
     return jsonify(
-        {'message': 'animethemes api', 'author': 'Fermin Cirella (reddit: u/LetrixZ)', 'docs': 'https://github.com/LetrixZ/animethemes-api'})
+        {'message': 'animethemes api', 'author': 'Fermin Cirella (reddit: u/LetrixZ)',
+         'docs': 'https://github.com/LetrixZ/animethemes-api'})
 
 
 version = '/api/v1'
@@ -39,7 +41,9 @@ app.register_blueprint(anime, url_prefix=f'{version}/id')
 app.register_blueprint(search, url_prefix=f'{version}/s')
 app.register_blueprint(search, url_prefix=f'{version}/search')
 
-app.register_blueprint(scrapers, url_prefix='/api/db')
+app.register_blueprint(music_app, url_prefix=f'{version}/music')
+
+# app.register_blueprint(scrapers, url_prefix='/api/db')
 
 app.register_blueprint(app_v1, url_prefix='/api/app/')
 
