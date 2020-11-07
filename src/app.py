@@ -43,7 +43,7 @@ app.register_blueprint(search, url_prefix=f'{version}/search')
 
 app.register_blueprint(music_app, url_prefix=f'{version}/music')
 
-# app.register_blueprint(scrapers, url_prefix='/api/db')
+app.register_blueprint(scrapers, url_prefix='/api/db')
 
 app.register_blueprint(app_v1, url_prefix='/api/app/')
 
