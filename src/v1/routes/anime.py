@@ -3,6 +3,7 @@ import subprocess
 from subprocess import run, PIPE
 
 import fileioapi
+import requests
 from flask import Blueprint, redirect, url_for, jsonify
 
 from models import Anime, Theme
@@ -75,6 +76,10 @@ def extract_audio(url, title):
     ffmpeg = ['ffmpeg', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a', '320k',
               '-metadata', "title='" + title[0] + "'", filename, "-y"]
     subprocess.run(ffmpeg)
-    response = fileioapi.upload(filename, "1w")
+    # file_upload = ['curl', '-F', f'"file=@{filename}"', 'https://file.io']
+    # upload_result = subprocess.run(file_upload)
+    # response = fileioapi.upload(filename, "1w")
+    payload = {'file': open(filename, 'rb')}
+    response = requests.post('https://ki.tc/file/u/', files=payload)
     subprocess.run(['rm', 'video.webm', filename])
-    return response.get("link")
+    return response.content.get("link")

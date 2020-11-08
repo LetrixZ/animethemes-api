@@ -12,18 +12,19 @@ reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
 
 
 def get_cover(mal_id):
-    row = Anime.query.filter_by(mal_id=mal_id).first()
-    if row and row.cover:
-        return row.cover
-    else:
-        try:
-            anime = AnimeMAL(mal_id)
-            image = anime.image_url
-        except requests.exceptions.ReadTimeout:
-            image = None
-        except TypeError:
-            image = None
-        return image
+    return ""
+    # row = Anime.query.filter_by(mal_id=mal_id).first()
+    # if row and row.cover:
+    #     return row.cover
+    # else:
+    #     try:
+    #         anime = AnimeMAL(mal_id)
+    #         image = anime.image_url
+    #     except requests.exceptions.ReadTimeout:
+    #         image = None
+    #     except TypeError:
+    #         image = None
+    #     return image
 
 
 def get_mal_id(link):
@@ -79,6 +80,8 @@ def get_theme(entry, mal_id, theme_id, category):
                                     'mirror': mirror_info.get('href')})
         except:
             pass
+        Theme.create(mal_id, theme_id, title, type, notes,
+                     episodes, category, mirrors)
         return {'title': title, 'type': type, 'episodes': episodes, 'notes': notes,
                 'category': category, 'mirrors': mirrors}
 
@@ -102,7 +105,7 @@ def get_anime(entry, year, season):
             if item.find('td').text != "":
                 theme = get_theme(item, mal_id, f'{mal_id}-{f"{theme_size:02d}"}', category=category)
                 if theme:
-                    theme_list.append(theme)
+                    theme_list.append(f'{mal_id}-{f"{theme_size:02d}"}')
                 theme_size += 1
         entry = entry.nextSibling.nextSibling
         if entry:
@@ -112,7 +115,8 @@ def get_anime(entry, year, season):
             for index, item in enumerate(entry.findAll('tr')[1:], start=theme_size):
                 theme = get_theme(item, mal_id, f'{mal_id}-{f"{index:02d}"}', category=category)
                 if theme:
-                    theme_list.append(theme)
+                    theme_list.append(f'{mal_id}-{f"{theme_size:02d}"}')
+                    print(index, theme['title'])
         return Anime.create(mal_id=mal_id, title=title, year=year, season=season, cover=get_cover(mal_id),
                             themes=theme_list)
     else:

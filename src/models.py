@@ -36,20 +36,25 @@ class Anime(db.Model):
             return self, False
 
     def json(self):
-        for theme_index, theme in enumerate(self.themes):
-            mirror_list = []
-            for mirror_index, mirror in enumerate(theme['mirrors']):
-                mirror['audio'] = f"{base_url}/{self.mal_id}/{theme_index}/{mirror_index}/audio"
-                mirror['quality'] = ', '.join(mirror['quality'])
-                mirror_list.append(mirror)
-            theme['mirrors'] = mirror_list
+        # for theme_index, theme in enumerate(self.themes):
+        #     mirror_list = []
+        #     for mirror_index, mirror in enumerate(theme['mirrors']):
+        #         mirror['audio'] = f"{base_url}/{self.mal_id}/{theme_index}/{mirror_index}/audio"
+        #         mirror['quality'] = ', '.join(mirror['quality'])
+        #         mirror_list.append(mirror)
+        #     theme['mirrors'] = mirror_list
+        theme_list = []
+        entries = Theme.query.filter_by(mal_id=self.mal_id).all()
+        print(self.mal_id, entries)
+        for theme in entries:
+            theme_list.append(theme.json())
         return {
             'mal_id': self.mal_id,
             'title': self.title[0],
             'cover': self.cover,
             'year': self.year,
             'season': self.season,
-            'themes': self.themes
+            'themes': theme_list
         }
 
     def app_json(self):
@@ -75,20 +80,54 @@ class Anime(db.Model):
 class Theme(db.Model):
     __tablename__ = 'api_theme'
 
+    # Primary Key: 1-2-3
     id = db.Column(db.Integer, primary_key=True)
+    # MAL ID: 40060. Tied to anime entry
     mal_id = db.Column(db.Integer, nullable=False)
+    # Theme ID: 40060-1. Unique
     theme_id = db.Column(db.String(), nullable=False, unique=True)
-    artist_id = db.Column(db.Integer, nullable=False, default=0)
     title = db.Column(db.String(), nullable=False)
     type = db.Column(db.String(), nullable=False)
     notes = db.Column(db.String())
     episodes = db.Column(db.String())
     category = db.Column(db.String())
-    views = db.Column(db.Integer, default=0)
     mirrors = db.Column(JSONB)
+
+    @classmethod
+    def create(cls, mal_id, theme_id, title, type, notes, episodes, category, mirrors):
+        theme = Theme(mal_id=mal_id, theme_id=theme_id, title=title, type=type, notes=notes, episodes=episodes,
+                      category=category, mirrors=mirrors)
+        return theme.save()
+
+    def save(self):
+        row = Theme.query.filter_by(theme_id=self.theme_id).first()
+        if not row:
+            db.session.add(self)
+            db.session.commit()
+            return self, True
+        else:
+            row.mirrors = self.mirrors
+            db.session.commit()
+            return self, False
 
     def update(self):
         self.save()
+
+    def json(self):
+        mirror_list = []
+        for mirror_index, mirror in enumerate(self.mirrors):
+            mirror['audio'] = f"{base_url}/{self.mal_id}/{self.theme_id.split('-')[1]}/{mirror_index}/audio"
+            mirror['quality'] = ', '.join(mirror['quality'])
+            mirror_list.append(mirror)
+        return {
+            'title': self.title,
+            'theme_id': self.theme_id,
+            'type': self.type,
+            'mirrors': mirror_list,
+            'notes': self.notes,
+            'episodes': self.episodes,
+            'category': self.category,
+        }
 
 
 class Artist(db.Model):
