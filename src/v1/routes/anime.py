@@ -1,3 +1,4 @@
+import json
 import string
 import subprocess
 from subprocess import run, PIPE
@@ -84,4 +85,4 @@ def extract_audio(url, title):
     payload = {'file': open(filename, 'rb')}
     response = requests.post('https://ki.tc/file/u/', files=payload)
     subprocess.run(['rm', 'video.webm', filename])
-    return response.content.get("link")
+    return json.loads(response.content)['file']['link']
