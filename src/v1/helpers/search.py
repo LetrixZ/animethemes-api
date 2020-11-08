@@ -15,7 +15,7 @@ from models import Artist, Anime, Theme
 #     return theme_list
 
 def search_theme(name):
-    results = Theme.query.filter(Theme.name.ilike("%{}%".format(name))).all()
+    results = Theme.query.filter(Theme.title.ilike("%{}%".format(name))).all()
     theme_list = []
     for theme in results:
         theme_list.append(theme.json())
