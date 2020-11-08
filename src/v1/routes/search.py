@@ -9,5 +9,5 @@ search = Blueprint('search', __name__)
 def search_all(name):
     return jsonify(
         {'anime_list': search_anime(name),
-         # 'theme_list': search_theme(name),
+         'theme_list': search_theme(name),
          'artist_list': search_artist(name)})

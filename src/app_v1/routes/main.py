@@ -139,27 +139,34 @@ def search_anime(name):
 base_url = 'https://animethemes-api.herokuapp.com/api/v1/anime'
 
 
+# def search_theme(name):
+#     anime_list = Anime.query.all()
+#     theme_list = []
+#     for anime in anime_list:
+#         for index, theme in enumerate(anime.themes):
+#             if SequenceMatcher(a=theme['title'].lower(), b=name.lower()).ratio() > 0.8:
+#                 theme['cover'] = anime.cover
+#                 theme['name'] = anime.title[0]
+#                 theme_list.append(theme)
+#             elif name.lower() in theme['title'].lower() and theme['title'] != "":
+#                 theme['cover'] = anime.cover
+#                 theme['name'] = anime.title[0]
+#                 theme_list.append(theme)
+#             else:
+#                 continue
+#             mirror_list = []
+#             for mirror_index, mirror in enumerate(theme['mirrors']):
+#                 mirror['audio'] = f"{base_url}/{anime.mal_id}/{index}/{mirror_index}/audio"
+#                 mirror['quality'] = ', '.join(mirror['quality'])
+#                 mirror_list.append(mirror)
+#             theme['mirrors'] = mirror_list
+#     return theme_list
+
 def search_theme(name):
-    anime_list = Anime.query.all()
+    results = Theme.query.filter(Theme.name.ilike("%{}%".format(name))).all()
     theme_list = []
-    for anime in anime_list:
-        for index, theme in enumerate(anime.themes):
-            if SequenceMatcher(a=theme['title'].lower(), b=name.lower()).ratio() > 0.8:
-                theme['cover'] = anime.cover
-                theme['name'] = anime.title[0]
-                theme_list.append(theme)
-            elif name.lower() in theme['title'].lower() and theme['title'] != "":
-                theme['cover'] = anime.cover
-                theme['name'] = anime.title[0]
-                theme_list.append(theme)
-            else:
-                continue
-            mirror_list = []
-            for mirror_index, mirror in enumerate(theme['mirrors']):
-                mirror['audio'] = f"{base_url}/{anime.mal_id}/{index}/{mirror_index}/audio"
-                mirror['quality'] = ', '.join(mirror['quality'])
-                mirror_list.append(mirror)
-            theme['mirrors'] = mirror_list
+    for theme in results:
+        theme_list.append(theme.json())
     return theme_list
 
 

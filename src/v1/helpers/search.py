@@ -1,17 +1,24 @@
 from difflib import SequenceMatcher
 
-from models import Artist, Anime
+from models import Artist, Anime, Theme
 
+
+# def search_theme(name):
+#     anime_list = Anime.query.all()
+#     theme_list = []
+#     for anime in anime_list:
+#         for theme in anime.themes:
+#             if SequenceMatcher(a=theme['title'].lower(), b=name.lower()).ratio() > 0.8:
+#                 theme_list.append(theme)
+#             elif name.lower() in theme['title'].lower() and theme['title'] != "":
+#                 theme_list.append(theme)
+#     return theme_list
 
 def search_theme(name):
-    anime_list = Anime.query.all()
+    results = Theme.query.filter(Theme.name.ilike("%{}%".format(name))).all()
     theme_list = []
-    for anime in anime_list:
-        for theme in anime.themes:
-            if SequenceMatcher(a=theme['title'].lower(), b=name.lower()).ratio() > 0.8:
-                theme_list.append(theme)
-            elif name.lower() in theme['title'].lower() and theme['title'] != "":
-                theme_list.append(theme)
+    for theme in results:
+        theme_list.append(theme.json())
     return theme_list
 
 
