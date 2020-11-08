@@ -58,8 +58,8 @@ def get_audio_theme(mal_id, theme_index, quality=0):
         try:
             mirror = theme.mirrors[quality]
             return redirect(extract_audio(mirror['mirror'],
-                                          [theme['title'], Anime.query.filter_by(mal_id=mal_id).first().title[0],
-                                           theme['type']]))
+                                          [theme.title, Anime.query.filter_by(mal_id=mal_id).first().title[0],
+                                           theme.type]))
         except IndexError:
             return jsonify({'error': 'invalid quality'})
     else:
