@@ -1,19 +1,5 @@
-from difflib import SequenceMatcher
+from models import Artist, Anime, Theme, Anime2
 
-from models import Artist, Anime, Theme, db
-from sqlalchemy.types import Unicode
-
-
-# def search_theme(name):
-#     anime_list = Anime.query.all()
-#     theme_list = []
-#     for anime in anime_list:
-#         for theme in anime.themes:
-#             if SequenceMatcher(a=theme['title'].lower(), b=name.lower()).ratio() > 0.8:
-#                 theme_list.append(theme)
-#             elif name.lower() in theme['title'].lower() and theme['title'] != "":
-#                 theme_list.append(theme)
-#     return theme_list
 
 def search_theme(name):
     results = Theme.query.filter(Theme.title.ilike("%{}%".format(name))).all()
@@ -24,15 +10,20 @@ def search_theme(name):
 
 
 def search_anime(name):
-    # results = Anime.query.filter(Anime.title.astext == "Big X")
-    # results = db.engine.execute("select * from api_anime where title @> '[\"{}\"]'".format(name))
     results = Anime.query.all()
     anime_list = []
     for anime in results:
-        # anime_list.append(anime.json())
         if name.lower() in str(anime.title).lower():
-            anime_list.append(anime.json())
+            anime_list.append(anime.json_raw())
     return anime_list
+
+
+# def search_anime(name):
+#     results = Anime.query.filter(Anime2.title.ilike('%{}%'.format(name))).all()
+#     anime_list = []
+#     for anime in results:
+#         anime_list.append(anime.json_raw())
+#     return anime_list
 
 
 def search_artist(name):

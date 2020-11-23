@@ -143,3 +143,12 @@ def get_anime(page):
 @v1.route('list/theme/<int:page>')
 def get_themes(page):
     return jsonify(all_themes_page(page))
+
+
+@v1.route('populate')
+def populate():
+    db_anime = Anime.query.all()
+    anime_list = []
+    for anime in db_anime:
+        Anime2.create(' | '.join(anime.title), anime.mal_id, anime.cover, anime.year, anime.season, anime.themes)
+    return jsonify('Ready')
