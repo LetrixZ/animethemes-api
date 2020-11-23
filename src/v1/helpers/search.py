@@ -1,4 +1,4 @@
-from models import Artist, Anime, Theme, Anime2
+from models import Artist, Anime, Theme
 
 
 def search_theme(name):
