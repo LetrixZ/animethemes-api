@@ -1,6 +1,7 @@
 from difflib import SequenceMatcher
 
-from models import Artist, Anime, Theme
+from models import Artist, Anime, Theme, db
+from sqlalchemy.types import Unicode
 
 
 # def search_theme(name):
@@ -23,9 +24,12 @@ def search_theme(name):
 
 
 def search_anime(name):
+    # results = Anime.query.filter(Anime.title.astext == "Big X")
+    # results = db.engine.execute("select * from api_anime where title @> '[\"{}\"]'".format(name))
     results = Anime.query.all()
     anime_list = []
     for anime in results:
+        # anime_list.append(anime.json())
         if name.lower() in str(anime.title).lower():
             anime_list.append(anime.json())
     return anime_list

@@ -31,3 +31,41 @@ def top_themes(limit):
     for theme in theme_list:
         result_list.append(theme.json())
     return result_list
+
+
+def all_anime():
+    anime_list = Anime.query.all()
+    result_list = []
+    for anime in anime_list:
+        result_list.append(anime.json_raw())
+    return result_list
+
+
+def all_theme():
+    theme_list = Theme.query.all()
+    result_list = []
+    for theme in theme_list:
+        result_list.append(theme.json())
+    return result_list
+
+
+def all_anime_page(page=1):
+    query = Anime.query
+    offset = 15 * (page - 1)
+    query = query.limit(15)
+    query = query.offset(offset)
+    anime_list = []
+    for anime in query:
+        anime_list.append(anime.json())
+    return anime_list
+
+
+def all_themes_page(page=1):
+    query = Theme.query
+    offset = 15 * (page - 1)
+    query = query.limit(15)
+    query = query.offset(offset)
+    theme_list = []
+    for theme in query:
+        theme_list.append(theme.json())
+    return theme_list

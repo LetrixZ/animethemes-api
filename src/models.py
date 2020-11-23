@@ -38,7 +38,7 @@ class Anime(db.Model):
     def json(self):
         theme_list = []
         entries = Theme.query.filter_by(mal_id=self.mal_id).all()
-        print(self.mal_id, entries)
+        # print(self.mal_id, entries)
         for theme in entries:
             theme_list.append(theme.json())
         return {
@@ -48,6 +48,16 @@ class Anime(db.Model):
             'year': self.year,
             'season': self.season,
             'themes': theme_list
+        }
+
+    def json_raw(self):
+        return {
+            'mal_id': self.mal_id,
+            'title': self.title[0],
+            'cover': self.cover,
+            'year': self.year,
+            'season': self.season,
+            'themes': self.themes
         }
 
     def app_json(self):
@@ -153,10 +163,15 @@ class Artist(db.Model):
         for theme_id in self.themes:
             mal_id = int(theme_id.split("-")[0])
             anime = Anime.query.filter_by(mal_id=mal_id).first()
-            theme = anime.themes[int(theme_id.split("-")[1])]
-            theme['cover'] = anime.cover
-            theme['anime'] = anime.title[0]
-            theme_list.append(theme)
+            # theme = anime.themes[int(theme_id.split("-")[1])]
+            theme = Theme.query.filter_by(theme_id=theme_id).first()
+            # try:
+            #     theme.cover = anime.cover
+            # except TypeError:
+            #     print(anime.title, anime.mal_id)
+            #     print(theme)
+            # theme['anime'] = anime.title[0]
+            theme_list.append(theme.json())
         return theme_list
 
     def json(self):

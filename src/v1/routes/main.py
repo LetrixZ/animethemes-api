@@ -3,7 +3,7 @@ from sqlalchemy import desc
 
 from v1.helpers.anilist import get_anilist, filters as anilist_filters
 from v1.helpers.myanimelist import get_mal_list, filters
-from v1.helpers.others import latest_anime, latest_themes, latest_artist, top_themes
+from v1.helpers.others import *
 from v1.helpers.search import *
 from v1.helpers.year_season import get_all_seasons, get_year_seasons, get_season, get_current_season
 
@@ -123,3 +123,23 @@ def get_latest_themes():
 def top():
     limit = request.args.get('limit', 20)
     return jsonify(top_themes(limit))
+
+
+@v1.route('list/anime')
+def get_all_anime():
+    return jsonify(all_anime())
+
+
+@v1.route('list/theme')
+def get_all_themes():
+    return jsonify(all_theme())
+
+
+@v1.route('list/anime/<int:page>')
+def get_anime(page):
+    return jsonify(all_anime_page(page))
+
+
+@v1.route('list/theme/<int:page>')
+def get_themes(page):
+    return jsonify(all_themes_page(page))
