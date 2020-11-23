@@ -21,7 +21,7 @@ def latest_themes(limit):
     theme_list = Theme.query.order_by(Theme.id.desc()).limit(limit)
     result_list = []
     for theme in theme_list:
-        result_list.append(theme.json_info_extended())
+        result_list.append(theme.json())
     return result_list
 
 
@@ -29,5 +29,5 @@ def top_themes(limit):
     theme_list = Theme.query.order_by(Theme.views.desc()).limit(limit)
     result_list = []
     for theme in theme_list:
-        result_list.append(theme.json_info_extended())
+        result_list.append(theme.json())
     return result_list

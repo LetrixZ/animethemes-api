@@ -47,7 +47,7 @@ def anilist_list(user, filter=None):
     # API REQUEST
     if filter:
         ani_list = get_anilist(user, filter.upper())
-    else: 
+    else:
         ani_list = get_anilist(user)
     if not ani_list:
         return {'available filters': anilist_filters}
@@ -95,7 +95,7 @@ def season_api(year=None):
 
 @v1.route('latest')
 def latest_api():
-    limit = request.args.get('limit', 15)
+    limit = request.args.get('limit', 20)
     type = request.args.get('type', 'anime')
     if type == 'anime':
         return jsonify(latest_anime(limit))
@@ -107,7 +107,19 @@ def latest_api():
         return jsonify({'error': 'invalid type'})
 
 
+@v1.route('latest/animes')
+def get_latest_anime():
+    limit = 20
+    return jsonify(latest_anime(limit))
+
+
+@v1.route('latest/themes')
+def get_latest_themes():
+    limit = 20
+    return jsonify(latest_themes(limit))
+
+
 @v1.route('top')
 def top():
-    limit = request.args.get('limit', 15)
+    limit = request.args.get('limit', 20)
     return jsonify(top_themes(limit))

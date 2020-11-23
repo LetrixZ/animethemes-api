@@ -36,13 +36,6 @@ class Anime(db.Model):
             return self, False
 
     def json(self):
-        # for theme_index, theme in enumerate(self.themes):
-        #     mirror_list = []
-        #     for mirror_index, mirror in enumerate(theme['mirrors']):
-        #         mirror['audio'] = f"{base_url}/{self.mal_id}/{theme_index}/{mirror_index}/audio"
-        #         mirror['quality'] = ', '.join(mirror['quality'])
-        #         mirror_list.append(mirror)
-        #     theme['mirrors'] = mirror_list
         theme_list = []
         entries = Theme.query.filter_by(mal_id=self.mal_id).all()
         print(self.mal_id, entries)
