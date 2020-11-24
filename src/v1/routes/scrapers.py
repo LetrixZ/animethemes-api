@@ -29,37 +29,38 @@ def scrape_all_years():
     return jsonify(added)
 
 
-@scrapers.route('print_all')
-def print_all_animes():
-    entries = Anime.query.all()
-    anime_list = []
-    for anime in entries:
-        anime_list.append(anime.app_json())
-    return jsonify(anime_list)
-
-
-@scrapers.route('print_all_artist')
-def print_all_artists():
-    entries = Artist.query.all()
-    artist_list = []
-    for artist in entries:
-        artist_list.append(artist.app_json())
-    return jsonify(artist_list)
-
-
-@scrapers.route('restore_covers')
-def restore_covers():
-    return jsonify(get_anime_covers())
-
-
-@scrapers.route('restore_artists')
-def restore_artist():
-    return jsonify(get_artists())
+# @scrapers.route('print_all')
+# def print_all_animes():
+#     entries = Anime.query.all()
+#     anime_list = []
+#     for anime in entries:
+#         anime_list.append(anime.app_json())
+#     return jsonify(anime_list)
+#
+#
+# @scrapers.route('print_all_artist')
+# def print_all_artists():
+#     entries = Artist.query.all()
+#     artist_list = []
+#     for artist in entries:
+#         artist_list.append(artist.app_json())
+#     return jsonify(artist_list)
+#
+#
+# @scrapers.route('restore_covers')
+# def restore_covers():
+#     return jsonify(get_anime_covers())
+#
+#
+# @scrapers.route('restore_artists')
+# def restore_artist():
+#     return jsonify(get_artists())
 
 
 @scrapers.route('assign_artist')
 def assign_artist():
-    for artist in Artist.query.all():
+    artist_list = Artist.query.all()
+    for artist in artist_list:
         for theme in artist.themes:
             item = Theme.query.filter_by(theme_id=theme).first()
             try:

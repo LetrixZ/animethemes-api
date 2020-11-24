@@ -99,6 +99,7 @@ class Theme(db.Model):
     episodes = db.Column(db.String())
     category = db.Column(db.String())
     mirrors = db.Column(JSONB)
+    artist_id = db.Column(db.Integer, nullable=True)
 
     @classmethod
     def create(cls, mal_id, theme_id, title, type, notes, episodes, category, mirrors):
@@ -122,6 +123,7 @@ class Theme(db.Model):
 
     def json(self):
         mirror_list = []
+        artist = Artist.query.filter_by(mal_id=self.artist_id).first()
         for mirror_index, mirror in enumerate(self.mirrors):
             mirror['audio'] = f"{base_url}/{self.mal_id}/{self.theme_id.split('-')[1]}/{mirror_index}/audio"
             mirror['quality'] = ', '.join(mirror['quality'])
@@ -130,6 +132,7 @@ class Theme(db.Model):
             'title': self.title,
             'theme_id': self.theme_id,
             'type': self.type,
+            'artist': artist.name if artist is not None else '',
             'mirrors': mirror_list,
             'notes': self.notes,
             'episodes': self.episodes,
@@ -175,6 +178,7 @@ class Artist(db.Model):
             #     print(anime.title, anime.mal_id)
             #     print(theme)
             # theme['anime'] = anime.title[0]
+            print(theme_id)
             theme_list.append(theme.json())
         return theme_list
 

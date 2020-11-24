@@ -3,6 +3,7 @@ from flask import Flask, jsonify
 from app_v1.routes.main import app_v1
 from config import config
 from models import db
+from v1.routes.artist import artist
 from v1.routes.music_app import music_app
 from v1.routes.anime import anime
 from v1.routes.main import v1 as main
@@ -37,6 +38,8 @@ app.register_blueprint(main, url_prefix=version)
 
 app.register_blueprint(anime, url_prefix=f'{version}/anime')
 app.register_blueprint(anime, url_prefix=f'{version}/id')
+
+app.register_blueprint(artist, url_prefix=f'{version}/artist')
 
 app.register_blueprint(search, url_prefix=f'{version}/s')
 app.register_blueprint(search, url_prefix=f'{version}/search')

@@ -4,6 +4,7 @@ import os
 from bs4 import BeautifulSoup
 
 from models import Theme, Artist, Anime
+from v1.scrapers.reddit_scraper import get_mal_id
 
 reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
                      client_secret=os.getenv('CLIENT_SECRET'),
@@ -29,22 +30,18 @@ def parse_themes(body):
     anime_list = body.findAll('h3')
     theme_list = []
     for anime in anime_list:
-        mal_url = anime.find('a').get('href')
-        if 'myanimelist' not in mal_url:
-            continue
-        mal_id = int("".join(filter(str.isdigit, mal_url)))
-        theme_entries = Anime.query.filter_by(mal_id=mal_id).first().themes
+        mal_id = get_mal_id(anime.find('a').get('href'))
+        theme_entries = Theme.query.filter_by(mal_id=mal_id).all()
         wiki_themes = anime.nextSibling.nextSibling.findAll('tr')[1:]
         if not wiki_themes:
             wiki_themes = anime.nextSibling.nextSibling.nextSibling.nextSibling.findAll('tr')[1:]
         for theme in wiki_themes:
-            theme_type = theme.find('td').getText().split('"')[0][:-1]
+            theme_type = theme.find('td').text.split(' "')[0]
             if not theme_type:
                 continue
-            for index, entry in enumerate(theme_entries):
-                if entry['type'] in theme_type:
-                    theme_list.append(f'{mal_id}-{index:02d}')
-                    break
+            for theme in theme_entries:
+                if theme_type == theme.type:
+                    theme_list.append(theme.theme_id)
     return theme_list
 
 
@@ -57,6 +54,7 @@ def parse_artist(entry):
     mal_url = body.find('h2').find('a').get('href')
     if 'myanimelist' not in mal_url:
         mal_id = None
+        print(mal_url)
     else:
         mal_id = body.find('h2').find('a').get('href').split('/')[-1]
         if not mal_id:
