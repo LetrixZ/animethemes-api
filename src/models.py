@@ -9,11 +9,11 @@ base_url = 'https://animethemes-api.herokuapp.com/api/v1/anime'
 
 
 class Anime(db.Model):
-    __tablename__ = 'api_anime'
+    __tablename__ = 'api_anime_2'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     mal_id = db.Column(db.Integer, nullable=False, unique=True)
-    title = db.Column(JSONB, nullable=False)
+    title = db.Column(db.String(), nullable=False)
     cover = db.Column(db.String(), nullable=True, default="")
     year = db.Column(db.Integer, nullable=False)
     season = db.Column(db.String())
@@ -43,7 +43,8 @@ class Anime(db.Model):
             theme_list.append(theme.json())
         return {
             'mal_id': self.mal_id,
-            'title': self.title[0],
+            'title': self.title.split(' | ')[0],
+            'synonyms': self.title.split(' | ')[1:],
             'cover': self.cover,
             'year': self.year,
             'season': self.season,
@@ -53,7 +54,8 @@ class Anime(db.Model):
     def json_raw(self):
         return {
             'mal_id': self.mal_id,
-            'title': self.title[0],
+            'title': self.title.split(' | ')[0],
+            'synonyms': self.title.split(' | ')[1:],
             'cover': self.cover,
             'year': self.year,
             'season': self.season,
@@ -63,7 +65,8 @@ class Anime(db.Model):
     def app_json(self):
         return {
             'mal_id': self.mal_id,
-            'title': self.title[0],
+            'title': self.title.split(' | ')[0],
+            'synonyms': self.title.split(' | ')[1:],
             'cover': self.cover,
             'year': self.year,
             'season': self.season,
@@ -72,7 +75,8 @@ class Anime(db.Model):
     def artist_json(self, theme_list):
         return {
             'mal_id': self.mal_id,
-            'title': self.title[0],
+            'title': self.title.split(' | ')[0],
+            'synonyms': self.title.split(' | ')[1:],
             'cover': self.cover,
             'year': self.year,
             'season': self.season,

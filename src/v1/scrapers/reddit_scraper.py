@@ -116,7 +116,7 @@ def get_anime(entry, year, season):
                 theme = get_theme(item, mal_id, f'{mal_id}-{f"{index:02d}"}', category=category)
                 if theme:
                     theme_list.append(f'{mal_id}-{f"{theme_size:02d}"}')
-        return Anime.create(mal_id=mal_id, title=title, year=year, season=season, cover=get_cover(mal_id),
+        return Anime.create(mal_id=mal_id, title=' | '.join(title), year=year, season=season, cover=get_cover(mal_id),
                             themes=theme_list)
     else:
         return None, None
