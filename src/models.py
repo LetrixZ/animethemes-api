@@ -1,9 +1,12 @@
+import os
 from operator import itemgetter
 
+import redis
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
 
 db = SQLAlchemy()
+redis_instance = redis.from_url(os.getenv('REDIS_URL'))
 
 base_url = 'https://animethemes-api.herokuapp.com/api/v1/anime'
 

@@ -1,3 +1,6 @@
+import os
+
+import redis
 from flask import Flask, jsonify
 
 from app_v1.routes.main import app_v1
@@ -24,6 +27,8 @@ environment = config['production']
 # environment = config['development']
 
 app = create_app(environment)
+
+
 
 
 @app.route('/')

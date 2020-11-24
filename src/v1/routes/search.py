@@ -2,12 +2,10 @@ import json
 import os
 
 from flask import Blueprint, jsonify
-import redis
 
 from v1.helpers.search import *
 
 search = Blueprint('search', __name__)
-redis_instance = redis.from_url(os.getenv('REDIS_URL'))
 
 
 @search.route('<path:name>')

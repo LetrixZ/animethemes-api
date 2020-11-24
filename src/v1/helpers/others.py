@@ -1,4 +1,6 @@
-from models import Anime, Theme, Artist
+import json
+
+from models import Anime, Theme, Artist, redis_instance
 
 
 def latest_anime(limit):
@@ -34,19 +36,27 @@ def top_themes(limit):
 
 
 def all_anime():
-    anime_list = Anime.query.all()
-    result_list = []
-    for anime in anime_list:
-        result_list.append(anime.json_raw())
-    return result_list
+    cached = redis_instance.get('list/anime')
+    if not cached:
+        anime_list = Anime.query.all()
+        result_list = []
+        for anime in anime_list:
+            result_list.append(anime.json_raw())
+        redis_instance.set('list/anime', json.dumps(result_list))
+        return result_list
+    return json.loads(cached)
 
 
 def all_theme():
-    theme_list = Theme.query.all()
-    result_list = []
-    for theme in theme_list:
-        result_list.append(theme.json())
-    return result_list
+    cached = redis_instance.get('list/theme')
+    if not cached:
+        theme_list = Theme.query.all()
+        result_list = []
+        for theme in theme_list:
+            result_list.append(theme.json())
+        redis_instance.set('list/theme', json.dumps(result_list))
+        return result_list
+    return json.loads(cached)
 
 
 def all_anime_page(page=1):
