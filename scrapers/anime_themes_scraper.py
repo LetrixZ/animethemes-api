@@ -12,19 +12,14 @@ reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
 
 
 def get_cover(mal_id):
-    return ""
-    row = Anime.query.filter_by(mal_id=mal_id).first()
-    if row and row.cover:
-        return row.cover
-    else:
-        try:
-            anime = AnimeMAL(mal_id)
-            image = anime.image_url
-        except requests.exceptions.ReadTimeout:
-            image = None
-        except TypeError:
-            image = None
-        return image
+    try:
+        anime = AnimeMAL(mal_id)
+        image = anime.image_url
+    except requests.exceptions.ReadTimeout:
+        image = None
+    except TypeError:
+        image = None
+    return image
 
 
 def get_mal_id(link):
@@ -45,7 +40,7 @@ def get_mal_id(link):
         return None
 
 
-def get_theme(entry, mal_id, theme_id, category):
+def get_theme(entry, mal_id, theme_id, category, theme_list_db):
     if entry.find('td').text:
         try:
             title = entry.find('td').text.split(' "')[1][:-1]
@@ -80,13 +75,13 @@ def get_theme(entry, mal_id, theme_id, category):
                                     'mirror': mirror_info.get('href')})
         except:
             pass
-        Theme.create(mal_id, theme_id, title, type, notes,
-                     episodes, category, mirrors)
+        theme_list_db.append(Theme(mal_id, None, theme_id, title, type, notes,
+                                   episodes, category, mirrors))
         return {'title': title, 'type': type, 'episodes': episodes, 'notes': notes,
                 'category': category, 'mirrors': mirrors}
 
 
-def get_anime(entry, year, season):
+def get_anime(entry, year, season, theme_list_db):
     mal_id = get_mal_id(entry.find('a').get('href'))
     if mal_id:
         theme_list = []
@@ -103,7 +98,7 @@ def get_anime(entry, year, season):
         theme_size = 0
         for index, item in enumerate(entry.findAll('tr')[1:]):
             if item.find('td').text != "":
-                theme = get_theme(item, mal_id, f'{mal_id}-{f"{theme_size:02d}"}', category=category)
+                theme = get_theme(item, mal_id, f'{mal_id}-{f"{theme_size:02d}"}', category, theme_list_db)
                 if theme:
                     theme_list.append(f'{mal_id}-{f"{theme_size:02d}"}')
                 theme_size += 1
@@ -113,17 +108,18 @@ def get_anime(entry, year, season):
                 category = entry.text
                 entry = entry.nextSibling.nextSibling
             for index, item in enumerate(entry.findAll('tr')[1:], start=theme_size):
-                theme = get_theme(item, mal_id, f'{mal_id}-{f"{index:02d}"}', category=category)
+                theme = get_theme(item, mal_id, f'{mal_id}-{f"{index:02d}"}', category, theme_list_db)
                 if theme:
                     theme_list.append(f'{mal_id}-{f"{theme_size:02d}"}')
-        return Anime.create(mal_id=mal_id, title=' | '.join(title), year=year, season=season, cover=get_cover(mal_id),
-                            themes=theme_list)
+        return Anime(mal_id, ' | '.join(title), None, year, season,
+                     theme_list)
     else:
-        return None, None
+        return None
 
 
 def get_year(year):
-    added = []
+    anime_list = []
+    theme_list = []
     page = BeautifulSoup(reddit.subreddit('AnimeThemes').wiki[year].content_html, 'html.parser')
     print(year)
     if page.findAll('h2'):
@@ -135,14 +131,14 @@ def get_year(year):
                 if aux is None or aux.name == 'h2':
                     break
                 elif aux.name == 'h3':
-                    anime, created = get_anime(aux, year, season)
-                    if created:
-                        added.append(anime.json())
+                    anime = get_anime(aux, year, season, theme_list)
+                    if anime:
+                        anime_list.append(anime)
     else:
         season = f'All {year}'
         year = int(str(year).replace('s', ''))
         for entry in page.findAll('h3'):
-            anime, created = get_anime(entry, year, season)
-            if created:
-                added.append(anime.json())
-    return added
+            anime = get_anime(entry, year, season, theme_list)
+            if anime:
+                anime_list.append(anime)
+    return anime_list, theme_list

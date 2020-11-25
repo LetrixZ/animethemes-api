@@ -3,8 +3,8 @@ import praw
 import requests
 from bs4 import BeautifulSoup
 
-from models import Theme, Artist, session
-from anime_themes_scraper import get_mal_id
+from models import Artist
+from scrapers.anime_themes_scraper import get_mal_id
 
 reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
                      client_secret=os.getenv('CLIENT_SECRET'),
@@ -12,7 +12,7 @@ reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
 
 
 def get_cover(mal_id):
-    return ''
+    return None
     artist = session.query(Artist).filter_by(mal_id=mal_id).first()
     if not artist:
         print(f'cover: {mal_id}')
@@ -27,12 +27,12 @@ def get_cover(mal_id):
         return artist.cover
 
 
-def parse_themes(body):
+def parse_themes(body, theme_list_db):
     anime_list = body.findAll('h3')
     theme_list = []
     for anime in anime_list:
         mal_id = get_mal_id(anime.find('a').get('href'))
-        theme_entries = session.query(Theme).filter_by(mal_id=mal_id).all()
+        theme_entries = [item for item in theme_list_db if mal_id == item['anime_id']]
         wiki_themes = anime.nextSibling.nextSibling.findAll('tr')[1:]
         if not wiki_themes:
             wiki_themes = anime.nextSibling.nextSibling.nextSibling.nextSibling.findAll('tr')[1:]
@@ -41,12 +41,12 @@ def parse_themes(body):
             if not theme_type:
                 continue
             for theme in theme_entries:
-                if theme_type == theme.type:
-                    theme_list.append(theme.theme_id)
+                if theme_type == theme['type']:
+                    theme_list.append(theme['theme_id'])
     return theme_list
 
 
-def parse_artist(entry):
+def parse_artist(entry, theme_list_db):
     name = entry.getText()
     wiki = entry.find('a').get('href').split('/')[4:]
     page = reddit.subreddit('AnimeThemes').wiki['/'.join(wiki)].content_html
@@ -64,16 +64,16 @@ def parse_artist(entry):
         mal_id = 12596
     if name == 'Spira*Spica':
         mal_id = 51708
-    return Artist.create(mal_id, name, get_cover(mal_id), parse_themes(body))
+    return Artist(mal_id, name, get_cover(mal_id), parse_themes(body, theme_list_db))
 
 
-def get_list():
+def get_list(theme_list_db):
     page = reddit.subreddit('AnimeThemes').wiki['artist'].content_html
     body = BeautifulSoup(page, 'html.parser')
     artist_entries = body.findAll('p')[1:]
     artist_list = []
     for item in artist_entries:
-        artist, created = parse_artist(item)
-        if created:
-            artist_list.append(artist.json())
+        artist = parse_artist(item, theme_list_db)
+        if artist:
+            artist_list.append(artist)
     return artist_list

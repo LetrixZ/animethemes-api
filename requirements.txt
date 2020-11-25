@@ -12,11 +12,9 @@ mal-api==0.3.5
 MarkupSafe==1.1.1
 praw==7.1.0
 prawcore==1.5.0
-psycopg2==2.8.6
 requests==2.25.0
 six==1.15.0
 soupsieve==2.0.1
-SQLAlchemy==1.3.20
 update-checker==0.18.0
 urllib3==1.26.2
 websocket-client==0.57.0
