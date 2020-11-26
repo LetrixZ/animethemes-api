@@ -2,7 +2,6 @@ import dataclasses
 import json
 from dataclasses import dataclass
 from typing import Any
-from dataclasses_json import dataclass_json
 
 
 class EnhancedJSONEncoder(json.JSONEncoder):
@@ -23,7 +22,6 @@ def object_decoder(obj):
     return obj
 
 
-@dataclass_json
 @dataclass
 class Anime:
     anime_id: int
