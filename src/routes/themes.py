@@ -73,7 +73,7 @@ def extract_audio(url, title):
     anime_title = ''.join(filter(lambda x: x in printable, title[1]))
     filename = '{} - {} ({}).mp3'.format(file_name, anime_title, title[2])
     print('Encoding')
-    ffmpeg = ['ffmpeg', '-hide_banner', '-loglevel warning', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a',
+    ffmpeg = ['ffmpeg', '-hide_banner', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a',
               '320k',
               '-metadata', "title='" + title[0] + "'", filename, "-y"]
     subprocess.run(ffmpeg)
