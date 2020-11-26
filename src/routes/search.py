@@ -10,7 +10,7 @@ def search_anime(name, s_all=False):
     results = [item.parse() for item in anime_list if name.lower() in item.title.lower()]
     if s_all:
         return results
-    return jsonify()
+    return jsonify(results)
 
 
 @search.route('artist/<path:name>')
@@ -18,7 +18,7 @@ def search_artist(name, s_all=False):
     results = [item.parse() for item in artist_list if name.lower() in item.name.lower()]
     if s_all:
         return results
-    return jsonify()
+    return jsonify(results)
 
 
 @search.route('theme/<path:name>')

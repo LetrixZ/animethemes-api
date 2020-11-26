@@ -22,7 +22,7 @@ def get_theme(theme_id):
         return jsonify('Theme not found')
 
 
-@theme.route('<string:theme_id>/mirror/')
+@theme.route('<string:theme_id>/mirror')
 @theme.route('<string:theme_id>/mirror/<int:index>')
 def get_mirror(theme_id, index=0):
     entry = next((item for item in theme_list if item.theme_id == theme_id), None)
@@ -33,19 +33,19 @@ def get_mirror(theme_id, index=0):
             return jsonify({'error': 'invalid index'})
 
 
-@theme.route('<string:theme_id>/mirror/video')
-@theme.route('<string:theme_id>/mirror/<int:index>/video')
-def get_video(theme_id, index=0):
+@theme.route('<string:theme_id>/video')
+@theme.route('<string:theme_id>/<int:quality>/video')
+def get_video(theme_id, quality=0):
     entry = next((item for item in theme_list if item.theme_id == theme_id), None)
     if theme:
         try:
-            return redirect(entry['mirrors'][index]['mirror'])
+            return redirect(entry['mirrors'][quality]['mirror'])
         except IndexError:
             return jsonify({'error': 'invalid index'})
 
 
-@theme.route('<string:theme_id>/mirror/audio')
-@theme.route('<string:theme_id>/mirror/<int:quality>/audio')
+@theme.route('<string:theme_id>/audio')
+@theme.route('<string:theme_id>/<int:quality>/audio')
 def get_audio_theme(theme_id, quality=0):
     entry = next((item for item in theme_list if item.theme_id == theme_id), None)
     if theme:
@@ -73,7 +73,7 @@ def extract_audio(url, title):
     anime_title = ''.join(filter(lambda x: x in printable, title[1]))
     filename = '{} - {} ({}).mp3'.format(file_name, anime_title, title[2])
     print('Encoding')
-    ffmpeg = ['ffmpeg', '-hide_banner', '-loglevel panic', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a',
+    ffmpeg = ['ffmpeg', '-hide_banner', '-loglevel warning', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a',
               '320k',
               '-metadata', "title='" + title[0] + "'", filename, "-y"]
     subprocess.run(ffmpeg)
