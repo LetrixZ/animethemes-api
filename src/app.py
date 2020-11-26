@@ -3,8 +3,8 @@ from flask import Flask, jsonify, request
 from src.config import config
 from src.data.repo import artist_list, theme_list, anime_list
 from src.routes.anime import anime
-from src.routes import artist
-from src.routes import search
+from src.routes.artist import artist
+from src.routes.search import search
 from src.routes.themes import theme
 
 

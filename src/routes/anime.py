@@ -1,3 +1,4 @@
+
 from flask import Blueprint, jsonify
 
 from src.data.repo import anime_list
@@ -12,3 +13,5 @@ def get_anime(anime_id):
         return jsonify(entry.parse())
     else:
         return jsonify('Anime not found')
+
+
