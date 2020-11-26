@@ -72,10 +72,13 @@ def extract_audio(url, title):
     file_name = ''.join(filter(lambda x: x in printable, title[0]))
     anime_title = ''.join(filter(lambda x: x in printable, title[1]))
     filename = '{} - {} ({}).mp3'.format(file_name, anime_title, title[2])
-    ffmpeg = ['ffmpeg', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a', '320k',
+    print('Encoding')
+    ffmpeg = ['ffmpeg', '-hide_banner', '-loglevel panic', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a',
+              '320k',
               '-metadata', "title='" + title[0] + "'", filename, "-y"]
     subprocess.run(ffmpeg)
     payload = {'file': open(filename, 'rb')}
+    print('Uploading')
     response = requests.post('https://ki.tc/file/u/', files=payload)
     subprocess.run(['rm', 'video.webm', filename])
     return json.loads(response.content)['file']['link']
