@@ -4,7 +4,7 @@ import os
 from bs4 import BeautifulSoup
 from mal import Anime as AnimeMAL
 
-from models import Anime, Theme
+from src.models import Anime, Theme
 
 reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
                      client_secret=os.getenv('CLIENT_SECRET'),

@@ -3,8 +3,8 @@ import praw
 import requests
 from bs4 import BeautifulSoup
 
-from models import Artist
-from scrapers.anime_themes_scraper import get_mal_id
+from src.models import Artist
+from src.scrapers import get_mal_id
 
 reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
                      client_secret=os.getenv('CLIENT_SECRET'),
@@ -32,7 +32,7 @@ def parse_themes(body, theme_list_db):
     theme_list = []
     for anime in anime_list:
         mal_id = get_mal_id(anime.find('a').get('href'))
-        theme_entries = [item for item in theme_list_db if mal_id == item['anime_id']]
+        theme_entries = [item for item in theme_list_db if mal_id == item.anime_id]
         wiki_themes = anime.nextSibling.nextSibling.findAll('tr')[1:]
         if not wiki_themes:
             wiki_themes = anime.nextSibling.nextSibling.nextSibling.nextSibling.findAll('tr')[1:]
@@ -41,8 +41,8 @@ def parse_themes(body, theme_list_db):
             if not theme_type:
                 continue
             for theme in theme_entries:
-                if theme_type == theme['type']:
-                    theme_list.append(theme['theme_id'])
+                if theme_type == theme.type:
+                    theme_list.append(theme.theme_id)
     return theme_list
 
 
