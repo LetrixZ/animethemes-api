@@ -26,6 +26,8 @@ def get_all_years():
         year_list = get_year(year)
         a_list += year_list[0]
         t_list += year_list[1]
+        print(len(t_list))
+        print(len(a_list))
     with open('data/anime.json', 'w') as f:
         json.dump(a_list, f, cls=EnhancedJSONEncoder)
     with open('data/themes.json', 'w') as f:
@@ -76,4 +78,7 @@ def assign_artists():
     return 'Artist assigment successfull'
 
 
+# get_all_years()
+# get_artists(theme_list)
+assign_artists()
 add_covers()

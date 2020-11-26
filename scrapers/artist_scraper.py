@@ -64,7 +64,7 @@ def parse_artist(entry, theme_list_db):
         mal_id = 12596
     if name == 'Spira*Spica':
         mal_id = 51708
-    return Artist(mal_id, name, get_cover(mal_id), parse_themes(body, theme_list_db))
+    return Artist(mal_id, name, None, parse_themes(body, theme_list_db))
 
 
 def get_list(theme_list_db):
