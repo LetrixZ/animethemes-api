@@ -1,3 +1,4 @@
+import copy
 import dataclasses
 import json
 from dataclasses import dataclass
@@ -35,13 +36,18 @@ class Anime:
 
     def parse(self):
         tmp_list = []
+        anime = copy.copy(self)
         from src.data.repo import theme_list
         for theme in theme_list:
-            for theme_id in self.themes:
+            for theme_id in anime.themes:
                 if theme_id == theme.theme_id:
                     tmp_list.append(theme)
-        self.themes = tmp_list
-        return self
+        anime.themes = tmp_list
+        return anime
+
+    def __copy__(self):
+        new = Anime(self.anime_id, self.title, self.cover, self.year, self.season, self.themes)
+        return new
 
 
 @dataclass
