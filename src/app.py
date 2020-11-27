@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 
+from src.android.app import android
 from src.config import config
 from src.data.repo import artist_list, theme_list, anime_list
 from src.helpers.anilist import get_anilist, filters as anilist_filters
@@ -35,6 +36,8 @@ app.register_blueprint(search, url_prefix='/api/v1/s')
 
 app.register_blueprint(seasons, url_prefix='/api/v1/season')
 
+app.register_blueprint(android, url_prefix='/api/android')
+
 
 @app.route('/api/v1/list/anime')
 def list_anime():
@@ -52,7 +55,7 @@ def list_artist():
     return jsonify(artist_list)
 
 
-@app.route('/api/v1/list/themes')
+@app.route('/api/v1/list/theme')
 def list_themes():
     return jsonify(theme_list)
 
