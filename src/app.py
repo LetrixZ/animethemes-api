@@ -60,7 +60,6 @@ def list_themes():
 @app.route('/api/v1/mal/<string:user>/<string:list_filter>')
 @app.route('/api/v1/mal/<string:user>')
 def mal_list(user, list_filter="all"):
-    # CHECKING FOR FILTER
     status_query = request.args.get('status')
     if status_query:
         if int(status_query) in filters.values():
@@ -78,14 +77,12 @@ def mal_list(user, list_filter="all"):
 @app.route('/api/v1/anilist/<string:user>/<string:filter>')
 @app.route('/api/v1/anilist/<string:user>')
 def anilist_list(user, filter=None):
-    # API REQUEST
     if filter:
         ani_list = get_anilist(user, filter.upper())
     else:
         ani_list = get_anilist(user)
     if not ani_list:
         return {'available filters': anilist_filters}
-    # FILTERING
     a_list = []
     for item in ani_list:
         mal_id = item['media']['idMal']
