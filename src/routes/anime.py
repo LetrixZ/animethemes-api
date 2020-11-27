@@ -1,4 +1,3 @@
-
 from flask import Blueprint, jsonify, url_for
 from werkzeug.utils import redirect
 
@@ -20,3 +19,7 @@ def get_anime(anime_id):
 def redirect_theme(anime_id, index):
     return redirect(url_for('theme.get_theme', theme_id=f'{anime_id}-{index:02d}'))
 
+
+@anime.route('<int:anime_id>/<int:index>/<int:quality>/audio')
+def redirect_theme(anime_id, index, quality):
+    return redirect(url_for('theme.get_audio_theme', theme_id=f'{anime_id}-{index:02d}', quality=quality))

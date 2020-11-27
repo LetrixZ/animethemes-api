@@ -8,9 +8,9 @@ season_order = {'Winter': 0, 'Spring': 1, 'Summer': 2, 'Fall': 3}
 
 
 @seasons.route('years')
-def list_years(raw=False):
+def list_years(app=False):
     ls = sorted(list(set(int(item.year) for item in anime_list)))
-    if raw:
+    if app:
         return sorted(ls, reverse=True)
     return jsonify(ls)
 
@@ -41,3 +41,11 @@ def list_year_season(year, season=None):
             tmp_list.append({'season': season, 'anime': [item.parse() for item in anime_list if
                                                          item.year == str(year) and season in item.season]})
             return jsonify({'year': year, 'seasons': tmp_list})
+
+
+@seasons.route('current')
+def list_current_season(app=False):
+    current = anime_list[-1].season
+    if app:
+        return [item.app() for item in anime_list if item.season == current]
+    return jsonify([item for item in anime_list if item.season == current])

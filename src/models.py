@@ -41,8 +41,12 @@ class Anime:
             for theme_id in self.themes:
                 if theme_id == theme.theme_id:
                     tmp_list.append(theme.parse())
-        return {'mal_id': self.anime_id, 'title': self.title.split(' | '), 'cover': self.cover, 'year': self.year,
+        return {'mal_id': self.anime_id, 'title': self.title.split(' | '), 'cover': self.cover[0], 'year': self.year,
                 'season': self.season, 'themes': tmp_list}
+
+    def app(self):
+        return {'mal_id': self.anime_id, 'title': self.title.split(' | ')[0], 'cover': self.cover[0], 'year': self.year,
+                'season': self.season}
 
     def __copy__(self):
         new = Anime(self.anime_id, self.title, self.cover, self.year, self.season, self.themes)
@@ -69,6 +73,7 @@ class Theme:
                 'artist': next((item.name for item in artist_list if item.artist_id == self.artist_id), None),
                 'mirrors': self.mirrors, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
 
+
 @dataclass
 class Artist:
     artist_id: int
@@ -85,5 +90,5 @@ class Artist:
             for theme_id in self.themes:
                 if theme_id == theme.theme_id:
                     tmp_list.append(theme)
-        self.themes = tmp_list
-        return self
+        return {'artist_id': self.artist_id, 'name': self.name,
+                'cover': [item for item in self.cover if 'voiceactors' in item][0], 'themes': tmp_list}
