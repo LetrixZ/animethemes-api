@@ -4,6 +4,8 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
+base = 'http://animethemes-api.herokuapp.com/api/v1/theme'
+
 
 class EnhancedJSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -82,16 +84,20 @@ class Theme:
     def parse(self, extended=True):
         from src.data.repo import artist_list
         from src.data.repo import anime_list
+        mirror_list = []
+        for index, mirror in enumerate(self.mirrors):
+            mirror['audio'] = f'{base}/{self.theme_id}/{index}/audio'
+            mirror_list.append(mirror)
         if extended:
             anime = next((item for item in anime_list if item.anime_id == self.anime_id), None)
             return {'title': self.title, 'name': anime.title, 'cover': anime.cover, 'theme_id': self.theme_id,
                     'type': self.type,
                     'artist': next((item.name for item in artist_list if item.artist_id == self.artist_id), None),
-                    'mirrors': self.mirrors, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
+                    'mirrors': mirror_list, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
         else:
             return {'title': self.title, 'theme_id': self.theme_id, 'type': self.type,
                     'artist': next((item.name for item in artist_list if item.artist_id == self.artist_id), None),
-                    'mirrors': self.mirrors, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
+                    'mirrors': mirror_list, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
 
 
 @dataclass

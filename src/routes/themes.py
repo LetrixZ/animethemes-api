@@ -4,6 +4,7 @@ import subprocess
 from subprocess import run, PIPE
 
 import requests
+from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
 from flask import Blueprint, jsonify, url_for
 from werkzeug.utils import redirect
@@ -77,8 +78,22 @@ def extract_audio(url, title):
               '320k',
               '-metadata', "title='" + title[0] + "'", filename, "-y"]
     subprocess.run(ffmpeg)
-    payload = {'file': open(filename, 'rb')}
+    # payload = {'file': open(filename, 'rb')}
     print('Uploading')
-    response = requests.post('https://ki.tc/file/u/', files=payload)
+    file = open(filename, 'rb')
+    data = {'reqtype': 'fileupload', 'userhash': '6e30d558b396c280ace81349f',
+            'fileToUpload': (file.name, file, 'audio/mp3')}
+    response = multipart_post(data)
+    # response = requests.post('https://ki.tc/file/u/', files=payload)
+    file.close()
     subprocess.run(['rm', 'video.webm', filename])
-    return json.loads(response.content)['file']['link']
+    print(response.text)
+    return response.text
+    # return json.loads(response.content)['file']['link']
+
+
+def multipart_post(data):
+    encoder = MultipartEncoder(fields=data)
+    monitor = MultipartEncoderMonitor(encoder)
+    r = requests.post("https://catbox.moe/user/api.php", data=monitor, headers={'Content-Type': monitor.content_type})
+    return r

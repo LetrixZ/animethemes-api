@@ -41,24 +41,18 @@ app.register_blueprint(android, url_prefix='/api/android')
 
 @app.route('/api/v1/list/anime')
 def list_anime():
-    if request.args.get('parsed') == '1':
-        tmp_list = [item.parse() for item in anime_list]
-        return jsonify(tmp_list)
-    return jsonify(anime_list)
+    return jsonify([item.parse() for item in anime_list])
 
 
 @app.route('/api/v1/list/artist')
 def list_artist():
-    if request.args.get('parsed') == '1':
-        tmp_list = [item.parse() for item in artist_list]
-        return jsonify(tmp_list)
-    return jsonify(artist_list)
+    return jsonify([item.parse() for item in artist_list])
 
 
 @app.route('/api/v1/list/theme')
 @app.route('/api/v1/list/themes')
 def list_themes():
-    return jsonify(theme_list)
+    return jsonify([item.parse() for item in theme_list])
 
 
 @app.route('/api/v1/mal/<string:user>/<string:list_filter>')
