@@ -71,7 +71,10 @@ def extract_audio(url, title, entry):
     anime_title = ''.join(filter(lambda x: x in printable, title[1]))
     filename = '{} - {} ({}).mp3'.format(file_name, anime_title, title[2])
     print('Encoding')
-    artist = f'{entry.artist} ({next((item.app() for item in anime_list if item.anime_id == entry.anime_id), None)["title"]})' if entry.artist is not None else f'({next((item.app() for item in anime_list if item.anime_id == entry.anime_id), None)["title"]})'
+    try:
+        artist = f'{entry.artist} ({next((item.app() for item in anime_list if item.anime_id == entry.anime_id), None)["title"]})' if entry.artist is not None else f'({next((item.app() for item in anime_list if item.anime_id == entry.anime_id), None)["title"]})'
+    except:
+        artist = ''
     ffmpeg = ['ffmpeg', '-hide_banner', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a',
               '320k',
               '-metadata', "title='" + title[0] + "'", f"author='{artist}'", filename, "-y"]
