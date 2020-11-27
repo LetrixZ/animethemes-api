@@ -18,7 +18,7 @@ def create_app(env):
     return flask_app
 
 
-environment = config['development']
+environment = config['production']
 
 app = create_app(environment)
 
