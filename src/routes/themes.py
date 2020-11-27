@@ -52,19 +52,16 @@ def get_audio_theme(theme_id, quality=0):
     if theme:
         try:
             mirror = entry.mirrors[quality]
-            return redirect(extract_audio(mirror['mirror'],
-                                          [entry.title,
-                                           next((item for item in anime_list if item.anime_id == entry.anime_id),
-                                                None).title.split(
-                                               ' | ')[0],
-                                           entry.type]))
+            return redirect(extract_audio(mirror['mirror'], [entry.title, next(
+                (item for item in anime_list if item.anime_id == entry.anime_id), None).title.split(' | ')[0],
+                                                             entry.type], entry))
         except IndexError:
             return jsonify({'error': 'invalid quality'})
     else:
         return jsonify('Theme not found')
 
 
-def extract_audio(url, title):
+def extract_audio(url, title, entry):
     video_file = ['curl', url, '-o', 'video.webm']
     print(url)
     result = run(video_file, stdout=PIPE, stderr=PIPE, universal_newlines=True)
@@ -74,22 +71,23 @@ def extract_audio(url, title):
     anime_title = ''.join(filter(lambda x: x in printable, title[1]))
     filename = '{} - {} ({}).mp3'.format(file_name, anime_title, title[2])
     print('Encoding')
+    artist = f'{entry.artist} ({next((item.app() for item in anime_list if item.anime_id == entry.anime_id), None)["title"]})' if entry.artist is not None else f'({next((item.app() for item in anime_list if item.anime_id == entry.anime_id), None)["title"]})'
     ffmpeg = ['ffmpeg', '-hide_banner', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a',
               '320k',
-              '-metadata', "title='" + title[0] + "'", filename, "-y"]
+              '-metadata', "title='" + title[0] + "'", f"author='{artist}'", filename, "-y"]
     subprocess.run(ffmpeg)
-    # payload = {'file': open(filename, 'rb')}
     print('Uploading')
-    file = open(filename, 'rb')
-    data = {'reqtype': 'fileupload', 'userhash': '6e30d558b396c280ace81349f',
-            'fileToUpload': (file.name, file, 'audio/mp3')}
-    response = multipart_post(data)
-    # response = requests.post('https://ki.tc/file/u/', files=payload)
-    file.close()
+    # file = open(filename, 'rb')
+    # data = {'reqtype': 'fileupload', 'userhash': '6e30d558b396c280ace81349f',
+    #         'fileToUpload': (file.name, file, 'audio/mp3')}
+    # response = multipart_post(data)
+    # file.close()
+    # print(response.text)
+    # return response.text
+    payload = {'file': open(filename, 'rb')}
+    response = requests.post('https://ki.tc/file/u/', files=payload)
     subprocess.run(['rm', 'video.webm', filename])
-    print(response.text)
-    return response.text
-    # return json.loads(response.content)['file']['link']
+    return json.loads(response.content)['file']['link']
 
 
 def multipart_post(data):

@@ -81,7 +81,7 @@ class Theme:
 
     __type__: str = 'Theme'
 
-    def parse(self, extended=True):
+    def parse(self, extended=False):
         from src.data.repo import artist_list
         from src.data.repo import anime_list
         mirror_list = []
