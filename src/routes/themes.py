@@ -74,6 +74,8 @@ def extract_audio(url, title, entry):
     try:
         if entry.artist_id:
             artist = f'{next((item.name for item in artist_list if item.artist_id == entry.artist_id), None)} ({next((item.app() for item in anime_list if item.anime_id == entry.anime_id), None)["title"]})' if entry.artist is not None else f'({next((item.app() for item in anime_list if item.anime_id == entry.anime_id), None)["title"]})'
+        else:
+            artist = ''
     except:
         artist = ''
     ffmpeg = ['ffmpeg', '-hide_banner', '-i', 'video.webm', '-vn', '-c:a', 'libmp3lame', '-b:a',
