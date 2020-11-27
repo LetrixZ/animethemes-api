@@ -23,13 +23,13 @@ def search_artist(name, s_all=False):
 
 @search.route('theme/<path:name>')
 def search_theme(name, s_all=False):
-    results = [item for item in theme_list if name.lower() in item.title.lower()]
+    results = [item.parse() for item in theme_list if name.lower() in item.title.lower()]
     if s_all:
         return results
     return jsonify(results)
 
 
-@search.route('all/<path:name>')
+@search.route('<path:name>')
 def search_all(name):
     return jsonify(
         {'anime': search_anime(name, True), 'themes': search_theme(name, True), 'artist': search_artist(name, True)})

@@ -15,7 +15,7 @@ theme = Blueprint('theme', __name__)
 
 @theme.route('<string:theme_id>')
 def get_theme(theme_id):
-    entry = next((item for item in theme_list if item.theme_id == theme_id), None)
+    entry = next((item.parse() for item in theme_list if item.theme_id == theme_id), None)
     if theme:
         return jsonify(entry)
     else:

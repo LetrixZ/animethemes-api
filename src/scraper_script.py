@@ -1,5 +1,7 @@
 import dataclasses
 import json
+
+from src.models import object_decoder
 from src.scrapers.anime_themes_scraper import get_year, get_cover
 from src.scrapers.artist_scraper import get_list, get_cover as get_cover_artist
 
@@ -20,15 +22,15 @@ def get_all_years():
         year_list = get_year(year)
         a_list += year_list[0]
         t_list += year_list[1]
-    with open('data/anime.json', 'w') as f:
+    with open('src/data/anime.json', 'w') as f:
         json.dump(a_list, f, cls=EnhancedJSONEncoder)
-    with open('data/themes.json', 'w') as f:
+    with open('src/data/themes.json', 'w') as f:
         json.dump(t_list, f, cls=EnhancedJSONEncoder)
 
 
 def get_artists(theme_list_db):
     artist_list = get_list(theme_list_db)
-    with open('data/artist.json', 'w') as f:
+    with open('src/data/artist.json', 'w') as f:
         json.dump(artist_list, f, cls=EnhancedJSONEncoder)
 
 
@@ -42,7 +44,7 @@ def add_covers():
             cover = get_cover(anime.anime_id)
             anime.cover = cover
             cover_list.append({'mal_id': anime.anime_id, 'cover': cover})
-    with open('data/anime.json', 'w') as f:
+    with open('src/data/anime.json', 'w') as f:
         json.dump(anime_list, f, cls=EnhancedJSONEncoder)
     for artist in artist_list:
         cover = [item['cover'] for item in cover_list if artist.artist_id == item['mal_id']]
@@ -53,9 +55,9 @@ def add_covers():
             cover = get_cover_artist(artist.artist_id)
             artist.cover = cover
             cover_list.append({'mal_id': artist.artist_id, 'cover': cover})
-    with open('data/artist.json', 'w') as f:
+    with open('src/data/artist.json', 'w') as f:
         json.dump(artist_list, f, cls=EnhancedJSONEncoder)
-    with open('data/covers.json', 'w') as f:
+    with open('src/data/covers.json', 'w') as f:
         json.dump(cover_list, f, cls=EnhancedJSONEncoder)
 
 
@@ -65,19 +67,19 @@ def assign_artists():
             entry = next((item for item in theme_list if item.theme_id == theme_id), None)
             if entry:
                 entry.artist_id = artist.artist_id
-    with open('data/themes.json', 'w') as f:
+    with open('src/data/themes.json', 'w') as f:
         json.dump(theme_list, f, cls=EnhancedJSONEncoder)
     return 'Artist assigment successfull'
 
 
-# get_all_years()
+get_all_years()
 
-anime_list = json.load(open('data/anime.json', 'r', encoding="utf8"), object_hook=object_decoder)
-theme_list = json.load(open('data/themes.json', 'r', encoding="utf8"), object_hook=object_decoder)
-# get_artists(theme_list)
+anime_list = json.load(open('src/data/anime.json', 'r', encoding="utf8"), object_hook=object_decoder)
+theme_list = json.load(open('src/data/themes.json', 'r', encoding="utf8"), object_hook=object_decoder)
+get_artists(theme_list)
 
-artist_list = json.load(open('data/artist.json', 'r', encoding='utf8'), object_hook=object_decoder)
+artist_list = json.load(open('src/data/artist.json', 'r', encoding='utf8'), object_hook=object_decoder)
 assign_artists()
 
-cover_list = json.load(open('data/covers.json', 'r', encoding='utf8'))
+cover_list = json.load(open('src/data/covers.json', 'r', encoding='utf8'))
 add_covers()

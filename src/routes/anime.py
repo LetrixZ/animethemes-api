@@ -1,5 +1,6 @@
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, url_for
+from werkzeug.utils import redirect
 
 from src.data.repo import anime_list
 
@@ -14,4 +15,8 @@ def get_anime(anime_id):
     else:
         return jsonify('Anime not found')
 
+
+@anime.route('<int:anime_id>/<int:index>')
+def redirect_theme(anime_id, index):
+    return redirect(url_for('theme.get_theme', theme_id=f'{anime_id}-{index:02d}'))
 

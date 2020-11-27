@@ -17,20 +17,21 @@ def create_app(env):
     return flask_app
 
 
-environment = config['development']
+environment = config['production']
 
 app = create_app(environment)
 
-app.register_blueprint(anime, url_prefix='/api/v1/a')
 app.register_blueprint(anime, url_prefix='/api/v1/anime')
+app.register_blueprint(anime, url_prefix='/api/v1/a')
+app.register_blueprint(anime, url_prefix='/api/v1/id')
 
-app.register_blueprint(theme, url_prefix='/api/v1/t')
 app.register_blueprint(theme, url_prefix='/api/v1/theme')
+app.register_blueprint(theme, url_prefix='/api/v1/t')
 
 app.register_blueprint(artist, url_prefix='/api/v1/artist')
 
-app.register_blueprint(search, url_prefix='/api/v1/s')
 app.register_blueprint(search, url_prefix='/api/v1/search')
+app.register_blueprint(search, url_prefix='/api/v1/s')
 
 app.register_blueprint(seasons, url_prefix='/api/v1/season')
 

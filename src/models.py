@@ -36,14 +36,13 @@ class Anime:
 
     def parse(self):
         tmp_list = []
-        anime = copy.copy(self)
         from src.data.repo import theme_list
         for theme in theme_list:
-            for theme_id in anime.themes:
+            for theme_id in self.themes:
                 if theme_id == theme.theme_id:
-                    tmp_list.append(theme)
-        anime.themes = tmp_list
-        return anime
+                    tmp_list.append(theme.parse())
+        return {'mal_id': self.anime_id, 'title': self.title.split(' | '), 'cover': self.cover, 'year': self.year,
+                'season': self.season, 'themes': tmp_list}
 
     def __copy__(self):
         new = Anime(self.anime_id, self.title, self.cover, self.year, self.season, self.themes)
@@ -64,6 +63,11 @@ class Theme:
 
     __type__: str = 'Theme'
 
+    def parse(self):
+        from src.data.repo import artist_list
+        return {'title': self.title, 'theme_id': self.theme_id, 'type': self.type,
+                'artist': next((item.name for item in artist_list if item.artist_id == self.artist_id), None),
+                'mirrors': self.mirrors, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
 
 @dataclass
 class Artist:

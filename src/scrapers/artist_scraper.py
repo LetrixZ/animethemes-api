@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from src.models import Artist
-from src.scrapers import get_mal_id
+from src.scrapers.anime_themes_scraper import get_mal_id
 
 reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
                      client_secret=os.getenv('CLIENT_SECRET'),
@@ -12,19 +12,14 @@ reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
 
 
 def get_cover(mal_id):
-    return None
-    artist = session.query(Artist).filter_by(mal_id=mal_id).first()
-    if not artist:
-        print(f'cover: {mal_id}')
-        page = requests.get("https://myanimelist.net/people/{}".format(mal_id))
-        body = BeautifulSoup(page.content, 'html.parser')
-        try:
-            cover = body.find('img', {'class': 'lazyload'}).get('data-src')
-            return cover
-        except AttributeError:
-            return None
-    else:
-        return artist.cover
+    print(f'cover: {mal_id}')
+    page = requests.get("https://myanimelist.net/people/{}".format(mal_id))
+    body = BeautifulSoup(page.content, 'html.parser')
+    try:
+        cover = body.find('img', {'class': 'lazyload'}).get('data-src')
+        return cover
+    except AttributeError:
+        return None
 
 
 def parse_themes(body, theme_list_db):
