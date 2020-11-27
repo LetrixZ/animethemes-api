@@ -21,21 +21,21 @@ environment = config['development']
 
 app = create_app(environment)
 
-app.register_blueprint(anime, url_prefix='/a')
-app.register_blueprint(anime, url_prefix='/anime')
+app.register_blueprint(anime, url_prefix='/api/v1/a')
+app.register_blueprint(anime, url_prefix='/api/v1/anime')
 
-app.register_blueprint(theme, url_prefix='/t')
-app.register_blueprint(theme, url_prefix='/theme')
+app.register_blueprint(theme, url_prefix='/api/v1/t')
+app.register_blueprint(theme, url_prefix='/api/v1/theme')
 
-app.register_blueprint(artist, url_prefix='/artist')
+app.register_blueprint(artist, url_prefix='/api/v1/artist')
 
-app.register_blueprint(search, url_prefix='/s')
-app.register_blueprint(search, url_prefix='/search')
+app.register_blueprint(search, url_prefix='/api/v1/s')
+app.register_blueprint(search, url_prefix='/api/v1/search')
 
-app.register_blueprint(seasons, url_prefix='/season')
+app.register_blueprint(seasons, url_prefix='/api/v1/season')
 
 
-@app.route('/list/anime')
+@app.route('/api/v1/list/anime')
 def list_anime():
     if request.args.get('parsed') == '1':
         tmp_list = [item.parse() for item in anime_list]
@@ -43,7 +43,7 @@ def list_anime():
     return jsonify(anime_list)
 
 
-@app.route('/list/artist')
+@app.route('/api/v1/list/artist')
 def list_artist():
     if request.args.get('parsed') == '1':
         tmp_list = [item.parse() for item in artist_list]
@@ -51,13 +51,13 @@ def list_artist():
     return jsonify(artist_list)
 
 
-@app.route('/list/themes')
+@app.route('/api/v1/list/themes')
 def list_themes():
     return jsonify(theme_list)
 
 
-@app.route('/mal/<string:user>/<string:list_filter>')
-@app.route('/mal/<string:user>')
+@app.route('/api/v1/mal/<string:user>/<string:list_filter>')
+@app.route('/api/v1/mal/<string:user>')
 def mal_list(user, list_filter="all"):
     # CHECKING FOR FILTER
     status_query = request.args.get('status')
@@ -74,8 +74,8 @@ def mal_list(user, list_filter="all"):
             return jsonify({'available filters': filters})
 
 
-@app.route('/anilist/<string:user>/<string:filter>')
-@app.route('/anilist/<string:user>')
+@app.route('/api/v1/anilist/<string:user>/<string:filter>')
+@app.route('/api/v1/anilist/<string:user>')
 def anilist_list(user, filter=None):
     # API REQUEST
     if filter:
