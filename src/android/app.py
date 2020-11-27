@@ -17,16 +17,13 @@ def get_home_list():
 
 @android.route('anime/<int:anime_id>')
 def get_anime(anime_id):
-    anime = next((item.parse() for item in anime_list if item.anime_id == anime_id), None)
-    anime['title'] = anime['title'][0]
-    print(anime)
+    anime = next((item.app(True) for item in anime_list if item.anime_id == anime_id), None)
     return jsonify(anime)
 
 
 @android.route('artist/<int:artist_id>')
 def get_artist(artist_id):
     artist = next((item.parse() for item in artist_list if item.artist_id == artist_id), None)
-    print(artist)
     return jsonify(artist)
 
 
@@ -39,13 +36,13 @@ def get_theme(theme_id):
 @android.route('search/<path:name>')
 def search_term(name):
     return jsonify({'anime_list': [item.app() for item in anime_list if name.lower() in item.title.lower()],
-                    'theme_list': [item.parse() for item in theme_list if name.lower() in item.title.lower()],
+                    'theme_list': [item.parse(extended=True) for item in theme_list if name.lower() in item.title.lower()],
                     'artist_list': [item.app() for item in artist_list if name.lower() in item.name.lower()]})
 
 
 @android.route('year/<int:year>')
 def get_year(year):
-    return redirect(url_for('season.list_year_season', year=year))
+    return redirect(url_for('season.list_year_season', year=year, app=True))
 
 
 @android.route('mal/<string:user>')

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 from src.data.repo import anime_list
 
@@ -29,6 +29,7 @@ def list_all_seasons():
 @seasons.route('<int:year>')
 @seasons.route('<int:year>/<string:season>')
 def list_year_season(year, season=None):
+    app = request.args.get('app')
     if season and season.capitalize() in season_order.keys():
         return jsonify({'year': year, 'season': season.capitalize(),
                         'anime': [item.parse() for item in anime_list if
@@ -38,7 +39,7 @@ def list_year_season(year, season=None):
                              key=lambda val: season_order[val])
         tmp_list = []
         for season in season_list:
-            tmp_list.append({'season': season, 'anime': [item.parse() for item in anime_list if
+            tmp_list.append({'season': season, 'anime': [item.parse() if not app else item.app() for item in anime_list if
                                                          item.year == str(year) and season in item.season]})
             return jsonify({'year': year, 'seasons': tmp_list})
 

@@ -44,10 +44,21 @@ class Anime:
         return {'mal_id': self.anime_id, 'title': self.title.split(' | '), 'cover': self.cover, 'year': int(self.year),
                 'season': self.season, 'themes': tmp_list}
 
-    def app(self):
-        return {'mal_id': self.anime_id, 'title': self.title.split(' | ')[0], 'cover': self.cover,
-                'year': int(self.year),
-                'season': self.season}
+    def app(self, extended=False):
+        if extended:
+            tmp_list = []
+            from src.data.repo import theme_list
+            for theme in theme_list:
+                for theme_id in self.themes:
+                    if theme_id == theme.theme_id:
+                        tmp_list.append(theme.parse())
+            return {'mal_id': self.anime_id, 'title': self.title.split(' | ')[0], 'cover': self.cover,
+                    'year': int(self.year),
+                    'season': self.season, 'themes': tmp_list}
+        else:
+            return {'mal_id': self.anime_id, 'title': self.title.split(' | ')[0], 'cover': self.cover,
+                    'year': int(self.year),
+                    'season': self.season}
 
     def __copy__(self):
         new = Anime(self.anime_id, self.title, self.cover, self.year, self.season, self.themes)
@@ -68,11 +79,19 @@ class Theme:
 
     __type__: str = 'Theme'
 
-    def parse(self):
+    def parse(self, extended=True):
         from src.data.repo import artist_list
-        return {'title': self.title, 'theme_id': self.theme_id, 'type': self.type,
-                'artist': next((item.name for item in artist_list if item.artist_id == self.artist_id), None),
-                'mirrors': self.mirrors, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
+        from src.data.repo import anime_list
+        if extended:
+            anime = next((item for item in anime_list if item.anime_id == self.anime_id), None)
+            return {'title': self.title, 'name': anime.title, 'cover': anime.cover, 'theme_id': self.theme_id,
+                    'type': self.type,
+                    'artist': next((item.name for item in artist_list if item.artist_id == self.artist_id), None),
+                    'mirrors': self.mirrors, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
+        else:
+            return {'title': self.title, 'theme_id': self.theme_id, 'type': self.type,
+                    'artist': next((item.name for item in artist_list if item.artist_id == self.artist_id), None),
+                    'mirrors': self.mirrors, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
 
 
 @dataclass
