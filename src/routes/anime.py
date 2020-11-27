@@ -21,5 +21,5 @@ def redirect_theme(anime_id, index):
 
 
 @anime.route('<int:anime_id>/<int:index>/<int:quality>/audio')
-def redirect_theme(anime_id, index, quality):
+def redirect_theme_audio(anime_id, index, quality):
     return redirect(url_for('theme.get_audio_theme', theme_id=f'{anime_id}-{index:02d}', quality=quality))
