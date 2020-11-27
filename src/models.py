@@ -92,3 +92,7 @@ class Artist:
                     tmp_list.append(theme)
         return {'artist_id': self.artist_id, 'name': self.name,
                 'cover': [item for item in self.cover if 'voiceactors' in item][0], 'themes': tmp_list}
+
+    def app(self):
+        return {'artist_id': self.artist_id, 'name': self.name,
+                'cover': [item for item in self.cover if 'voiceactors' in item][0]}
