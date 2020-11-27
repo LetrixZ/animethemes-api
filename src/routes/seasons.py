@@ -8,8 +8,11 @@ season_order = {'Winter': 0, 'Spring': 1, 'Summer': 2, 'Fall': 3}
 
 
 @seasons.route('years')
-def list_years():
-    return jsonify(sorted(list(set(int(item.year) for item in anime_list))))
+def list_years(raw=False):
+    ls = sorted(list(set(int(item.year) for item in anime_list)))
+    if raw:
+        return sorted(ls, reverse=True)
+    return jsonify(ls)
 
 
 @seasons.route('all')

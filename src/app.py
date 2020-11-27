@@ -18,7 +18,7 @@ def create_app(env):
     return flask_app
 
 
-environment = config['production']
+environment = config['development']
 
 app = create_app(environment)
 
@@ -56,6 +56,7 @@ def list_artist():
 
 
 @app.route('/api/v1/list/theme')
+@app.route('/api/v1/list/themes')
 def list_themes():
     return jsonify(theme_list)
 
@@ -104,4 +105,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0", port=8000)
