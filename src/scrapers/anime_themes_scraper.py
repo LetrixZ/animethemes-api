@@ -50,7 +50,7 @@ def get_theme(entry, mal_id, theme_id, category, theme_list_db):
         mirror_info = entry.findAll('td')[1].find('a')
         if not mirror_info:
             return
-        mirrors = [{'quality': mirror_info.text.partition("(")[2].partition(")")[0].split(', '),
+        mirrors = [{'quality': mirror_info.text.partition("(")[2].partition(")")[0],
                     'mirror': mirror_info.get('href')}]
         episodes = entry.findAll('td')[2].text
         try:
@@ -63,7 +63,7 @@ def get_theme(entry, mal_id, theme_id, category, theme_list_db):
         if next and next.name == 'tr':
             if next.find('td').text == '':
                 mirror_info = next.findAll('td')[1].find('a')
-                mirrors.append({'quality': mirror_info.text.partition("(")[2].partition(")")[0].split(', '),
+                mirrors.append({'quality': mirror_info.text.partition("(")[2].partition(")")[0],
                                 'mirror': mirror_info.get('href')})
         # Next mirror
         try:
@@ -71,7 +71,7 @@ def get_theme(entry, mal_id, theme_id, category, theme_list_db):
             if next and next.name == 'tr':
                 if next.find('td').text == '':
                     mirror_info = next.findAll('td')[1].find('a')
-                    mirrors.append({'quality': mirror_info.text.partition("(")[2].partition(")")[0].split(', '),
+                    mirrors.append({'quality': mirror_info.text.partition("(")[2].partition(")")[0],
                                     'mirror': mirror_info.get('href')})
         except:
             pass

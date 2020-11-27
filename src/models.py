@@ -41,11 +41,12 @@ class Anime:
             for theme_id in self.themes:
                 if theme_id == theme.theme_id:
                     tmp_list.append(theme.parse())
-        return {'mal_id': self.anime_id, 'title': self.title.split(' | '), 'cover': self.cover[0], 'year': self.year,
+        return {'mal_id': self.anime_id, 'title': self.title.split(' | '), 'cover': self.cover, 'year': int(self.year),
                 'season': self.season, 'themes': tmp_list}
 
     def app(self):
-        return {'mal_id': self.anime_id, 'title': self.title.split(' | ')[0], 'cover': self.cover[0], 'year': self.year,
+        return {'mal_id': self.anime_id, 'title': self.title.split(' | ')[0], 'cover': self.cover,
+                'year': int(self.year),
                 'season': self.season}
 
     def __copy__(self):
@@ -84,15 +85,25 @@ class Artist:
     __type__: str = 'Artist'
 
     def parse(self):
-        tmp_list = []
-        from src.data.repo import theme_list
-        for theme in theme_list:
-            for theme_id in self.themes:
-                if theme_id == theme.theme_id:
-                    tmp_list.append(theme)
+        themes = {}
+        for theme_id in self.themes:
+            mal_id = int(theme_id.split('-')[0])
+            if not themes.get(mal_id):
+                themes[mal_id] = []
+            themes[mal_id].append(theme_id.split('-')[1])
+        anime_list = []
+        for mal_id, theme_ids in themes.items():
+            from src.data.repo import anime_list as anime_list_repo
+            anime = next((item.parse() for item in anime_list_repo if item.anime_id == mal_id), None)
+            anime['title'] = anime['title'][0]
+            theme_list = []
+            for theme_id in theme_ids:
+                theme_list.append(anime['themes'][int(theme_id)])
+            anime['themes'] = theme_list
+            anime_list.append(anime)
         return {'artist_id': self.artist_id, 'name': self.name,
-                'cover': [item for item in self.cover if 'voiceactors' in item][0], 'themes': tmp_list}
+                'cover': self.cover, 'themes': anime_list}
 
     def app(self):
         return {'artist_id': self.artist_id, 'name': self.name,
-                'cover': [item for item in self.cover if 'voiceactors' in item][0]}
+                'cover': self.cover}

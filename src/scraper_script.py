@@ -36,7 +36,8 @@ def get_artists(theme_list_db):
 
 def add_covers():
     for anime in anime_list:
-        cover = [item['cover'] for item in cover_list if anime.anime_id == item['mal_id']]
+        cover = next((item['cover'] for item in cover_list if
+                      anime.anime_id == item['mal_id'] and 'voiceactor' not in item['cover']), None)
         if cover:
             anime.cover = cover
         else:
@@ -47,7 +48,8 @@ def add_covers():
     with open('src/data/anime.json', 'w') as f:
         json.dump(anime_list, f, cls=EnhancedJSONEncoder)
     for artist in artist_list:
-        cover = [item['cover'] for item in cover_list if artist.artist_id == item['mal_id']]
+        cover = next((item['cover'] for item in cover_list if
+                      artist.artist_id == item['mal_id'] and 'voiceactor' in item['cover']), None)
         if cover:
             artist.cover = cover
         else:
@@ -72,11 +74,11 @@ def assign_artists():
     return 'Artist assigment successfull'
 
 
-get_all_years()
+# get_all_years()
 
 anime_list = json.load(open('src/data/anime.json', 'r', encoding="utf8"), object_hook=object_decoder)
 theme_list = json.load(open('src/data/themes.json', 'r', encoding="utf8"), object_hook=object_decoder)
-get_artists(theme_list)
+# get_artists(theme_list)
 
 artist_list = json.load(open('src/data/artist.json', 'r', encoding='utf8'), object_hook=object_decoder)
 assign_artists()

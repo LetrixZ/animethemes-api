@@ -29,7 +29,7 @@ def list_all_seasons():
 @seasons.route('<int:year>')
 @seasons.route('<int:year>/<string:season>')
 def list_year_season(year, season=None):
-    if season.capitalize() in season_order.keys():
+    if season and season.capitalize() in season_order.keys():
         return jsonify({'year': year, 'season': season.capitalize(),
                         'anime': [item.parse() for item in anime_list if
                                   item.year == str(year) and season.capitalize() in item.season]})
@@ -45,7 +45,8 @@ def list_year_season(year, season=None):
 
 @seasons.route('current')
 def list_current_season(app=False):
-    current = anime_list[-1].season
+    current_year = anime_list[-1].year
+    current = next((item.season for item in anime_list if item.year == current_year), None)
     if app:
         return [item.app() for item in anime_list if item.season == current]
     return jsonify([item for item in anime_list if item.season == current])

@@ -65,15 +65,16 @@ def list_themes():
 @app.route('/api/v1/mal/<string:user>')
 def mal_list(user, list_filter="all"):
     status_query = request.args.get('status')
+    app_r = request.args.get('app_r')
     if status_query:
         if int(status_query) in filters.values():
-            return jsonify(get_mal_list(user, status_query))
+            return jsonify(get_mal_list(user, status_query, app_r))
         else:
             return jsonify({'available filters': filters})
     else:
         list_filter = list_filter.lower()
         if filters.get(list_filter):
-            return jsonify(get_mal_list(user, filters[list_filter]))
+            return jsonify(get_mal_list(user, filters[list_filter], app_r))
         else:
             return jsonify({'available filters': filters})
 
@@ -81,6 +82,7 @@ def mal_list(user, list_filter="all"):
 @app.route('/api/v1/anilist/<string:user>/<string:filter>')
 @app.route('/api/v1/anilist/<string:user>')
 def anilist_list(user, filter=None):
+    app_r = request.args.get('app_r')
     if filter:
         ani_list = get_anilist(user, filter.upper())
     else:
@@ -90,10 +92,13 @@ def anilist_list(user, filter=None):
     a_list = []
     for item in ani_list:
         mal_id = item['media']['idMal']
-        entry = next((item.parse() for item in anime_list if item.anime_id == mal_id), None)
+        if app_r:
+            entry = next((item.app() for item in anime_list if item.anime_id == mal_id), None)
+        else:
+            entry = next((item.parse() for item in anime_list if item.anime_id == mal_id), None)
         if entry:
             a_list.append(entry)
-    a_list = sorted(a_list, key=lambda k: k.title)
+    a_list = sorted(a_list, key=lambda k: k['title'])
     return jsonify(a_list)
 
 

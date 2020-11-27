@@ -24,7 +24,7 @@ def get_bodies(url_list):
     return bodies
 
 
-def get_mal_list(user, list_filter):
+def get_mal_list(user, list_filter, app=False):
     # LIST REQUEST
     url_list = [f'https://myanimelist.net/animelist/{user}/load.json?offset={i}&status={list_filter}'
                 for i in range(0, 300 * 10, 300)]
@@ -38,8 +38,11 @@ def get_mal_list(user, list_filter):
         for entry in json.loads(page):
             if entry == 'errors':
                 return {'error': 'user not found'}
-            anime = next((item.parse() for item in anime_list if item.anime_id == entry['anime_id']), None)
+            if app:
+                anime = next((item.app() for item in anime_list if item.anime_id == entry['anime_id']), None)
+            else:
+                anime = next((item.parse() for item in anime_list if item.anime_id == entry['anime_id']), None)
             if anime:
                 mal_list.append(anime)
-    mal_list = sorted(mal_list, key=lambda k: k.title)
+    mal_list = sorted(mal_list, key=lambda k: k['title'])
     return mal_list
