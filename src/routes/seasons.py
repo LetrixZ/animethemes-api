@@ -41,7 +41,7 @@ def list_year_season(year, season=None):
         for season in season_list:
             tmp_list.append({'season': season, 'anime': [item.parse() if not app else item.app() for item in anime_list if
                                                          item.year == str(year) and season in item.season]})
-            return jsonify({'year': year, 'seasons': tmp_list})
+        return jsonify({'year': year, 'seasons': tmp_list})
 
 
 @seasons.route('current')

@@ -96,6 +96,16 @@ def anilist_list(user, filter=None):
     return jsonify(a_list)
 
 
+@app.route('/api/v1/stats')
+def get_stats():
+    total_anime = len(anime_list)
+    total_themes = len(theme_list)
+    total_artist = len(artist_list)
+    total_files = sum(len(item.mirrors) for item in theme_list)
+    return jsonify({'total anime': total_anime, 'total themes': total_themes, 'total artists': total_artist,
+                    'total files': total_files})
+
+
 @app.route('/')
 def index():
     return jsonify(

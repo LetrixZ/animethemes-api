@@ -74,7 +74,7 @@ def assign_artists():
     return 'Artist assigment successfull'
 
 
-# get_all_years()
+get_all_years()
 
 anime_list = json.load(open('src/data/anime.json', 'r', encoding="utf8"), object_hook=object_decoder)
 theme_list = json.load(open('src/data/themes.json', 'r', encoding="utf8"), object_hook=object_decoder)

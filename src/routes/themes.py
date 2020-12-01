@@ -40,7 +40,7 @@ def get_video(theme_id, quality=0):
     entry = next((item for item in theme_list if item.theme_id == theme_id), None)
     if theme:
         try:
-            return redirect(entry['mirrors'][quality]['mirror'])
+            return redirect(entry.mirrors[quality]['mirror'])
         except IndexError:
             return jsonify({'error': 'invalid index'})
 
@@ -84,7 +84,7 @@ def extract_audio(url, title, entry):
     subprocess.run(ffmpeg)
     print('Uploading')
     # file = open(filename, 'rb')
-    # data = {'reqtype': 'fileupload', 'userhash': '6e30d558b396c280ace81349f',
+    # data = {'reqtype': 'fileupload', 'userhash': '',
     #         'fileToUpload': (file.name, file, 'audio/mp3')}
     # response = multipart_post(data)
     # file.close()
