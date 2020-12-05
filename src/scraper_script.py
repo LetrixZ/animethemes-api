@@ -78,7 +78,7 @@ get_all_years()
 
 anime_list = json.load(open('src/data/anime.json', 'r', encoding="utf8"), object_hook=object_decoder)
 theme_list = json.load(open('src/data/themes.json', 'r', encoding="utf8"), object_hook=object_decoder)
-# get_artists(theme_list)
+get_artists(theme_list)
 
 artist_list = json.load(open('src/data/artist.json', 'r', encoding='utf8'), object_hook=object_decoder)
 assign_artists()
