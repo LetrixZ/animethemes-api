@@ -52,7 +52,7 @@ def get_audio_theme(theme_id, quality=0):
     if theme:
         try:
             mirror = entry.mirrors[quality]
-            return jsonify({'link': extract_audio(mirror['mirror'], [entry.title, next(
+            return jsonify({'audio': extract_audio(mirror['mirror'], [entry.title, next(
                 (item for item in anime_list if item.anime_id == entry.anime_id), None).title.split(' | ')[0],
                                                                      entry.type], entry)})
             # return redirect(extract_audio(mirror['mirror'], [entry.title, next(
