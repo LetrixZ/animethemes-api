@@ -75,10 +75,10 @@ def mal_list(user, list_filter="all"):
 
 @app.route('/api/v1/anilist/<string:user>/<string:filter>')
 @app.route('/api/v1/anilist/<string:user>')
-def anilist_list(user, filter=None):
+def anilist_list(user, list_filter=None):
     app_r = request.args.get('app_r')
-    if filter:
-        ani_list = get_anilist(user, filter.upper())
+    if list_filter:
+        ani_list = get_anilist(user, list_filter.upper())
     else:
         ani_list = get_anilist(user)
     if not ani_list:
@@ -110,7 +110,7 @@ def get_stats():
 def index():
     return jsonify(
         {'message': 'animethemes api', 'author': 'Fermin Cirella (reddit: u/LetrixZ)',
-         'docs': 'https://github.com/LetrixZ/animethemes-api-lite'})
+         'docs': 'https://github.com/LetrixZ/animethemes-api'})
 
 
 if __name__ == '__main__':

@@ -15,6 +15,13 @@ def get_home_list():
                     'latest_artist': [item.app() for item in random.sample(artist_list, 6)]})
 
 
+@android.route('updates')
+def get_updates():
+    return jsonify(
+        {'title': 'New version available!', 'message': 'This is a changelog', 'version': '1.0',
+         'id': 1002})
+
+
 @android.route('anime/<int:anime_id>')
 def get_anime(anime_id):
     anime = next((item.app(True) for item in anime_list if item.anime_id == anime_id), None)
@@ -36,7 +43,8 @@ def get_theme(theme_id):
 @android.route('search/<path:name>')
 def search_term(name):
     return jsonify({'anime_list': [item.app() for item in anime_list if name.lower() in item.title.lower()],
-                    'theme_list': [item.parse(extended=True) for item in theme_list if name.lower() in item.title.lower()],
+                    'theme_list': [item.parse(extended=True) for item in theme_list if
+                                   name.lower() in item.title.lower()],
                     'artist_list': [item.app() for item in artist_list if name.lower() in item.name.lower()]})
 
 
