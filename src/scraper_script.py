@@ -34,11 +34,19 @@ def get_artists(theme_list_db):
         json.dump(artist_list, f, cls=EnhancedJSONEncoder)
 
 
+corrected_covers = {41911: 'https://cdn.myanimelist.net/images/anime/1984/110105.jpg',
+                    40148: 'https://cdn.myanimelist.net/images/anime/1485/108385.jpg'}
+
+
 def add_covers():
     for anime in anime_list:
         cover = next((item['cover'] for item in cover_list if
                       anime.anime_id == item['mal_id'] and 'voiceactor' not in item['cover']), None)
         if cover:
+            # if anime.anime_id in corrected_covers.keys():
+            #     anime.cover = corrected_covers[anime.anime_id]
+            #     print(anime)
+            # else:
             anime.cover = cover
         else:
             print(anime)
