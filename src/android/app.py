@@ -8,18 +8,29 @@ from src.routes.seasons import list_years, list_current_season
 android = Blueprint('android', __name__)
 
 
+@android.route('years')
+def get_year_list():
+    return jsonify(list_years(True))
+
+
 @android.route('home')
 def get_home_list():
     return jsonify({'year_list': list_years(True), 'current_season': list_current_season(True),
-                    'latest_anime': [item.app() for item in random.sample(anime_list, 6)],
-                    'latest_artist': [item.app() for item in random.sample(artist_list, 6)]})
+                    # 'latest_anime': [item.app() for item in random.sample(anime_list, 6)],
+                    # 'latest_artist': [item.app() for item in random.sample(artist_list, 6)]
+                    })
 
 
 @android.route('updates')
 def get_updates():
     return jsonify(
         {'title': 'New version available!', 'message': 'This is a changelog', 'version': '1.0',
-         'id': 1002})
+         'id': 1000})
+
+
+@android.route('random')
+def get_random_anime():
+    return jsonify([item.app() for item in random.sample(anime_list, 15)])
 
 
 @android.route('anime/<int:anime_id>')
