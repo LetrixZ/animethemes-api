@@ -66,6 +66,9 @@ class Anime:
         new = Anime(self.anime_id, self.title, self.cover, self.year, self.season, self.themes)
         return new
 
+    def __eq__(self, other):
+        return self.anime_id == other.anime_id
+
 
 @dataclass
 class Theme:
@@ -98,6 +101,11 @@ class Theme:
             return {'title': self.title, 'theme_id': self.theme_id, 'type': self.type,
                     'artist': next((item.name for item in artist_list if item.artist_id == self.artist_id), None),
                     'mirrors': mirror_list, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
+
+    def __eq__(self, other):
+        if self.theme_id != other.theme_id:
+            return False
+        return True
 
 
 @dataclass
@@ -132,3 +140,8 @@ class Artist:
     def app(self):
         return {'artist_id': self.artist_id, 'name': self.name,
                 'cover': self.cover}
+
+    def __eq__(self, other):
+        if self.artist_id != other.artist_id:
+            return False
+        return True

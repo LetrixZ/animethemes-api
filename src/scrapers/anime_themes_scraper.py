@@ -1,14 +1,28 @@
+import dataclasses
+import json
+
 import praw
 import requests
 import os
 from bs4 import BeautifulSoup
 from mal import Anime as AnimeMAL
 
-from src.models import Anime, Theme
+from src.models import Anime, Theme, object_decoder
 
 reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
                      client_secret=os.getenv('CLIENT_SECRET'),
                      user_agent="Letrix's AnimeThemes API")
+
+
+class EnhancedJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if dataclasses.is_dataclass(o):
+            return dataclasses.asdict(o)
+        return super().default(o)
+
+
+local_anime_list = json.load(open('src/data/anime.json', 'r', encoding="utf8"), object_hook=object_decoder)
+local_theme_list = json.load(open('src/data/themes.json', 'r', encoding="utf8"), object_hook=object_decoder)
 
 
 def get_cover(mal_id):
@@ -59,24 +73,37 @@ def get_theme(entry, mal_id, theme_id, category, theme_list_db):
             episodes = ""
             notes = entry.findAll('td')[2].text
         # Next mirror
-        next = entry.nextSibling.nextSibling
-        if next and next.name == 'tr':
-            if next.find('td').text == '':
-                mirror_info = next.findAll('td')[1].find('a')
+        next_mirror = entry.nextSibling.nextSibling
+        if next_mirror and next_mirror.name == 'tr':
+            if next_mirror.find('td').text == '':
+                mirror_info = next_mirror.findAll('td')[1].find('a')
                 mirrors.append({'quality': mirror_info.text.partition("(")[2].partition(")")[0],
                                 'mirror': mirror_info.get('href')})
         # Next mirror
         try:
-            next = next.nextSibling.nextSibling
-            if next and next.name == 'tr':
-                if next.find('td').text == '':
-                    mirror_info = next.findAll('td')[1].find('a')
+            next_mirror = next_mirror.nextSibling.nextSibling
+            if next_mirror and next_mirror.name == 'tr':
+                if next_mirror.find('td').text == '':
+                    mirror_info = next_mirror.findAll('td')[1].find('a')
                     mirrors.append({'quality': mirror_info.text.partition("(")[2].partition(")")[0],
                                     'mirror': mirror_info.get('href')})
         except:
             pass
-        theme_list_db.append(Theme(mal_id, None, theme_id, title, type, notes,
-                                   episodes, category, mirrors))
+        theme = Theme(mal_id, None, theme_id, title, type, notes,
+                      episodes, category, mirrors)
+        if theme:
+            if theme not in local_theme_list:
+                print(f'New theme {theme.theme_id}: {theme.title}')
+                theme_list_db.append(theme)
+            else:
+                db_theme = next(
+                    (index for index, item in enumerate(local_theme_list) if item.theme_id == theme.theme_id),
+                    None)
+                if db_theme and local_theme_list[db_theme].mirrors != theme.mirrors:
+                    print(f'Updating theme with index = {db_theme}, id = {theme.theme_id}, name = {theme.title}')
+                    local_theme_list[db_theme] = theme
+                    with open("src/data/themes.json", 'w') as f:
+                        json.dump(local_theme_list, f, cls=EnhancedJSONEncoder)
         return {'title': title, 'type': type, 'episodes': episodes, 'notes': notes,
                 'category': category, 'mirrors': mirrors}
 
@@ -133,12 +160,34 @@ def get_year(year):
                 elif aux.name == 'h3':
                     anime = get_anime(aux, year, season, theme_list)
                     if anime:
-                        anime_list.append(anime)
+                        if anime not in local_anime_list:
+                            print(f'New anime {anime.anime_id}: {anime.title}')
+                            anime_list.append(anime)
+                        else:
+                            db_anime = next((index for index, item in enumerate(local_anime_list) if
+                                             item.anime_id == anime.anime_id), None)
+                            if db_anime and local_anime_list[db_anime].themes != anime.themes:
+                                print(
+                                    f'Updating anime with index {db_anime}, anime_id = {anime.anime_id}, title = {anime.title}')
+                                local_anime_list[db_anime] = anime
+                                with open("src/data/anime.json", 'w') as f:
+                                    json.dump(local_anime_list, f, cls=EnhancedJSONEncoder)
     else:
         season = f'All {year}'
         year = int(str(year).replace('s', ''))
         for entry in page.findAll('h3'):
             anime = get_anime(entry, year, season, theme_list)
             if anime:
-                anime_list.append(anime)
+                if anime not in local_anime_list:
+                    print(f'New anime {anime.anime_id}: {anime.title}')
+                    anime_list.append(anime)
+                else:
+                    db_anime = next((index for index, item in enumerate(local_anime_list) if
+                                     item.anime_id == anime.anime_id), None)
+                    if db_anime and local_anime_list[db_anime].themes != anime.themes:
+                        print(
+                            f'Updating anime with index {db_anime}, anime_id = {anime.anime_id}, title = {anime.title}')
+                        local_anime_list[db_anime] = anime
+                        with open("src/data/anime.json", 'w') as f:
+                            json.dump(local_anime_list, f, cls=EnhancedJSONEncoder)
     return anime_list, theme_list

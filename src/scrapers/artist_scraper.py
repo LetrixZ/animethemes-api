@@ -1,14 +1,17 @@
+import json
 import os
 import praw
 import requests
 from bs4 import BeautifulSoup
 
-from src.models import Artist
+from src.models import Artist, object_decoder, EnhancedJSONEncoder
 from src.scrapers.anime_themes_scraper import get_mal_id
 
 reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
                      client_secret=os.getenv('CLIENT_SECRET'),
                      user_agent="Letrix's AnimeThemes API")
+
+local_artist_list = json.load(open('src/data/artist.json', 'r', encoding="utf8"), object_hook=object_decoder)
 
 
 def get_cover(mal_id):
@@ -70,5 +73,16 @@ def get_list(theme_list_db):
     for item in artist_entries:
         artist = parse_artist(item, theme_list_db)
         if artist:
-            artist_list.append(artist)
+            if artist not in local_artist_list:
+                print(artist)
+                artist_list.append(artist)
+            else:
+                db_artist = next((index for index, item in enumerate(local_artist_list) if
+                                  item.artist_id == artist.artist_id), None)
+                if db_artist and local_artist_list[db_artist].themes != artist.themes:
+                    print(
+                        f'Updating artist with index {db_artist}, artist_id = {artist.artist_id}, name = {artist.name}')
+                    local_artist_list[db_artist] = artist
+                    with open("src/data/artist.json", 'w') as f:
+                        json.dump(local_artist_list, f, cls=EnhancedJSONEncoder)
     return artist_list

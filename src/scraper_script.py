@@ -14,6 +14,7 @@ class EnhancedJSONEncoder(json.JSONEncoder):
 
 
 def get_all_years():
+    print("get_all_years")
     years = ['60s', '70s', '80s', '90s', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008',
              '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020']
     a_list = []
@@ -22,16 +23,17 @@ def get_all_years():
         year_list = get_year(year)
         a_list += year_list[0]
         t_list += year_list[1]
-    with open('src/data/anime.json', 'w') as f:
+    with open('src/data/anime_new.json', 'w') as f:
         json.dump(a_list, f, cls=EnhancedJSONEncoder)
-    with open('src/data/themes.json', 'w') as f:
+    with open('src/data/themes_new.json', 'w') as f:
         json.dump(t_list, f, cls=EnhancedJSONEncoder)
 
 
 def get_artists(theme_list_db):
-    artist_list = get_list(theme_list_db)
-    with open('src/data/artist.json', 'w') as f:
-        json.dump(artist_list, f, cls=EnhancedJSONEncoder)
+    print("get_artists")
+    a_list = get_list(theme_list_db)
+    with open('src/data/artist_new.json', 'w') as f:
+        json.dump(a_list, f, cls=EnhancedJSONEncoder)
 
 
 corrected_covers = {41911: 'https://cdn.myanimelist.net/images/anime/1984/110105.jpg',
@@ -39,14 +41,11 @@ corrected_covers = {41911: 'https://cdn.myanimelist.net/images/anime/1984/110105
 
 
 def add_covers():
+    print("add_covers")
     for anime in anime_list:
         cover = next((item['cover'] for item in cover_list if
                       anime.anime_id == item['mal_id'] and 'voiceactor' not in item['cover']), None)
         if cover:
-            # if anime.anime_id in corrected_covers.keys():
-            #     anime.cover = corrected_covers[anime.anime_id]
-            #     print(anime)
-            # else:
             anime.cover = cover
         else:
             print(anime)
@@ -72,6 +71,7 @@ def add_covers():
 
 
 def assign_artists():
+    print("assing_artists")
     for artist in artist_list:
         for theme_id in artist.themes:
             entry = next((item for item in theme_list if item.theme_id == theme_id), None)
@@ -82,14 +82,41 @@ def assign_artists():
     return 'Artist assigment successfull'
 
 
-get_all_years()
+def update_data():
+    print("update_data")
+    new_anime = json.load(open('src/data/anime_new.json', 'r', encoding='utf8'), object_hook=object_decoder)
+    new_themes = json.load(open('src/data/themes_new.json', 'r', encoding='utf8'), object_hook=object_decoder)
+    new_artist = json.load(open('src/data/artist_new.json', 'r', encoding='utf8'), object_hook=object_decoder)
+
+    if len(new_anime) > 0:
+        print("Updating anime")
+        for anime in new_anime:
+            anime_list.append(anime)
+        with open('src/data/anime.json', 'w') as f:
+            json.dump(anime_list, f, cls=EnhancedJSONEncoder)
+
+    if len(new_themes) > 0:
+        print("Updating themes")
+        for theme in new_themes:
+            theme_list.append(theme)
+        with open('src/data/themes.json', 'w') as f:
+            json.dump(theme_list, f, cls=EnhancedJSONEncoder)
+
+    if len(new_artist) > 0:
+        print("Updating artist")
+        for artist in new_artist:
+            artist_list.append(artist)
+        with open('src/data/artist.json', 'w') as f:
+            json.dump(artist_list, f, cls=EnhancedJSONEncoder)
+
 
 anime_list = json.load(open('src/data/anime.json', 'r', encoding="utf8"), object_hook=object_decoder)
 theme_list = json.load(open('src/data/themes.json', 'r', encoding="utf8"), object_hook=object_decoder)
-get_artists(theme_list)
-
 artist_list = json.load(open('src/data/artist.json', 'r', encoding='utf8'), object_hook=object_decoder)
-assign_artists()
-
 cover_list = json.load(open('src/data/covers.json', 'r', encoding='utf8'))
+
+get_all_years()
+get_artists(theme_list)
+assign_artists()
+update_data()
 add_covers()

@@ -4,6 +4,7 @@ from src.android.app import android
 from src.config import config
 from src.data.repo import artist_list, theme_list, anime_list
 from src.helpers.anilist import get_anilist, filters as anilist_filters
+from src.helpers.common import get_latest_data
 from src.helpers.myanimelist import filters, get_mal_list
 from src.routes.anime import anime
 from src.routes.artist import artist
@@ -94,6 +95,11 @@ def anilist_list(user, list_filter=None):
             a_list.append(entry)
     a_list = sorted(a_list, key=lambda k: k['title'])
     return jsonify(a_list)
+
+
+@app.route('/api/v1/latest')
+def get_latest():
+    return jsonify(get_latest_data())
 
 
 @app.route('/api/v1/stats')

@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, url_for
 from werkzeug.utils import redirect
 
 from src.data.repo import anime_list, artist_list, theme_list
+from src.helpers.common import get_latest_data
 from src.routes.seasons import list_years, list_current_season
 
 android = Blueprint('android', __name__)
@@ -13,12 +14,17 @@ def get_year_list():
     return jsonify(list_years(True))
 
 
+@android.route('latest')
+def get_latest():
+    return jsonify(get_latest_data(True))
+
+
 @android.route('home')
 def get_home_list():
-    return jsonify({'year_list': list_years(True), 'current_season': list_current_season(True),
-                    # 'latest_anime': [item.app() for item in random.sample(anime_list, 6)],
-                    # 'latest_artist': [item.app() for item in random.sample(artist_list, 6)]
-                    })
+    home = {'year_list': list_years(True),
+            'current_season': list_current_season(True)}
+    home.update(get_latest_data(True))
+    return jsonify(home)
 
 
 @android.route('updates')
