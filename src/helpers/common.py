@@ -11,7 +11,14 @@ def get_latest_data(app=False):
         anime_list = [item.app(False) for item in a_list]
         artist_list = [item.app() for item in ar_list]
         theme_list = [item.parse(True) for item in t_list]
-        return {'latest_anime': anime_list, 'latest_artist': artist_list, 'latest_themes': theme_list}
+        response = {}
+        if len(a_list) > 0:
+            response['latest_anime'] = anime_list
+        if len(ar_list) > 0:
+            response['latest_artist'] = artist_list
+        if len(t_list) > 0:
+            response['latest_themes'] = theme_list
+        return response
     else:
         anime_list = [item.parse() for item in a_list]
         artist_list = [item.parse() for item in ar_list]

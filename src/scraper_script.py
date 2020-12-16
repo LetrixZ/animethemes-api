@@ -69,6 +69,34 @@ def add_covers():
     with open('src/data/covers.json', 'w') as f:
         json.dump(cover_list, f, cls=EnhancedJSONEncoder)
 
+    new_anime = json.load(open('src/data/anime_new.json', 'r', encoding='utf8'), object_hook=object_decoder)
+    new_artist = json.load(open('src/data/artist_new.json', 'r', encoding='utf8'), object_hook=object_decoder)
+
+    for anime in new_anime:
+        cover = next((item['cover'] for item in cover_list if
+                      anime.anime_id == item['mal_id'] and 'voiceactor' not in item['cover']), None)
+        if cover:
+            anime.cover = cover
+        else:
+            print(anime)
+            cover = get_cover(anime.anime_id)
+            anime.cover = cover
+            cover_list.append({'mal_id': anime.anime_id, 'cover': cover})
+    with open('src/data/anime_new.json', 'w') as f:
+        json.dump(new_anime, f, cls=EnhancedJSONEncoder)
+    for artist in new_artist:
+        cover = next((item['cover'] for item in cover_list if
+                      artist.artist_id == item['mal_id'] and 'voiceactor' in item['cover']), None)
+        if cover:
+            artist.cover = cover
+        else:
+            print(artist)
+            cover = get_cover_artist(artist.artist_id)
+            artist.cover = cover
+            cover_list.append({'mal_id': artist.artist_id, 'cover': cover})
+    with open('src/data/artist_new.json', 'w') as f:
+        json.dump(new_artist, f, cls=EnhancedJSONEncoder)
+
 
 def assign_artists():
     print("assing_artists")
@@ -115,8 +143,8 @@ theme_list = json.load(open('src/data/themes.json', 'r', encoding="utf8"), objec
 artist_list = json.load(open('src/data/artist.json', 'r', encoding='utf8'), object_hook=object_decoder)
 cover_list = json.load(open('src/data/covers.json', 'r', encoding='utf8'))
 
-get_all_years()
-get_artists(theme_list)
-assign_artists()
-update_data()
+# get_all_years()
+# get_artists(theme_list)
+# assign_artists()
+# update_data()
 add_covers()
