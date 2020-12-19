@@ -143,8 +143,8 @@ theme_list = json.load(open('src/data/themes.json', 'r', encoding="utf8"), objec
 artist_list = json.load(open('src/data/artist.json', 'r', encoding='utf8'), object_hook=object_decoder)
 cover_list = json.load(open('src/data/covers.json', 'r', encoding='utf8'))
 
-# get_all_years()
-# get_artists(theme_list)
-# assign_artists()
-# update_data()
+get_all_years()
+get_artists(theme_list)
+assign_artists()
+update_data()
 add_covers()

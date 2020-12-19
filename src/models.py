@@ -4,6 +4,8 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
+from src.helpers.picture import get_anime_picture, get_artist_picture
+
 base = 'http://animethemes-api.herokuapp.com/api/v1/theme'
 
 
@@ -54,7 +56,8 @@ class Anime:
                 for theme_id in self.themes:
                     if theme_id == theme.theme_id:
                         tmp_list.append(theme.parse())
-            return {'mal_id': self.anime_id, 'title': self.title.split(' | ')[0], 'cover': self.cover,
+            return {'mal_id': self.anime_id, 'title': self.title.split(' | ')[0],
+                    'cover': self.cover,
                     'year': int(self.year),
                     'season': self.season, 'themes': tmp_list}
         else:

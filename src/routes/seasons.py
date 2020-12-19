@@ -39,14 +39,16 @@ def list_year_season(year, season=None):
                              key=lambda val: season_order[val])
         tmp_list = []
         for season in season_list:
-            tmp_list.append({'season': season, 'anime': [item.parse() if not app else item.app() for item in anime_list if
-                                                         item.year == str(year) and season in item.season]})
+            tmp_list.append(
+                {'season': season, 'anime': [item.parse() if not app else item.app() for item in anime_list if
+                                             item.year == str(year) and season in item.season]})
         return jsonify({'year': year, 'seasons': tmp_list})
 
 
 @seasons.route('current')
 def list_current_season(app=False):
-    current_year = anime_list[-1].year
+    # current_year = anime_list[-1].year
+    current_year = "2020"
     current = next((item.season for item in anime_list if item.year == current_year), None)
     if app:
         return [item.app() for item in anime_list if item.season == current]
