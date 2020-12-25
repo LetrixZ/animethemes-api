@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Blueprint, jsonify, request
 
 from src.data.repo import anime_list
@@ -47,8 +49,7 @@ def list_year_season(year, season=None):
 
 @seasons.route('current')
 def list_current_season(app=False):
-    # current_year = anime_list[-1].year
-    current_year = "2020"
+    current_year = str(datetime.datetime.now().year)
     current = next((item.season for item in anime_list if item.year == current_year), None)
     if app:
         return [item.app() for item in anime_list if item.season == current]

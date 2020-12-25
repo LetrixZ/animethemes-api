@@ -99,11 +99,13 @@ class Theme:
             return {'title': self.title, 'name': anime.title, 'cover': anime.cover, 'theme_id': self.theme_id,
                     'type': self.type,
                     'artist': next((item.name for item in artist_list if item.artist_id == self.artist_id), None),
-                    'mirrors': mirror_list, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
+                    'mirrors': mirror_list, 'notes': self.notes if self.notes else None, 'episodes': self.episodes,
+                    'category': self.category if self.category else None}
         else:
             return {'title': self.title, 'theme_id': self.theme_id, 'type': self.type,
                     'artist': next((item.name for item in artist_list if item.artist_id == self.artist_id), None),
-                    'mirrors': mirror_list, 'notes': self.notes, 'episodes': self.episodes, 'category': self.category}
+                    'mirrors': mirror_list, 'notes': self.notes if self.notes else None, 'episodes': self.episodes,
+                    'category': self.category if self.category else None}
 
     def __eq__(self, other):
         if self.theme_id != other.theme_id:
