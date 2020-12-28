@@ -117,21 +117,21 @@ def update_data():
     new_artist = json.load(open('src/data/artist_new.json', 'r', encoding='utf8'), object_hook=object_decoder)
 
     if len(new_anime) > 0:
-        print("Updating anime")
+        print("Adding anime")
         for anime in new_anime:
             anime_list.append(anime)
         with open('src/data/anime.json', 'w') as f:
             json.dump(anime_list, f, cls=EnhancedJSONEncoder)
 
     if len(new_themes) > 0:
-        print("Updating themes")
+        print("Adding themes")
         for theme in new_themes:
             theme_list.append(theme)
         with open('src/data/themes.json', 'w') as f:
             json.dump(theme_list, f, cls=EnhancedJSONEncoder)
 
     if len(new_artist) > 0:
-        print("Updating artist")
+        print("Adding artist")
         for artist in new_artist:
             artist_list.append(artist)
         with open('src/data/artist.json', 'w') as f:
