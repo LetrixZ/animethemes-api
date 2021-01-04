@@ -49,7 +49,7 @@ def list_year_season(year, season=None):
 
 @seasons.route('current')
 def list_current_season(app=False):
-    current_year = str(datetime.datetime.now().year)
+    current_year = str("2020")
     current = next((item.season for item in anime_list if item.year == current_year), None)
     if app:
         return [item.app() for item in anime_list if item.season == current]

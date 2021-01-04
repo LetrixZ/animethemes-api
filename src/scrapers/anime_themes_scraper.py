@@ -99,7 +99,8 @@ def get_theme(entry, mal_id, theme_id, category, theme_list_db):
                 db_theme = next(
                     (index for index, item in enumerate(local_theme_list) if item.theme_id == theme.theme_id),
                     None)
-                if db_theme and local_theme_list[db_theme].mirrors != theme.mirrors:
+                if db_theme and local_theme_list[db_theme].mirrors != theme.mirrors or local_theme_list[
+                    db_theme].episodes != theme.episodes:
                     print(f'Updating theme with index = {db_theme}, id = {theme.theme_id}, name = {theme.title}')
                     local_theme_list[db_theme] = theme
                     with open("src/data/themes.json", 'w') as f:
