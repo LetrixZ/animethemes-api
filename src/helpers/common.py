@@ -5,9 +5,9 @@ from src.data.repo import anime_list, artist_list, theme_list
 
 
 def get_latest_data(app=False):
-    # a_list = json.load(open('src/data/anime_new.json', 'r', encoding="utf8"), object_hook=object_decoder)
-    # ar_list = json.load(open('src/data/artist_new.json', 'r', encoding="utf8"), object_hook=object_decoder)
-    # t_list = json.load(open('src/data/themes_new.json', 'r', encoding="utf8"), object_hook=object_decoder)
+    # a_list = json.load(open('data/anime_new.json', 'r', encoding="utf8"), object_hook=object_decoder)
+    # ar_list = json.load(open('data/artist_new.json', 'r', encoding="utf8"), object_hook=object_decoder)
+    # t_list = json.load(open('data/themes_new.json', 'r', encoding="utf8"), object_hook=object_decoder)
     if app:
         a_list = [item.app(False) for item in anime_list[-9:]]
         ar_list = [item.app() for item in artist_list[-6:]]
