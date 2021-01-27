@@ -21,8 +21,8 @@ class EnhancedJSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
-local_anime_list = json.load(open('data/anime.json', 'r', encoding="utf8"), object_hook=object_decoder)
-local_theme_list = json.load(open('data/themes.json', 'r', encoding="utf8"), object_hook=object_decoder)
+local_anime_list = json.load(open('src/data/anime.json', 'r', encoding="utf8"), object_hook=object_decoder)
+local_theme_list = json.load(open('src/data/themes.json', 'r', encoding="utf8"), object_hook=object_decoder)
 
 
 def get_cover(mal_id):
@@ -103,7 +103,7 @@ def get_theme(entry, mal_id, theme_id, category, theme_list_db):
                     db_theme].episodes != theme.episodes:
                     print(f'Updating theme with index = {db_theme}, id = {theme.theme_id}, name = {theme.title}')
                     local_theme_list[db_theme] = theme
-                    with open("data/themes.json", 'w') as f:
+                    with open("src/data/themes.json", 'w') as f:
                         json.dump(local_theme_list, f, cls=EnhancedJSONEncoder)
         return {'title': title, 'type': type, 'episodes': episodes, 'notes': notes,
                 'category': category, 'mirrors': mirrors}
@@ -171,7 +171,7 @@ def get_year(year):
                                 print(
                                     f'Updating anime with index {db_anime}, anime_id = {anime.anime_id}, title = {anime.title}')
                                 local_anime_list[db_anime] = anime
-                                with open("data/anime.json", 'w') as f:
+                                with open("src/data/anime.json", 'w') as f:
                                     json.dump(local_anime_list, f, cls=EnhancedJSONEncoder)
     else:
         season = f'All {year}'
@@ -189,6 +189,6 @@ def get_year(year):
                         print(
                             f'Updating anime with index {db_anime}, anime_id = {anime.anime_id}, title = {anime.title}')
                         local_anime_list[db_anime] = anime
-                        with open("data/anime.json", 'w') as f:
+                        with open("src/data/anime.json", 'w') as f:
                             json.dump(local_anime_list, f, cls=EnhancedJSONEncoder)
     return anime_list, theme_list

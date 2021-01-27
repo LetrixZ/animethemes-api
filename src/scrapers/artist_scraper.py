@@ -11,7 +11,7 @@ reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
                      client_secret=os.getenv('CLIENT_SECRET'),
                      user_agent="Letrix's AnimeThemes API")
 
-local_artist_list = json.load(open('data/artist.json', 'r', encoding="utf8"), object_hook=object_decoder)
+local_artist_list = json.load(open('src/data/artist.json', 'r', encoding="utf8"), object_hook=object_decoder)
 
 
 def get_cover(mal_id):
@@ -83,6 +83,6 @@ def get_list(theme_list_db):
                     print(
                         f'Updating artist with index {db_artist}, artist_id = {artist.artist_id}, name = {artist.name}')
                     local_artist_list[db_artist] = artist
-                    with open("data/artist.json", 'w') as f:
+                    with open("src/data/artist.json", 'w') as f:
                         json.dump(local_artist_list, f, cls=EnhancedJSONEncoder)
     return artist_list
