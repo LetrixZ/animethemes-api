@@ -7,7 +7,7 @@ Flask==1.1.2
 gunicorn==20.0.4
 idna==2.10
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 mal-api==0.3.5
 MarkupSafe==1.1.1
 praw==7.1.0
