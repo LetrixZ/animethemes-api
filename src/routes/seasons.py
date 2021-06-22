@@ -2,7 +2,11 @@ import datetime
 
 from flask import Blueprint, jsonify, request
 
+<<<<<<< HEAD
 from data.repo import anime_list
+=======
+from src.data.repo import anime_list
+>>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
 
 seasons = Blueprint('season', __name__)
 

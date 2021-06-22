@@ -4,6 +4,7 @@ import json
 import praw
 import requests
 import os
+<<<<<<< HEAD
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from mal import Anime as AnimeMAL
@@ -11,6 +12,12 @@ from mal import Anime as AnimeMAL
 from models import Anime, Theme, object_decoder
 
 load_dotenv()
+=======
+from bs4 import BeautifulSoup
+from mal import Anime as AnimeMAL
+
+from src.models import Anime, Theme, object_decoder
+>>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
 
 reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
                      client_secret=os.getenv('CLIENT_SECRET'),

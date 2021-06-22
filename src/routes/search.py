@@ -1,6 +1,10 @@
 from flask import Blueprint, jsonify
 
+<<<<<<< HEAD
 from data.repo import anime_list, theme_list, artist_list
+=======
+from src.data.repo import anime_list, theme_list, artist_list
+>>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
 
 search = Blueprint('search', __name__)
 

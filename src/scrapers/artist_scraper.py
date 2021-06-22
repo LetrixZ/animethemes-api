@@ -4,8 +4,13 @@ import praw
 import requests
 from bs4 import BeautifulSoup
 
+<<<<<<< HEAD
 from models import Artist, object_decoder, EnhancedJSONEncoder
 from scrapers.anime_themes_scraper import get_mal_id
+=======
+from src.models import Artist, object_decoder, EnhancedJSONEncoder
+from src.scrapers.anime_themes_scraper import get_mal_id
+>>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
 
 reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
                      client_secret=os.getenv('CLIENT_SECRET'),

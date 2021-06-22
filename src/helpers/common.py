@@ -1,7 +1,12 @@
 import json
 
+<<<<<<< HEAD
 from models import object_decoder
 from data.repo import anime_list, artist_list, theme_list
+=======
+from src.models import object_decoder
+from src.data.repo import anime_list, artist_list, theme_list
+>>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
 
 
 def get_latest_data(app=False):

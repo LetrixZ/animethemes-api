@@ -2,9 +2,15 @@ import random
 from flask import Blueprint, jsonify, url_for
 from werkzeug.utils import redirect
 
+<<<<<<< HEAD
 from data.repo import anime_list, artist_list, theme_list
 from helpers.common import get_latest_data
 from routes.seasons import list_years, list_current_season
+=======
+from src.data.repo import anime_list, artist_list, theme_list
+from src.helpers.common import get_latest_data
+from src.routes.seasons import list_years, list_current_season
+>>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
 
 android = Blueprint('android', __name__)
 

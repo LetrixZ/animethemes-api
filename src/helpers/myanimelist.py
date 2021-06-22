@@ -3,7 +3,11 @@ import json
 
 import requests
 
+<<<<<<< HEAD
 from data.repo import anime_list
+=======
+from src.data.repo import anime_list
+>>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
 
 filters = {'all': 7, 'watching': 1, 'completed': 2, 'hold': 3, 'dropped': 4, 'planning': 6}
 
