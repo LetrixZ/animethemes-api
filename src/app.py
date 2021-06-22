@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request
 
-<<<<<<< HEAD
 from android.app import android
 from config import config
 from data.repo import artist_list, theme_list, anime_list
@@ -12,19 +11,6 @@ from routes.artist import artist
 from routes.search import search
 from routes.seasons import seasons
 from routes.themes import theme
-=======
-from src.android.app import android
-from src.config import config
-from src.data.repo import artist_list, theme_list, anime_list
-from src.helpers.anilist import get_anilist, filters as anilist_filters
-from src.helpers.common import get_latest_data
-from src.helpers.myanimelist import filters, get_mal_list
-from src.routes.anime import anime
-from src.routes.artist import artist
-from src.routes.search import search
-from src.routes.seasons import seasons
-from src.routes.themes import theme
->>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
 
 
 def create_app(env):

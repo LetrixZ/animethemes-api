@@ -4,11 +4,7 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-<<<<<<< HEAD
 from helpers.picture import get_anime_picture, get_artist_picture
-=======
-from src.helpers.picture import get_anime_picture, get_artist_picture
->>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
 
 base = 'http://animethemes-api.herokuapp.com/api/v1/theme'
 
@@ -44,11 +40,7 @@ class Anime:
 
     def parse(self):
         tmp_list = []
-<<<<<<< HEAD
         from data.repo import theme_list
-=======
-        from src.data.repo import theme_list
->>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
         for theme in theme_list:
             for theme_id in self.themes:
                 if theme_id == theme.theme_id:
@@ -59,11 +51,7 @@ class Anime:
     def app(self, extended=False):
         if extended:
             tmp_list = []
-<<<<<<< HEAD
             from data.repo import theme_list
-=======
-            from src.data.repo import theme_list
->>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
             for theme in theme_list:
                 for theme_id in self.themes:
                     if theme_id == theme.theme_id:
@@ -100,13 +88,8 @@ class Theme:
     __type__: str = 'Theme'
 
     def parse(self, extended=False):
-<<<<<<< HEAD
         from data.repo import artist_list
         from data.repo import anime_list
-=======
-        from src.data.repo import artist_list
-        from src.data.repo import anime_list
->>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
         mirror_list = []
         for index, mirror in enumerate(self.mirrors):
             mirror['audio'] = f'{base}/{self.theme_id}/{index}/audio'
@@ -148,11 +131,7 @@ class Artist:
             themes[mal_id].append(theme_id.split('-')[1])
         anime_list = []
         for mal_id, theme_ids in themes.items():
-<<<<<<< HEAD
             from data.repo import anime_list as anime_list_repo
-=======
-            from src.data.repo import anime_list as anime_list_repo
->>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
             anime = next((item.parse() for item in anime_list_repo if item.anime_id == mal_id), None)
             anime['title'] = anime['title'][0]
             theme_list = []

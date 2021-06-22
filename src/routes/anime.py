@@ -1,11 +1,7 @@
 from flask import Blueprint, jsonify, url_for
 from werkzeug.utils import redirect
 
-<<<<<<< HEAD
 from data.repo import anime_list
-=======
-from src.data.repo import anime_list
->>>>>>> b5795fde038c5903a2a7fed45b73855fe98d1588
 
 anime = Blueprint('anime', __name__)
 
