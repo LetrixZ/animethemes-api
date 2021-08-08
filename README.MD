@@ -1,4 +1,10 @@
-# AnimeThemes unofficial API 
+## Update
+
+AnimeThemes has an official API [https://staging.animethemes.moe/](https://staging.animethemes.moe/) and audio only mode is [planned](https://github.com/AnimeThemes/animethemes-server/issues/225).
+
+I will keep updating this whenever I can. I'll probably end up switching to a proper database again and do automatic updates.
+
+# AnimeThemes unofficial API
 
 This an AnimeThemes API written in Python. It works by scraping data from the subreddit ([r/AnimeThemes](https://www.reddit.com/r/AnimeThemes/)) and saving it to different JSON files under 'data' folder. This is done by the scraping script that is present in the code.
 
@@ -12,102 +18,99 @@ The API is deployed in Heroku and is powered by Flask.
 
 Returns info related to an anime that is identified by the 'anime_id' (MyAnimeList anime's ID).
 
-Example output: 
+Example output:
 
 /api/v1/anime/40060
 
 ```json
 {
-    "mal_id": 40060,
-    "title": [
-        "BNA",
-        "Brand New Animal"
-    ],
-    "cover": "https://cdn.myanimelist.net/images/anime/1139/106986.jpg",
-    "year": 2020,
-    "season": "Spring 2020",
-    "themes": [
+  "mal_id": 40060,
+  "title": ["BNA", "Brand New Animal"],
+  "cover": "https://cdn.myanimelist.net/images/anime/1139/106986.jpg",
+  "year": 2020,
+  "season": "Spring 2020",
+  "themes": [
+    {
+      "title": "Ready to",
+      "theme_id": "40060-00",
+      "type": "OP V1",
+      "artist": null,
+      "mirrors": [
         {
-            "title": "Ready to",
-            "theme_id": "40060-00",
-            "type": "OP V1",
-            "artist": null,
-            "mirrors": [
-                {
-                    "quality": "",
-                    "mirror": "https://animethemes.moe/video/BrandNewAnimal-OP1.webm",
-                    "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-00/0/audio"
-                }
-            ],
-            "notes": "",
-            "episodes": "1-5",
-            "category": ""
-        },
-        {
-            "title": "Ready to",
-            "theme_id": "40060-01",
-            "type": "OP V2",
-            "artist": null,
-            "mirrors": [
-                {
-                    "quality": "",
-                    "mirror": "https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm",
-                    "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-01/0/audio"
-                }
-            ],
-            "notes": "",
-            "episodes": "6-11",
-            "category": ""
-        },
-        {
-            "title": "NIGHT RUNNING",
-            "theme_id": "40060-02",
-            "type": "ED V1",
-            "artist": null,
-            "mirrors": [
-                {
-                    "quality": "",
-                    "mirror": "https://animethemes.moe/video/BrandNewAnimal-ED1.webm",
-                    "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-02/0/audio"
-                }
-            ],
-            "notes": "",
-            "episodes": "1-6",
-            "category": ""
-        },
-        {
-            "title": "NIGHT RUNNING",
-            "theme_id": "40060-03",
-            "type": "ED V2",
-            "artist": null,
-            "mirrors": [
-                {
-                    "quality": "",
-                    "mirror": "https://animethemes.moe/video/BrandNewAnimal-ED1v2.webm",
-                    "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-03/0/audio"
-                }
-            ],
-            "notes": "",
-            "episodes": "7-10",
-            "category": ""
-        },
-        {
-            "title": "NIGHT RUNNING",
-            "theme_id": "40060-04",
-            "type": "ED V3",
-            "artist": null,
-            "mirrors": [
-                {
-                    "quality": "",
-                    "mirror": "https://animethemes.moe/video/BrandNewAnimal-ED1v3.webm",
-                    "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-04/0/audio"
-                }
-            ],
-            "notes": "",
-            "episodes": "11",
-            "category": ""
+          "quality": "",
+          "mirror": "https://animethemes.moe/video/BrandNewAnimal-OP1.webm",
+          "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-00/0/audio"
         }
-    ]
+      ],
+      "notes": "",
+      "episodes": "1-5",
+      "category": ""
+    },
+    {
+      "title": "Ready to",
+      "theme_id": "40060-01",
+      "type": "OP V2",
+      "artist": null,
+      "mirrors": [
+        {
+          "quality": "",
+          "mirror": "https://animethemes.moe/video/BrandNewAnimal-OP1v2.webm",
+          "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-01/0/audio"
+        }
+      ],
+      "notes": "",
+      "episodes": "6-11",
+      "category": ""
+    },
+    {
+      "title": "NIGHT RUNNING",
+      "theme_id": "40060-02",
+      "type": "ED V1",
+      "artist": null,
+      "mirrors": [
+        {
+          "quality": "",
+          "mirror": "https://animethemes.moe/video/BrandNewAnimal-ED1.webm",
+          "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-02/0/audio"
+        }
+      ],
+      "notes": "",
+      "episodes": "1-6",
+      "category": ""
+    },
+    {
+      "title": "NIGHT RUNNING",
+      "theme_id": "40060-03",
+      "type": "ED V2",
+      "artist": null,
+      "mirrors": [
+        {
+          "quality": "",
+          "mirror": "https://animethemes.moe/video/BrandNewAnimal-ED1v2.webm",
+          "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-03/0/audio"
+        }
+      ],
+      "notes": "",
+      "episodes": "7-10",
+      "category": ""
+    },
+    {
+      "title": "NIGHT RUNNING",
+      "theme_id": "40060-04",
+      "type": "ED V3",
+      "artist": null,
+      "mirrors": [
+        {
+          "quality": "",
+          "mirror": "https://animethemes.moe/video/BrandNewAnimal-ED1v3.webm",
+          "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-04/0/audio"
+        }
+      ],
+      "notes": "",
+      "episodes": "11",
+      "category": ""
+    }
+  ]
 }
 ```
 
@@ -115,9 +118,9 @@ Example output:
 
 /api/v1/artist/:artist_id
 
-Returns info related to an artist that is identified by the 'artist_id' (MyAnimeList people's ID). 
+Returns info related to an artist that is identified by the 'artist_id' (MyAnimeList people's ID).
 
-Example output (truncated): 
+Example output (truncated):
 
 /api/v1/artist/10561
 
@@ -167,7 +170,7 @@ Example output (truncated):
           "category": ""
         }
       ]
-    },
+    }
   ]
 }
 ```
@@ -178,32 +181,32 @@ Example output (truncated):
 
 Returns info related to a theme that is identified by the 'theme_id' (format: 'anime_id'-index).
 
-Example output: 
+Example output:
 
 /api/v1/theme/40060-00
 
 ```json
 {
-    "title": "Ready to",
-    "theme_id": "40060-00",
-    "type": "OP V1",
-    "artist": null,
-    "mirrors": [
-        {
-            "quality": "",
-            "mirror": "https://animethemes.moe/video/BrandNewAnimal-OP1.webm",
-            "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-00/0/audio"
-        }
-    ],
-    "notes": "",
-    "episodes": "1-5",
-    "category": ""
+  "title": "Ready to",
+  "theme_id": "40060-00",
+  "type": "OP V1",
+  "artist": null,
+  "mirrors": [
+    {
+      "quality": "",
+      "mirror": "https://animethemes.moe/video/BrandNewAnimal-OP1.webm",
+      "audio": "http://animethemes-api.herokuapp.com/api/v1/theme/40060-00/0/audio"
+    }
+  ],
+  "notes": "",
+  "episodes": "1-5",
+  "category": ""
 }
 ```
 
 ### Search content in the data base
 
-/api/v1/search/:search 
+/api/v1/search/:search
 
 Returns a dict containing list of anime, artists and themes.
 
@@ -216,10 +219,7 @@ Example output (truncated):
   "anime": [
     {
       "mal_id": 3024,
-      "title": [
-        "Ribbon no Kishi",
-        "Princess Knight"
-      ],
+      "title": ["Ribbon no Kishi", "Princess Knight"],
       "cover": "https://cdn.myanimelist.net/images/anime/2/4403.jpg",
       "year": 60,
       "season": "All 60s",
@@ -257,7 +257,7 @@ Example output (truncated):
           "category": ""
         }
       ]
-    },
+    }
   ],
   "themes": [
     {
@@ -275,7 +275,7 @@ Example output (truncated):
       "notes": "",
       "episodes": "",
       "category": ""
-    },
+    }
   ],
   "artist": [
     {
@@ -307,14 +307,14 @@ Example output (truncated):
               "category": ""
             }
           ]
-        },
+        }
       ]
     }
   ]
 }
 ```
 
-/api/v1/search/anime/:search 
+/api/v1/search/anime/:search
 
 Returns a dict containing list of anime.
 
@@ -358,18 +358,8 @@ Example output (truncated):
 
 ```json
 {
-    "2000": [
-        "Winter",
-        "Spring",
-        "Summer",
-        "Fall"
-    ],
-    "2020": [
-        "Winter",
-        "Spring",
-        "Summer",
-        "Fall"
-    ]
+  "2000": ["Winter", "Spring", "Summer", "Fall"],
+  "2020": ["Winter", "Spring", "Summer", "Fall"]
 }
 ```
 
@@ -381,31 +371,8 @@ Example output:
 
 ```json
 [
-    60,
-    70,
-    80,
-    90,
-    2000,
-    2001,
-    2002,
-    2003,
-    2004,
-    2005,
-    2006,
-    2007,
-    2008,
-    2009,
-    2010,
-    2011,
-    2012,
-    2013,
-    2014,
-    2015,
-    2016,
-    2017,
-    2018,
-    2019,
-    2020
+  60, 70, 80, 90, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+  2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020
 ]
 ```
 
@@ -417,19 +384,15 @@ Example output (truncated):
 
 ```json
 [
-    {
-        "anime_id": 41380,
-        "title": "100-man no Inochi no Ue ni Ore wa Tatteiru | I'm Standing on a Million Lives",
-        "cover": "https://cdn.myanimelist.net/images/anime/1825/108800.jpg",
-        "year": "2020",
-        "season": "Fall 2020",
-        "themes": [
-            "41380-00",
-            "41380-01",
-            "41380-02"
-        ],
-        "__type__": "Anime"
-    },
+  {
+    "anime_id": 41380,
+    "title": "100-man no Inochi no Ue ni Ore wa Tatteiru | I'm Standing on a Million Lives",
+    "cover": "https://cdn.myanimelist.net/images/anime/1825/108800.jpg",
+    "year": "2020",
+    "season": "Fall 2020",
+    "themes": ["41380-00", "41380-01", "41380-02"],
+    "__type__": "Anime"
+  }
 ]
 ```
 
@@ -450,9 +413,7 @@ Example output (truncated):
       "anime": [
         {
           "mal_id": 37956,
-          "title": [
-            "3D Kanojo: Real Girl 2nd Season"
-          ],
+          "title": ["3D Kanojo: Real Girl 2nd Season"],
           "cover": "https://cdn.myanimelist.net/images/anime/1941/97219.jpg",
           "year": 2019,
           "season": "Winter 2019",
@@ -487,10 +448,7 @@ Example output (truncated):
       "anime": [
         {
           "mal_id": 38735,
-          "title": [
-            "7 Seeds",
-            "7SEEDS"
-          ],
+          "title": ["7 Seeds", "7SEEDS"],
           "cover": "https://cdn.myanimelist.net/images/anime/1305/96703.jpg",
           "year": 2019,
           "season": "Spring 2019",
@@ -553,9 +511,7 @@ Example output (truncated):
       "anime": [
         {
           "mal_id": 38670,
-          "title": [
-            "Actors: Songs Connection"
-          ],
+          "title": ["Actors: Songs Connection"],
           "cover": "https://cdn.myanimelist.net/images/anime/1383/103339.jpg",
           "year": 2019,
           "season": "Fall 2019",
@@ -619,4 +575,3 @@ Available filters:
 - 'DROPPED'
 - 'PAUSED'
 - 'REPEATING'
-
