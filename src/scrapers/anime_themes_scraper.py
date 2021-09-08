@@ -4,7 +4,7 @@ import json
 import praw
 import requests
 import os
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from mal import Anime as AnimeMAL
 

@@ -1,8 +1,9 @@
+import os
+from db_models import db
 from flask import Flask, jsonify, request
-
-from android.app import android
 from config import config
 from data.repo import artist_list, theme_list, anime_list
+from dump_json_postgres import process
 from helpers.anilist import get_anilist, filters as anilist_filters
 from helpers.common import get_latest_data
 from helpers.myanimelist import filters, get_mal_list
@@ -16,28 +17,30 @@ from routes.themes import theme
 def create_app(env):
     flask_app = Flask(__name__)
     flask_app.config.from_object(env)
+    with flask_app.app_context():
+        db.init_app(flask_app)
+        # db.drop_all()
+        db.create_all()
     return flask_app
 
 
-environment = config['production']
+environment = config[os.environ['ENV']]
 
 app = create_app(environment)
 
-app.register_blueprint(anime, url_prefix='/api/v1/anime')
-app.register_blueprint(anime, url_prefix='/api/v1/a')
-app.register_blueprint(anime, url_prefix='/api/v1/id')
+app.register_blueprint(anime, url_prefix='/api/v1/anime', name="anime")
+app.register_blueprint(anime, url_prefix='/api/v1/a', name="a")
+app.register_blueprint(anime, url_prefix='/api/v1/id', name="id")
 
-app.register_blueprint(theme, url_prefix='/api/v1/theme')
-app.register_blueprint(theme, url_prefix='/api/v1/t')
+app.register_blueprint(theme, url_prefix='/api/v1/theme', name="theme")
+app.register_blueprint(theme, url_prefix='/api/v1/t', name="t")
 
-app.register_blueprint(artist, url_prefix='/api/v1/artist')
+app.register_blueprint(artist, url_prefix='/api/v1/artist', name="artist")
 
-app.register_blueprint(search, url_prefix='/api/v1/search')
-app.register_blueprint(search, url_prefix='/api/v1/s')
+app.register_blueprint(search, url_prefix='/api/v1/search', name="search")
+app.register_blueprint(search, url_prefix='/api/v1/s', name="s")
 
-app.register_blueprint(seasons, url_prefix='/api/v1/season')
-
-app.register_blueprint(android, url_prefix='/api/android')
+app.register_blueprint(seasons, url_prefix='/api/v1/season', name="season")
 
 
 @app.route('/api/v1/list/anime')
@@ -122,6 +125,12 @@ def site_map():
             url = url_for(rule.endpoint, **(rule.defaults or {}))
             links.append((url, rule.endpoint))
     # links is now a list of url, endpoint tuples
+
+
+@app.route('/test')
+def test():
+    process()
+    return 'a'
 
 
 @app.route('/')

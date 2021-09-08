@@ -1,18 +1,23 @@
-from flask import Blueprint, jsonify, url_for
+from flask import Blueprint, url_for, request
 from werkzeug.utils import redirect
-
-from data.repo import anime_list
+from db_models import Anime
 
 anime = Blueprint('anime', __name__)
 
 
+@anime.route('/get')
+def get():
+    mal_id = request.args.get('mal_id')
+    return Anime.query.filter_by(mal_id=mal_id).first().json()
+
+
 @anime.route('<int:anime_id>')
 def get_anime(anime_id):
-    entry = next((item for item in anime_list if item.anime_id == anime_id), None)
+    entry = Anime.query.filter_by(mal_id=anime_id).first()
     if entry:
-        return jsonify(entry.parse())
+        return entry.json()
     else:
-        return jsonify('Anime not found')
+        return {'message': 'Item not found'}, 400
 
 
 @anime.route('<int:anime_id>/<int:index>')

@@ -36,8 +36,10 @@ def get_artists(theme_list_db):
         json.dump(a_list, f, cls=EnhancedJSONEncoder)
 
 
-corrected_covers = {41911: 'https://cdn.myanimelist.net/images/anime/1984/110105.jpg',
-                    40148: 'https://cdn.myanimelist.net/images/anime/1485/108385.jpg'}
+corrected_covers = {
+    41911: 'https://cdn.myanimelist.net/images/anime/1984/110105.jpg',
+    40148: 'https://cdn.myanimelist.net/images/anime/1485/108385.jpg'
+}
 
 
 def add_covers():
@@ -73,9 +75,9 @@ def add_covers():
         json.dump(cover_list, f, cls=EnhancedJSONEncoder)
 
     new_anime = json.load(open('src/data/anime_new.json',
-                          'r', encoding='utf8'), object_hook=object_decoder)
+                               'r', encoding='utf8'), object_hook=object_decoder)
     new_artist = json.load(open('src/data/artist_new.json',
-                           'r', encoding='utf8'), object_hook=object_decoder)
+                                'r', encoding='utf8'), object_hook=object_decoder)
 
     for anime in new_anime:
         try:
@@ -122,11 +124,11 @@ def assign_artists():
 def update_data():
     print("update_data")
     new_anime = json.load(open('src/data/anime_new.json',
-                          'r', encoding='utf8'), object_hook=object_decoder)
+                               'r', encoding='utf8'), object_hook=object_decoder)
     new_themes = json.load(open('src/data/themes_new.json',
-                           'r', encoding='utf8'), object_hook=object_decoder)
+                                'r', encoding='utf8'), object_hook=object_decoder)
     new_artist = json.load(open('src/data/artist_new.json',
-                           'r', encoding='utf8'), object_hook=object_decoder)
+                                'r', encoding='utf8'), object_hook=object_decoder)
 
     if len(new_anime) > 0:
         print("Adding anime")
@@ -151,9 +153,9 @@ def update_data():
 
 
 anime_list = json.load(open('src/data/anime.json', 'r',
-                       encoding="utf8"), object_hook=object_decoder)
+                            encoding="utf8"), object_hook=object_decoder)
 theme_list = json.load(open('src/data/themes.json', 'r',
-                       encoding="utf8"), object_hook=object_decoder)
+                            encoding="utf8"), object_hook=object_decoder)
 artist_list = json.load(
     open('src/data/artist.json', 'r', encoding='utf8'), object_hook=object_decoder)
 cover_list = json.load(open('src/data/covers.json', 'r', encoding='utf8'))
