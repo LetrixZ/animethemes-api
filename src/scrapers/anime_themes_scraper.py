@@ -12,8 +12,8 @@ from models import Anime, Theme, object_decoder
 
 load_dotenv()
 
-reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
-                     client_secret=os.getenv('CLIENT_SECRET'),
+reddit = praw.Reddit(client_id=os.getenv('PRAW_CLIENT_ID'),
+                     client_secret=os.getenv('PRAW_CLIENT_SECRET'),
                      user_agent="Letrix's AnimeThemes API")
 
 

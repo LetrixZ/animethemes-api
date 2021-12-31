@@ -7,8 +7,8 @@ from bs4 import BeautifulSoup
 from models import Artist, object_decoder, EnhancedJSONEncoder
 from scrapers.anime_themes_scraper import get_mal_id
 
-reddit = praw.Reddit(client_id=os.getenv('CLIENT_ID'),
-                     client_secret=os.getenv('CLIENT_SECRET'),
+reddit = praw.Reddit(client_id=os.getenv('PRAW_CLIENT_ID'),
+                     client_secret=os.getenv('PRAW_CLIENT_SECRET'),
                      user_agent="Letrix's AnimeThemes API")
 
 local_artist_list = json.load(open('src/data/artist.json', 'r', encoding="utf8"), object_hook=object_decoder)
